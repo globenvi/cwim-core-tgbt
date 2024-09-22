@@ -13,6 +13,13 @@ from core.middlewares.is_admin import isAdmin
 router = Router()
 
 
+#TODO###
+#*Пооверка установки файлов*#
+#поверка версии ядра
+#проверка модулей
+#проверка версии каждого модуля
+#установка файловой системы
+#
 @router.message(Command('install'))
 async def install_core_command(message: Message):
     # Load config.json
