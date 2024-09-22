@@ -1,0 +1,23 @@
+{
+    "modules": {},
+    "admins": [
+        665852999
+    ],
+    "core_settings": {
+        "core_autoupdate": true,
+        "modules_autoupdate": true,
+        "modules_autoload": false,
+        "debug_mode": false
+    },
+    "databases": {
+        "localhost": {
+            "hostname" : "localhost",
+            "username" : "",
+            "password" : "",
+            "database" : "database",
+            "prefix" : "cwim_",
+            "collation" : "utf8_general_ci",
+            "charset" : "utf8"
+        }
+    }
+}
