@@ -1,79 +1,59 @@
-import json
-from flet import *
+import flet as ft
 
+# Глобальные переменные для хранения сообщений и имени пользователя
+messages = []
+username = ""
 
-# Функция для загрузки существующих сообщений из файла
-def load_messages():
-    try:
-        with open('./cwim-core-tgbt/datafiles/messages.json', 'r') as f:
-            return json.load(f)
-    except (FileNotFoundError, json.JSONDecodeError):
-        return []  # Возвращаем пустой список, если файл не найден или не может быть прочитан
+def main(page: ft.Page):
+    global username
 
-
-# Функция для сохранения сообщения в файл
-def save_message(message):
-    messages = load_messages()
-    messages.append(message)
-    with open('./cwim-core-tgbt/datafiles/messages.json', 'w') as f:
-        json.dump(messages, f)
-
-
-def tpl_chat(page: Page):
-    page.title = "Чат"
-
-    # Список для отображения сообщений
-    messages_list = Column()
-
-    # Загрузка существующих сообщений
-    existing_messages = load_messages()
-    for msg in existing_messages:
-        messages_list.controls.append(Text(msg))  # Изменено с add() на controls.append()
-
-    # Поле для ввода сообщения
-    input_field = TextField(
-        label="Ваше сообщение",
-        multiline=False,
-        width=300,
-        on_submit=lambda e: send_message(input_field, messages_list, page)
-    )
-
-    # Кнопка отправки сообщения
-    send_button = IconButton(
-        icon=icons.SEND,
-        on_click=lambda e: send_message(input_field, messages_list, page)
-    )
-
-    # Добавляем элементы на страницу
-    page.add(
-        Column(
-            [
-                messages_list,
-                Row(
-                    [input_field, send_button],
-                    alignment=MainAxisAlignment.CENTER
-                )
-            ],
-            alignment=MainAxisAlignment.CENTER,
-            horizontal_alignment=CrossAxisAlignment.CENTER,
+    def open_popup(e):
+        # Открытие всплывающего окна для ввода имени пользователя
+        popup = ft.AlertDialog(
+            title="Введите ваше имя",
+            content=ft.Column(
+                [
+                    ft.TextField(label="Имя пользователя", on_submit=on_username_submit),
+                    ft.Row(
+                        [
+                            ft.ElevatedButton("OK", on_click=on_username_submit),
+                            ft.ElevatedButton("Отмена", on_click=lambda e: popup.close()),
+                        ]
+                    ),
+                ]
+            ),
         )
-    )
+        page.dialog = popup
+        popup.open = True
+        page.update()
 
-    page.update()
+    def on_username_submit(e):
+        nonlocal username
+        username = e.control.value
+        page.dialog.close()
+        page.update()
 
+    def send_message(e):
+        global messages
+        message_text = message_input.value.strip()
+        if message_text:
+            messages.append(f"{username}: {message_text}")
+            message_input.value = ""
+            update_chat()
+            page.update()
 
-def send_message(input_field, messages_list, page):
-    """Отправляет сообщение в чат."""
-    message_text = input_field.value.strip()  # Получаем текст сообщения
-    if message_text:  # Если текст не пустой
-        # Получаем имя пользователя из сессии, установив "Гость" как значение по умолчанию
-        name = page.session.get("user_name") or "Гость"
-        full_message = f"{name}: {message_text}"
+    def update_chat():
+        chat_area.controls.append(ft.Text("\n".join(messages), size=12))
+        chat_area.scroll = True
 
-        # Сохраняем сообщение в файл
-        save_message(full_message)
+    # Инициализация элементов интерфейса
+    page.title = "Realtime Online Chat"
+    page.vertical_alignment = ft.MainAxisAlignment.START
 
-        # Добавляем сообщение в список
-        messages_list.controls.append(Text(full_message))  # Изменено с add() на controls.append()
-        input_field.value = ""  # Очищаем поле ввода
-        page.update()  # Обновляем страницу
+    chat_area = ft.Column(scroll=True)
+    message_input = ft.TextField(label="Ваше сообщение", on_submit=send_message)
+
+    # Кнопка для открытия окна ввода имени
+    start_button = ft.ElevatedButton("Начать чат", on_click=open_popup)
+
+    page.add(start_button, chat_area, message_input)
