@@ -101,5 +101,3 @@ def send_message(input_field, messages_list, page):
 # Инициализация базы данных
 init_db()
 
-# Запуск приложения
-ft.app(target=tpl_chat)
