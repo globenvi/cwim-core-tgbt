@@ -49,8 +49,8 @@ def tpl_index(page: Page):
     # Выпадающий список для навигации
     page_selector = Dropdown(
         options=[
-            DropdownOption(label="Админ панель", value="/admin"),
-            DropdownOption(label="Чат", value="/chat"),
+            dropdown.Option(label="Админ панель", value="/admin"),
+            dropdown.Option(label="Чат", value="/chat"),
             # Добавьте другие страницы здесь
         ],
         on_change=lambda e: page.go(e.control.value),
