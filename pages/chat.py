@@ -16,14 +16,16 @@ def save_message(message):
 
 def tpl_chat(page: Page):
     page.title = "Чат"
+    page.vertical_alignment = MainAxisAlignment.START
+    page.horizontal_alignment = CrossAxisAlignment.CENTER
 
     # Список для отображения сообщений
-    messages_list = Column()
+    messages_list = Column(scroll=True, expand=True, alignment=MainAxisAlignment.END)
 
     # Загрузка существующих сообщений
     existing_messages = load_messages()
     for msg in existing_messages:
-        messages_list.controls.append(Text(msg))
+        messages_list.controls.append(Text(msg, size=14, color="black", selectable=True))
 
     # Поле для ввода сообщения
     input_field = TextField(
@@ -45,15 +47,21 @@ def tpl_chat(page: Page):
             [
                 messages_list,
                 Row(
-                    [input_field, send_button],
-                    alignment=MainAxisAlignment.CENTER
-                )
+                    [
+                        input_field,
+                        send_button,
+                    ],
+                    alignment=MainAxisAlignment.END,
+                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                ),
             ],
-            alignment=MainAxisAlignment.CENTER,
-            horizontal_alignment=CrossAxisAlignment.CENTER,
+            alignment=MainAxisAlignment.SPACE_BETWEEN,
+            vertical_alignment=CrossAxisAlignment.END,
+            expand=True,
         )
     )
 
+    # Фиксация поля ввода и кнопки к низу экрана
     page.update()
 
 def send_message(input_field, messages_list, page):
@@ -68,9 +76,7 @@ def send_message(input_field, messages_list, page):
         save_message(full_message)
 
         # Добавляем сообщение в список
-        messages_list.controls.append(Text(full_message))
+        messages_list.controls.append(Text(full_message, size=14, color="black", selectable=True))
         input_field.value = ""  # Очищаем поле ввода
+        messages_list.scroll = True  # Прокрутка вниз
         page.update()  # Обновляем страницу
-
-# Запуск приложения
-ft.app(target=tpl_chat)
