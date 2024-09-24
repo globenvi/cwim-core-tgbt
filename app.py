@@ -1,109 +1,122 @@
 import os
-import time
-import subprocess
+import importlib
 import json
-from tqdm import tqdm
+from flet import Page, Text, Column
 
-# Конфигурация
-REPO_URL = 'https://github.com/globenvi/cwim-core-tgbt.git'  # URL вашего репозитория
-LOCAL_REPO_PATH = os.path.join(os.getenv('HOME', '/tmp'), 'cwim-core-tgbt')  # Локальный путь для клонирования
-CHECK_INTERVAL = 60  # Интервал проверки новых коммитов в секундах
-VERSION_FILE = os.path.join(LOCAL_REPO_PATH, 'version.txt')  # Путь к файлу версии
-ROUTES_FILE = os.path.join(LOCAL_REPO_PATH, 'routes.json')  # Путь к файлу с доступом
+# Путь к папке со страницами
+PAGES_DIR = "./cwim-core-tgbt/pages"
 
-def load_access_rules():
-    """Загружает правила доступа из файла routes.json."""
-    try:
-        with open(ROUTES_FILE, 'r') as f:
-            return json.load(f)
-    except Exception as e:
-        print(f"Ошибка при загрузке файла с доступом: {e}")
-        return []
+# Путь к файлу с роутами
+ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
-def check_access(user_group, required_group):
-    """Проверяет, имеет ли пользователь доступ к странице."""
-    return user_group == required_group
+# Проверка наличия файла и его создание, если не существует
+def check_routes_file():
+    if not os.path.exists(ROUTES_FILE):
+        with open(ROUTES_FILE, "w") as f:
+            json.dump({}, f)
 
-def clone_repo():
-    """Клонирует репозиторий, если он еще не существует."""
-    if not os.path.exists(LOCAL_REPO_PATH):
-        print(f"Клонирование репозитория из {REPO_URL} в {LOCAL_REPO_PATH}...")
+# Чтение существующих роутов из файла
+def load_routes():
+    check_routes_file()
+    with open(ROUTES_FILE, "r") as f:
+        return json.load(f)
+
+# Сохранение роутов в файл
+def save_routes(routes):
+    with open(ROUTES_FILE, "w") as f:
+        json.dump(routes, f, indent=4)
+
+# Сканирование папки на наличие страниц
+def scan_pages():
+    routes = load_routes()
+    for file_name in os.listdir(PAGES_DIR):
+        if file_name.endswith(".py"):
+            module_name = file_name[:-3]
+            try:
+                module = importlib.import_module(f"pages.{module_name}")
+                for attr in dir(module):
+                    if attr.startswith("tpl_"):
+                        route = f"/{module_name}"
+                        routes[route] = {
+                            "module": module_name,
+                            "template": attr,
+                            "enabled": True,
+                            "group_access": "all"
+                        }
+                        print(f"Маршрут {route} добавлен.")
+            except Exception as e:
+                print(f"Ошибка импорта {module_name}: {e}")
+    save_routes(routes)
+
+# Получение страницы по маршруту
+def get_page(route, user_group="all"):
+    routes = load_routes()
+    print(f"Ищем маршрут для: {route}")
+    if route in routes:
+        route_info = routes[route]
+        print(f"Маршрут найден: {route}, модуль: {route_info['module']}, шаблон: {route_info['template']}")
+
+        if not route_info["enabled"]:
+            return None  # Страница отключена
+
+        if route_info["group_access"] != "all" and route_info["group_access"] != user_group:
+            print(f"Доступ запрещен для группы: {user_group}")
+            return None
+
         try:
-            subprocess.run(['git', 'clone', REPO_URL, LOCAL_REPO_PATH], check=True)
-            print("Клонирование завершено.")
-        except subprocess.CalledProcessError as e:
-            print(f"Ошибка при клонировании репозитория: {e}")
+            module = importlib.import_module(f"pages.{route_info['module']}")
+            template_func = getattr(module, route_info["template"])
+            return template_func
+        except Exception as e:
+            print(f"Ошибка загрузки страницы {route}: {e}")
     else:
-        print("Репозиторий уже клонирован.")
+        print(f"Маршрут {route} не найден.")
+    return None
 
-def update_repo():
-    """Обновляет локальный репозиторий, если есть новые коммиты."""
-    print("Проверка обновлений в репозитории...")
-    try:
-        subprocess.run(['git', '-C', LOCAL_REPO_PATH, 'pull'], check=True)
-        print("Обновление завершено: новые коммиты загружены.")
-        return True  # Обновления найдены
-    except subprocess.CalledProcessError:
-        print("Ошибка при обновлении репозитория.")
-        return False  # Обновлений нет
+# Функция роутинга
+def router(page: Page):
+    # Получаем маршрут из запроса, по умолчанию перенаправляем на "/index"
+    route = page.route or "/index"
+    print(f"Текущий маршрут: {route}")
 
-def run_flet_app():
-    """Запускает flet приложение."""
-    app_path = os.path.join(LOCAL_REPO_PATH, 'app.py')
-    print(f"Запуск flet приложения: {app_path}")
+    # Получаем группу пользователя (по умолчанию "all")
+    user_group = page.session.get("user_group") or "all"
+    print(f"Группа пользователя: {user_group}")
 
-    # Запускаем flet приложение
-    process = subprocess.Popen(['flet', '-w', app_path])
-    return process
+    # Получаем шаблон страницы по маршруту
+    page_template = get_page(route, user_group)
 
-def read_version():
-    """Читает текущую версию приложения из файла."""
-    if os.path.exists(VERSION_FILE):
-        with open(VERSION_FILE, 'r') as f:
-            return f.read().strip()
-    return "0.0.0"  # Если файл не найден, возвращаем базовую версию
+    if page_template:
+        print(f"Отображаем страницу: {route}")
+        page.controls.clear()
+        page_template(page)
+    else:
+        print(f"Страница {route} не найдена или доступ запрещен.")
+        page.controls.clear()
+        page.controls.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
+        page.update()
 
-def write_version(version):
-    """Записывает текущую версию приложения в файл."""
-    with open(VERSION_FILE, 'w') as f:
-        f.write(version)
+# Пример инициализации приложения Flet
+def main(page: Page):
+    # Сканируем страницы при старте приложения
+    scan_pages()
 
-def main():
-    # Клонируем репозиторий, если он еще не существует
-    clone_repo()
+    # Устанавливаем начальный маршрут, если он не задан
+    if page.route == "/":
+        page.route = "/index"
 
-    # Читаем текущую версию
-    current_version = read_version()
-    print(f"Текущая версия приложения: {current_version}")
+    # Обработчик события перехода по маршруту
+    def on_route_change(e):
+        router(page)
 
-    # Запускаем flet приложение
-    flet_process = run_flet_app()
 
-    try:
-        while True:
-            if update_repo():
-                # Перезапускаем приложение при обнаружении обновлений
-                flet_process.terminate()  # Завершаем текущий процесс flet
-                flet_process.wait()  # Ждем завершения процесса
-                flet_process = run_flet_app()  # Запускаем его снова
+    # Слушаем изменения маршрута
+    page.on_route_change = on_route_change
 
-                # Обновляем и записываем новую версию (если доступна)
-                new_version = read_version()  # Или можете использовать какую-то логику для получения новой версии
-                if new_version != current_version:
-                    write_version(new_version)
-                    print(f"Обновление версии: {new_version}")
-                    current_version = new_version
+    # Запуск роутера
+    router(page)
 
-            # Отображение статус-бара
-            for _ in tqdm(range(CHECK_INTERVAL), desc="Ожидание проверки обновлений", ncols=80):
-                time.sleep(1)
-
-    except KeyboardInterrupt:
-        print("\nОстановка отслеживания репозитория.")
-        flet_process.terminate()  # Завершаем процесс перед выходом
-    except Exception as e:
-        print(f"Произошла ошибка: {e}")
-        flet_process.terminate()  # Завершаем процесс при ошибке
-
+# Запуск Flet
 if __name__ == "__main__":
-    main()
+    import flet as ft
+    ft.app(target=main, view=ft.AppView.WEB_BROWSER)
