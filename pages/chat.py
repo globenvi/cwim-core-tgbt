@@ -8,13 +8,26 @@ DATA_FILE = './cwim-core-tgbt/datafiles/chat_data.json'
 def check_data_file():
     if not os.path.exists(DATA_FILE):
         with open(DATA_FILE, 'w') as f:
-            json.dump([], f)
+            json.dump([], f)  # Инициализируем пустым массивом
+    else:
+        # Проверяем, что содержимое файла является корректным JSON
+        with open(DATA_FILE, 'r') as f:
+            try:
+                json.load(f)
+            except json.JSONDecodeError:
+                # Если содержимое некорректное, переинициализируем
+                with open(DATA_FILE, 'w') as f:
+                    json.dump([], f)
 
 # Загрузка сообщений из JSON файла
 def load_messages():
     check_data_file()
-    with open(DATA_FILE, 'r') as f:
-        return json.load(f)
+    try:
+        with open(DATA_FILE, 'r') as f:
+            return json.load(f)
+    except json.JSONDecodeError:
+        print("Ошибка загрузки сообщений: неверный формат данных.")
+        return []  # Возвращаем пустой список в случае ошибки
 
 # Сохранение сообщений в JSON файл
 def save_message(message):
