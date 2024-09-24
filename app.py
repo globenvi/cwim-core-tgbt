@@ -1,14 +1,13 @@
 import os
 import importlib
 import json
-from flet import Page, Column, Text, TextField, ElevatedButton, ProgressRing
+from flet import Page, Column, Text, TextField, ElevatedButton, Cookies
+from flet_fastapi import FastAPI, SessionStorage
 
-# Путь к папке со страницами
+# Путь к папке со страницами и модулями
 PAGES_DIR = "./cwim-core-tgbt/pages"
-
-# Путь к файлу с роутами
+MODULES_DIRS = ["./cwim-core-tgbt/modules", "./cwim-core-tgbt/modules_extra"]
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
-
 
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
@@ -16,19 +15,16 @@ def check_routes_file():
         with open(ROUTES_FILE, "w") as f:
             json.dump({}, f)
 
-
 # Чтение существующих роутов из файла
 def load_routes():
     check_routes_file()
     with open(ROUTES_FILE, "r") as f:
         return json.load(f)
 
-
 # Сохранение роутов в файл
 def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
-
 
 # Сканирование папки на наличие страниц
 def scan_pages():
@@ -45,26 +41,34 @@ def scan_pages():
                             "module": module_name,
                             "template": attr,
                             "enabled": True,
-                            "group_access": "all"  # По умолчанию доступ для всех
+                            "group_access": "all"
                         }
                         print(f"Маршрут {route} добавлен.")
             except Exception as e:
                 print(f"Ошибка импорта {module_name}: {e}")
     save_routes(routes)
 
+# Загрузка модулей
+def load_modules():
+    for module_dir in MODULES_DIRS:
+        for file_name in os.listdir(module_dir):
+            if file_name.endswith(".py"):
+                module_name = file_name[:-3]
+                try:
+                    importlib.import_module(f"modules.{module_name}")
+                    print(f"Модуль {module_name} загружен.")
+                except Exception as e:
+                    print(f"Ошибка загрузки модуля {module_name}: {e}")
 
-# Проверка доступа к маршруту
+# Проверка доступа
 def check_access(route_info, user_group):
-    return route_info['group_access'] == 'all' or route_info['group_access'] == user_group
-
+    return route_info["group_access"] == "all" or route_info["group_access"] == user_group
 
 # Получение страницы по маршруту
 def get_page(route, user_group="guest"):
     routes = load_routes()
-    print(f"Ищем маршрут для: {route}")
     if route in routes:
         route_info = routes[route]
-        print(f"Маршрут найден: {route}, модуль: {route_info['module']}, шаблон: {route_info['template']}")
 
         if not route_info["enabled"]:
             return None  # Страница отключена
@@ -83,18 +87,12 @@ def get_page(route, user_group="guest"):
         print(f"Маршрут {route} не найден.")
     return None
 
-
 # Функция роутинга
 def router(page: Page):
-    # Получаем маршрут из запроса, по умолчанию перенаправляем на "/index"
     route = page.route or "/index"
-    print(f"Текущий маршрут: {route}")
+    user_group = page.session.get("user_group", "guest")
+    print(f"Текущий маршрут: {route}, группа пользователя: {user_group}")
 
-    # Получаем группу пользователя из сессии, по умолчанию "guest"
-    user_group = page.session.get("user_group") or "guest"
-    print(f"Группа пользователя: {user_group}")
-
-    # Получаем шаблон страницы по маршруту
     page_template = get_page(route, user_group)
 
     if page_template:
@@ -107,33 +105,24 @@ def router(page: Page):
         page.controls.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
         page.update()
 
-
-# Функция для авторизации
-def tpl_login(page: Page):
-    def login_action(e):
-        password = password_input.value
-        if authenticate(password):  # Проверьте правильность пароля
-            page.session["user_group"] = "admin"  # Установите группу пользователя в сессии
-            page.route = "/index"  # Перенаправляем на главную страницу
-            page.update()  # Обновляем страницу
-
-    password_input = TextField(label="Пароль", password=True)
-
-    page.controls.append(Column([
-        Text("Логин"),
-        password_input,
-        ElevatedButton("Войти", on_click=login_action),
-        ProgressRing(visible=False)  # Если потребуется, для индикатора загрузки
-    ]))
-    page.update()
-
+# Функция авторизации
+def authenticate(password, page):
+    # Временная логика для авторизации
+    if password == "your_password":  # Замените на свою логику
+        session_id = os.urandom(16).hex()  # Генерация ID сессии
+        page.session["user_group"] = "admin"  # Присваиваем группу доступа
+        page.cookies["session_id"] = session_id  # Устанавливаем куки
+        page.go("/admin")  # Перенаправление на страницу администратора
+    else:
+        page.controls.append(Text("Неверный пароль!"))
+        page.update()
 
 # Пример инициализации приложения Flet
 def main(page: Page):
-    # Сканируем страницы при старте приложения
-    scan_pages()
+    scan_pages()  # Сканируем страницы
+    load_modules()  # Загружаем модули
 
-    # Устанавливаем начальный маршрут, если он не задан
+    # Устанавливаем начальный маршрут
     if page.route == "/":
         page.route = "/index"
 
@@ -147,9 +136,7 @@ def main(page: Page):
     # Запуск роутера
     router(page)
 
-
 # Запуск Flet
 if __name__ == "__main__":
     import flet as ft
-
     ft.app(target=main, view=ft.AppView.WEB_BROWSER)
