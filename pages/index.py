@@ -39,27 +39,21 @@ def tpl_index(page: Page):
         width=200
     )
 
-    # Переключатель темной/светлой темы
-    theme_switch = Switch(
-        thumb_icon=icons.SUNNY,
-        value=page.theme_mode == ThemeMode.DARK,
-        on_change=lambda e: toggle_theme(page, e.control.value),
-    )
-
-    # AppBar с переключателем темы
-    page.appbar = AppBar(
-        title=Text("Админ центр"),
-        center_title=True,
-        bgcolor=colors.BLUE,
-        actions=[
-            theme_switch
-        ]
+    # Навигационная панель
+    navbar = Row(
+        [
+            TextButton("Главная", on_click=lambda e: page.go("/")),
+            TextButton("Чат", on_click=lambda e: page.go("/chat")),
+            TextButton("Админ панель", on_click=lambda e: page.go("/admin")),
+        ],
+        alignment=MainAxisAlignment.START,
     )
 
     # Добавляем элементы на страницу
     page.add(
         Column(
             [
+                navbar,
                 Text(
                     "Авторизация",
                     size=24,
@@ -74,13 +68,6 @@ def tpl_index(page: Page):
         )
     )
 
-    page.update()
-
-def toggle_theme(page: Page, is_dark_mode: bool):
-    """Переключает тему и сохраняет её в сессии."""
-    theme = ThemeMode.DARK if is_dark_mode else ThemeMode.LIGHT
-    page.session.set("theme_mode", theme)
-    page.theme_mode = theme
     page.update()
 
 def authenticate(input_password: str, admin_password: str, page: Page):
