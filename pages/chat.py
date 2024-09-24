@@ -23,18 +23,19 @@ def tpl_chat(page: Page):
                 ],
                 alignment=MainAxisAlignment.CENTER,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
-            )
+                spacing=20
+            ),
+            alignment=MainAxisAlignment.CENTER
         )
         page.update()
     else:
         username = page.session.get("username")
-        print(f"Пользователь: {username}")
 
         # Поле для ввода нового сообщения
-        message_input = TextField(label="Введите сообщение", width=300)
+        message_input = TextField(label="Введите сообщение", width=300, multiline=True)
 
         # Кнопка отправки сообщения
-        send_button = ElevatedButton(
+        send_button = CupertinoFilledButton(
             "Отправить",
             on_click=lambda e: send_message(page, username, message_input.value),
             width=100
@@ -47,11 +48,16 @@ def tpl_chat(page: Page):
         page.add(
             Column(
                 [
-                    Row([message_input, send_button]),
                     message_list,
+                    Row(
+                        [message_input, send_button],
+                        alignment=MainAxisAlignment.CENTER,
+                        spacing=10
+                    ),
                 ],
                 alignment=MainAxisAlignment.CENTER,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
+                spacing=20
             )
         )
 
