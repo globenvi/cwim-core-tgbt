@@ -1,7 +1,7 @@
 import os
 import importlib
 import json
-from flet import Page, Text, Column, TextField, ElevatedButton
+from flet import Page, Text, Column
 
 # Путь к папке со страницами
 PAGES_DIR = "./cwim-core-tgbt/pages"
@@ -51,91 +51,67 @@ def scan_pages():
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
     routes = load_routes()
+    print(f"Ищем маршрут для: {route}")
     if route in routes:
         route_info = routes[route]
+        print(f"Маршрут найден: {route}, модуль: {route_info['module']}, шаблон: {route_info['template']}")
+        
         if not route_info["enabled"]:
             return None  # Страница отключена
+        
         if route_info["group_access"] != "all" and route_info["group_access"] != user_group:
-            return None  # Доступ запрещен
+            print(f"Доступ запрещен для группы: {user_group}")
+            return None
+        
         try:
             module = importlib.import_module(f"pages.{route_info['module']}")
             template_func = getattr(module, route_info["template"])
             return template_func
         except Exception as e:
             print(f"Ошибка загрузки страницы {route}: {e}")
+    else:
+        print(f"Маршрут {route} не найден.")
     return None
 
-# Функция для проверки авторизации пользователя
-def is_authorized(page):
-    return page.session.get('user_id') is not None
-
-# Функция для установки куки после авторизации
-def set_auth_cookie(page, user_id):
-    page.session['user_id'] = user_id
-    page.session['user_group'] = 'admin'  # Здесь вы можете задать группу пользователя
-
-# Функция для проверки доступа к маршруту
-def check_access(route_info, user_group):
-    return route_info['group_access'] == 'all' or route_info['group_access'] == user_group
-
-# Обновленная функция роутинга
+# Функция роутинга
 def router(page: Page):
+    # Получаем маршрут из запроса, по умолчанию перенаправляем на "/index"
     route = page.route or "/index"
+    print(f"Текущий маршрут: {route}")
+
+    # Получаем группу пользователя (по умолчанию "all")
     user_group = page.session.get("user_group") or "all"
+    print(f"Группа пользователя: {user_group}")
 
-    if not is_authorized(page) and route != '/login':
-        page.go('/login')  # Перенаправляем на страницу логина
-        return
-
+    # Получаем шаблон страницы по маршруту
     page_template = get_page(route, user_group)
-
+    
     if page_template:
-        if not check_access(page_template, user_group):
-            page.controls.clear()
-            page.controls.append(Column([Text("Доступ запрещен.")]))
-            page.update()
-            return
-
+        print(f"Отображаем страницу: {route}")
         page.controls.clear()
         page_template(page)
     else:
+        print(f"Страница {route} не найдена или доступ запрещен.")
         page.controls.clear()
-        page.controls.append(Column([Text(f"Страница {route} не найдена.")]))
+        page.controls.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
         page.update()
-
-# Пример функции авторизации
-def authenticate(input_password: str, page: Page):
-    # Замените 'your_admin_password' на свой пароль
-    if input_password == 'your_admin_password':
-        set_auth_cookie(page, 'user_id_123')  # Установите уникальный идентификатор пользователя
-        page.go('/admin')  # Перейти на страницу админ-панели
-    else:
-        print("Неверный пароль!")
-
-# Шаблон страницы логина
-def tpl_login(page: Page):
-    password_input = TextField(label="Пароль", password=True)  # Создаем поле для пароля
-
-    def login_action(e):
-        password = password_input.value
-        authenticate(password, page)
-
-    # Добавляем элементы управления на страницу
-    page.controls.append(Column([
-        Text("Логин"),
-        password_input,
-        ElevatedButton("Войти", on_click=login_action)
-    ]))
-    page.update()
 
 # Пример инициализации приложения Flet
 def main(page: Page):
+    # Сканируем страницы при старте приложения
     scan_pages()
 
+    # Устанавливаем начальный маршрут, если он не задан
     if page.route == "/":
         page.route = "/index"
 
-    page.on_route_change = lambda e: router(page)
+    # Обработчик события перехода по маршруту
+    def on_route_change(e):
+        router(page)
+        
+
+    # Слушаем изменения маршрута
+    page.on_route_change = on_route_change
 
     # Запуск роутера
     router(page)
