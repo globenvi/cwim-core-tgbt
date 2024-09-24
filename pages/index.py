@@ -43,7 +43,7 @@ def tpl_index(page: Page):
     theme_switch = Switch(
         thumb_icon=icons.SUNNY,
         value=page.theme_mode == ThemeMode.DARK,
-        on_change=lambda e: toggle_theme(page, e.control.value) and [icons.SUNNY if theme == icons.MOOD else icons.SUNNY],
+        on_change=lambda e: toggle_theme(page, e.control.value),
     )
 
     # AppBar с переключателем темы
@@ -89,7 +89,7 @@ def authenticate(input_password: str, admin_password: str, page: Page):
         # Пароль верный, авторизуем пользователя
         page.snack_bar = SnackBar(Text("Авторизация успешна!"), bgcolor=colors.GREEN)
         page.snack_bar.open = True
-        user_group = page.session.get("user_group") or "admin"
+        page.session.set("user_group", "admin")  # Устанавливаем группу пользователя как "admin"
         page.update()
         page.go('/admin')  # Переход на страницу админ-панели
     else:
@@ -97,4 +97,3 @@ def authenticate(input_password: str, admin_password: str, page: Page):
         page.snack_bar = SnackBar(Text("Неверный пароль!", color=colors.WHITE), bgcolor=colors.RED)
         page.snack_bar.open = True
         page.update()
-
