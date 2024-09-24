@@ -82,8 +82,9 @@ def get_page(route, user_group="all"):
 # Функция для регистрации информации о пользователе
 def register_user_info(page: Page):
     user_info = {
-        "user_agent": page.session.get("user_agent"),
         "ip_address": page.session.get("ip_address"),
+        "user_agent": page.session.get("user_agent"),
+        "current_route": page.route,
     }
     page.session['user_info'] = user_info
     print("Информация о пользователе зарегистрирована:", user_info)
