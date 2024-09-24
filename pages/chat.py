@@ -33,11 +33,12 @@ def tpl_chat(page: Page):
         # Поле для ввода нового сообщения
         message_input = TextField(label="Введите сообщение", width=300, multiline=True)
 
-        # Кнопка отправки сообщения
-        send_button = CupertinoFilledButton(
-            "Отправить",
+        # Кнопка отправки сообщения с иконкой
+        send_button = IconButton(
+            icon=icons.SEND,
             on_click=lambda e: send_message(page, username, message_input.value),
-            width=100
+            tooltip="Отправить",
+            icon_size=30  # Размер иконки
         )
 
         # Список для отображения сообщений
@@ -87,7 +88,13 @@ def tpl_chat(page: Page):
             messages.remove(msg)
             display_messages()  # Обновляем список сообщений
 
-        display_messages()  # Начальное отображение сообщений
+        # Запуск функции обновления сообщений в реальном времени
+        def update_messages():
+            display_messages()
+            page.update()
+            page.timer(1, update_messages)  # Обновление каждую секунду
+
+        update_messages()  # Начальное отображение сообщений
 
 def set_username(page: Page, username: str):
     """Устанавливает имя пользователя и обновляет страницу."""
