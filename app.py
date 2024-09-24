@@ -45,7 +45,7 @@ def scan_pages():
                             "module": module_name,
                             "template": attr,
                             "enabled": True,
-                            "group_access": "all"
+                            "group_access": "all"  # Можно указать группы для каждой страницы
                         }
                         print(f"Маршрут {route} добавлен.")
             except Exception as e:
@@ -69,13 +69,14 @@ def get_page(route, user_group="all"):
             print(f"Маршрут {route} отключен.")
             return None  # Страница отключена
 
+        # Проверяем доступ к странице по группе пользователя
         if route_info["group_access"] != "all" and route_info["group_access"] != user_group:
             print(f"Доступ запрещен для группы: {user_group}")
             return None
 
         try:
             module = importlib.import_module(f"pages.{route_info['module']}")
-            template_func = getattr(module, route_info['template'])
+            template_func = getattr(module, route_info["template"])
             return template_func
         except Exception as e:
             print(f"Ошибка загрузки страницы {route}: {e}")
@@ -91,7 +92,7 @@ def router(page: Page):
     print(f"Текущий маршрут: {route}")
 
     # Получаем группу пользователя (по умолчанию "all")
-    user_group = page.session.get("user_group", "all")
+    user_group = page.session.get("user_group") or "all"  # Исправлено: убран третий аргумент
     print(f"Группа пользователя: {user_group}")
 
     # Получаем шаблон страницы по маршруту
@@ -110,9 +111,6 @@ def router(page: Page):
 
 # Пример инициализации приложения Flet
 def main(page: Page):
-    # Инициализация сессии пользователя
-    page.session.set("user_group", "all")  # Здесь можно установить группу пользователя, например, "admin" или "user"
-
     # Сканируем страницы при старте приложения
     scan_pages()
 
@@ -127,6 +125,9 @@ def main(page: Page):
 
     # Слушаем изменения маршрута
     page.on_route_change = on_route_change
+
+    # Устанавливаем группу пользователя в сессии (можно настраивать через авторизацию)
+    page.session.set("user_group", "all")  # Группу можно изменить на "admin" или другую
 
     # Запуск роутера
     router(page)
