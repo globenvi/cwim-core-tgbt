@@ -58,6 +58,7 @@ def tpl_index(page: Page):
 
     # Добавляем элементы на страницу
     page.add(
+        Text(f'{page.session.get("user_group", "")}'),
         Column(
             [
                 Text(
