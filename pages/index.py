@@ -39,7 +39,7 @@ def tpl_index(page: Page):
         width=200
     )
 
-    # Навигационная панель
+    # Создание навигационной панели
     navbar = Row(
         [
             TextButton("Главная", on_click=lambda e: page.go("/")),
@@ -49,11 +49,20 @@ def tpl_index(page: Page):
         alignment=MainAxisAlignment.START,
     )
 
+    # AppBar с навигационной панелью
+    page.appbar = AppBar(
+        title=Text("Админ центр"),
+        center_title=True,
+        bgcolor=colors.BLUE,
+        actions=[
+            navbar  # Добавляем навигационную панель в AppBar
+        ]
+    )
+
     # Добавляем элементы на страницу
     page.add(
         Column(
             [
-                navbar,
                 Text(
                     "Авторизация",
                     size=24,
