@@ -1,59 +1,76 @@
-import flet as ft
+import pymongo
+from flet import *
 
-# Глобальные переменные для хранения сообщений и имени пользователя
-messages = []
-username = ""
+# Настройка соединения с MongoDB
+client = pymongo.MongoClient("mongodb://localhost:27017/")
+db = client["chat_database"]
+messages_collection = db["messages"]
 
-def tpl_chat(page: ft.Page):
-    global username
+# Функция для загрузки существующих сообщений из MongoDB
+def load_messages():
+    return [msg["text"] for msg in messages_collection.find()]
 
-    def open_popup(e):
-        # Открытие всплывающего окна для ввода имени пользователя
-        popup = ft.AlertDialog(
-            title="Введите ваше имя",
-            content=ft.Column(
-                [
-                    ft.TextField(label="Имя пользователя", on_submit=on_username_submit),
-                    ft.Row(
-                        [
-                            ft.ElevatedButton("OK", on_click=on_username_submit),
-                            ft.ElevatedButton("Отмена", on_click=lambda e: popup.close()),
-                        ]
-                    ),
-                ]
-            ),
+# Функция для сохранения сообщения в MongoDB
+def save_message(message):
+    messages_collection.insert_one({"text": message})
+
+def tpl_chat(page: Page):
+    page.title = "Чат"
+
+    # Список для отображения сообщений
+    messages_list = Column()
+
+    # Загрузка существующих сообщений
+    existing_messages = load_messages()
+    for msg in existing_messages:
+        messages_list.controls.append(Text(msg))
+
+    # Поле для ввода сообщения
+    input_field = TextField(
+        label="Ваше сообщение",
+        multiline=False,
+        width=300,
+        on_submit=lambda e: send_message(input_field, messages_list, page)
+    )
+
+    # Кнопка отправки сообщения
+    send_button = IconButton(
+        icon=icons.SEND,
+        on_click=lambda e: send_message(input_field, messages_list, page)
+    )
+
+    # Добавляем элементы на страницу
+    page.add(
+        Column(
+            [
+                messages_list,
+                Row(
+                    [input_field, send_button],
+                    alignment=MainAxisAlignment.CENTER
+                )
+            ],
+            alignment=MainAxisAlignment.CENTER,
+            horizontal_alignment=CrossAxisAlignment.CENTER,
         )
-        page.dialog = popup
-        popup.open = True
-        page.update()
+    )
 
-    def on_username_submit(e):
-        nonlocal username
-        username = e.control.value
-        page.dialog.close()
-        page.update()
+    page.update()
 
-    def send_message(e):
-        global messages
-        message_text = message_input.value.strip()
-        if message_text:
-            messages.append(f"{username}: {message_text}")
-            message_input.value = ""
-            update_chat()
-            page.update()
+def send_message(input_field, messages_list, page):
+    """Отправляет сообщение в чат."""
+    message_text = input_field.value.strip()  # Получаем текст сообщения
+    if message_text:  # Если текст не пустой
+        # Получаем имя пользователя из сессии, установив "Гость" как значение по умолчанию
+        name = page.session.get("user_name") or "Гость"
+        full_message = f"{name}: {message_text}"
 
-    def update_chat():
-        chat_area.controls.append(ft.Text("\n".join(messages), size=12))
-        chat_area.scroll = True
+        # Сохраняем сообщение в MongoDB
+        save_message(full_message)
 
-    # Инициализация элементов интерфейса
-    page.title = "Realtime Online Chat"
-    page.vertical_alignment = ft.MainAxisAlignment.START
+        # Добавляем сообщение в список
+        messages_list.controls.append(Text(full_message))
+        input_field.value = ""  # Очищаем поле ввода
+        page.update()  # Обновляем страницу
 
-    chat_area = ft.Column(scroll=True)
-    message_input = ft.TextField(label="Ваше сообщение", on_submit=send_message)
-
-    # Кнопка для открытия окна ввода имени
-    start_button = ft.ElevatedButton("Начать чат", on_click=open_popup)
-
-    page.add(start_button, chat_area, message_input)
+# Запуск приложения
+ft.app(target=tpl_chat)
