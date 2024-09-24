@@ -24,8 +24,7 @@ def tpl_chat(page: Page):
                 alignment=MainAxisAlignment.CENTER,
                 horizontal_alignment=CrossAxisAlignment.CENTER,
                 spacing=20
-            ),
-            alignment=MainAxisAlignment.CENTER
+            )
         )
         page.update()
     else:
@@ -42,7 +41,7 @@ def tpl_chat(page: Page):
         )
 
         # Список для отображения сообщений
-        message_list = Column()
+        message_list = Column(spacing=10)
 
         # Добавляем элементы на страницу
         page.add(
@@ -56,7 +55,6 @@ def tpl_chat(page: Page):
                     ),
                 ],
                 alignment=MainAxisAlignment.CENTER,
-                horizontal_alignment=CrossAxisAlignment.CENTER,
                 spacing=20
             )
         )
@@ -72,7 +70,7 @@ def tpl_chat(page: Page):
                         on_click=lambda e, m=msg: delete_message(m),
                         tooltip="Удалить сообщение"
                     )
-                    message_list.controls.append(Row([msg_text, delete_button]))
+                    message_list.controls.append(Row([msg_text, delete_button], alignment=MainAxisAlignment.SPACE_BETWEEN))
                 else:
                     message_list.controls.append(msg_text)
             page.update()
@@ -101,3 +99,7 @@ def set_username(page: Page, username: str):
         page.snack_bar = SnackBar(Text("Имя не может быть пустым!", color=colors.WHITE), bgcolor=colors.RED)
         page.snack_bar.open = True
         page.update()
+
+# Запуск Flet
+if __name__ == "__main__":
+    app(target=tpl_chat, view=AppView.WEB_BROWSER)
