@@ -1,18 +1,35 @@
-import pymongo
+import sqlite3
 from flet import *
 
-# Настройка соединения с MongoDB
-client = pymongo.MongoClient("mongodb://localhost:27017/")
-db = client["chat_database"]
-messages_collection = db["messages"]
+# Функция для подключения к базе данных SQLite и создания таблицы, если она не существует
+def init_db():
+    conn = sqlite3.connect('chat_database.db')
+    cursor = conn.cursor()
+    cursor.execute('''
+        CREATE TABLE IF NOT EXISTS messages (
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            text TEXT NOT NULL
+        )
+    ''')
+    conn.commit()
+    conn.close()
 
-# Функция для загрузки существующих сообщений из MongoDB
+# Функция для загрузки существующих сообщений из базы данных
 def load_messages():
-    return [msg["text"] for msg in messages_collection.find()]
+    conn = sqlite3.connect('chat_database.db')
+    cursor = conn.cursor()
+    cursor.execute('SELECT text FROM messages')
+    messages = [row[0] for row in cursor.fetchall()]
+    conn.close()
+    return messages
 
-# Функция для сохранения сообщения в MongoDB
+# Функция для сохранения сообщения в базу данных
 def save_message(message):
-    messages_collection.insert_one({"text": message})
+    conn = sqlite3.connect('chat_database.db')
+    cursor = conn.cursor()
+    cursor.execute('INSERT INTO messages (text) VALUES (?)', (message,))
+    conn.commit()
+    conn.close()
 
 def tpl_chat(page: Page):
     page.title = "Чат"
@@ -72,7 +89,7 @@ def send_message(input_field, messages_list, page):
         name = page.session.get("user_name") or "Гость"
         full_message = f"{name}: {message_text}"
 
-        # Сохраняем сообщение в MongoDB
+        # Сохраняем сообщение в базе данных
         save_message(full_message)
 
         # Добавляем сообщение в список
@@ -80,3 +97,9 @@ def send_message(input_field, messages_list, page):
         input_field.value = ""  # Очищаем поле ввода
         messages_list.scroll = True  # Прокрутка вниз
         page.update()  # Обновляем страницу
+
+# Инициализация базы данных
+init_db()
+
+# Запуск приложения
+ft.app(target=tpl_chat)
