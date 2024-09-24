@@ -1,95 +1,105 @@
 import json
-from flet import *
+import flet as ft
 
 # Функция для загрузки конфигурации из config.json
 def load_config():
     with open('./cwim-core-tgbt/config.json', 'r') as f:
         return json.load(f)
 
-def tpl_index(page: Page):
+def tpl_index(page: ft.Page):
     page.title = "Админ центр - Авторизация"
 
     # Инициализация состояния темы (из сессии)
     if page.session.get("theme_mode") is None:
-        page.session.set("theme_mode", ThemeMode.LIGHT)  # По умолчанию светлая тема
+        page.session.set("theme_mode", ft.ThemeMode.LIGHT)  # По умолчанию светлая тема
 
     page.theme_mode = page.session.get("theme_mode")
 
     # Настройка центрального выравнивания содержимого страницы
-    page.horizontal_alignment = CrossAxisAlignment.CENTER
-    page.vertical_alignment = MainAxisAlignment.CENTER
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    page.vertical_alignment = ft.MainAxisAlignment.CENTER
 
     # Загружаем пароль админа из конфигурации
     config = load_config()
     admin_password = config.get('admin_pass', '')
 
     # Поле для ввода пароля
-    password_field = TextField(
+    password_field = ft.TextField(
         label="Введите пароль:",
         password=True,
         can_reveal_password=True,
         width=300,
-        text_align=TextAlign.LEFT,
+        text_align=ft.TextAlign.LEFT,
     )
 
     # Кнопка авторизации
-    login_button = CupertinoFilledButton(
+    login_button = ft.CupertinoFilledButton(
         "Войти",
         on_click=lambda e: authenticate(password_field.value, admin_password, page),
         width=200
     )
 
-    # Создание навигационной панели
-    navbar = Row(
-        [
-            TextButton("Главная", on_click=lambda e: page.go("/")),
-            TextButton("Чат", on_click=lambda e: page.go("/chat")),
-            TextButton("Админ панель", on_click=lambda e: page.go("/admin")),
+    # Создание выпадающего списка для навигации
+    dropdown = ft.Dropdown(
+        label="Выберите страницу",
+        hint_text="Перейдите на страницу",
+        options=[
+            ft.dropdown.Option("Главная", value="/"),
+            ft.dropdown.Option("Чат", value="/chat"),
+            ft.dropdown.Option("Админ панель", value="/admin"),
         ],
-        alignment=MainAxisAlignment.START,
+        on_change=lambda e: page.go(e.control.value),  # Переход на выбранную страницу
+        autofocus=True,
     )
 
-    # AppBar с навигационной панелью
-    page.appbar = AppBar(
-        title=Text("Админ центр"),
+    # AppBar
+    page.appbar = ft.AppBar(
+        title=ft.Text("Админ центр"),
         center_title=True,
-        bgcolor=colors.BLUE,
-        actions=[
-            navbar  # Добавляем навигационную панель в AppBar
-        ]
+        bgcolor=ft.colors.BLUE,
+    )
+
+    # BottomAppBar с выпадающим списком
+    page.bottom_app_bar = ft.BottomAppBar(
+        content=ft.Row(
+            [
+                dropdown
+            ],
+            alignment=ft.MainAxisAlignment.START,
+        )
     )
 
     # Добавляем элементы на страницу
     page.add(
-        Column(
+        ft.Column(
             [
-                Text(
+                ft.Text(
                     "Авторизация",
                     size=24,
-                    weight=FontWeight.BOLD,
-                    text_align=TextAlign.CENTER
+                    weight=ft.FontWeight.BOLD,
+                    text_align=ft.TextAlign.CENTER
                 ),
                 password_field,
                 login_button,
             ],
-            alignment=MainAxisAlignment.CENTER,
-            horizontal_alignment=CrossAxisAlignment.CENTER,
+            alignment=ft.MainAxisAlignment.CENTER,
+            horizontal_alignment=ft.CrossAxisAlignment.CENTER,
         )
     )
 
     page.update()
 
-def authenticate(input_password: str, admin_password: str, page: Page):
+def authenticate(input_password: str, admin_password: str, page: ft.Page):
     """Проверяет введенный пароль и управляет сессией."""
     if input_password == admin_password:
         # Пароль верный, авторизуем пользователя
-        page.snack_bar = SnackBar(Text("Авторизация успешна!"), bgcolor=colors.GREEN)
+        page.snack_bar = ft.SnackBar(ft.Text("Авторизация успешна!"), bgcolor=ft.colors.GREEN)
         page.snack_bar.open = True
         page.session.set("user_group", "admin")  # Устанавливаем группу пользователя как "admin"
         page.update()
         page.go('/admin')  # Переход на страницу админ-панели
     else:
         # Неверный пароль
-        page.snack_bar = SnackBar(Text("Неверный пароль!", color=colors.WHITE), bgcolor=colors.RED)
+        page.snack_bar = ft.SnackBar(ft.Text("Неверный пароль!", color=ft.colors.WHITE), bgcolor=ft.colors.RED)
         page.snack_bar.open = True
         page.update()
