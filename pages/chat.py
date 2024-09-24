@@ -71,8 +71,7 @@ def tpl_chat(page: Page):
                     alignment=MainAxisAlignment.END,  # Здесь используем только alignment
                 ),
             ],
-            alignment=MainAxisAlignment.SPACE_BETWEEN,
-            vertical_alignment=CrossAxisAlignment.END,
+            alignment=MainAxisAlignment.SPACE_BETWEEN,  # Вертикальное выравнивание элементов
             expand=True,
         )
     )
@@ -99,4 +98,3 @@ def send_message(input_field, messages_list, page):
 
 # Инициализация базы данных
 init_db()
-
