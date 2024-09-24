@@ -68,8 +68,7 @@ def tpl_chat(page: Page):
                         input_field,
                         send_button,
                     ],
-                    alignment=MainAxisAlignment.END,
-                    horizontal_alignment=CrossAxisAlignment.CENTER,
+                    alignment=MainAxisAlignment.END,  # Здесь используем только alignment
                 ),
             ],
             alignment=MainAxisAlignment.SPACE_BETWEEN,
@@ -101,3 +100,5 @@ def send_message(input_field, messages_list, page):
 # Инициализация базы данных
 init_db()
 
+# Запуск приложения
+ft.app(target=tpl_chat)
