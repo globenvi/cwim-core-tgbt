@@ -9,6 +9,6 @@
         "module": "admin",
         "template": "tpl_admin",
         "enabled": true,
-        "group_access": "all"
+        "group_access": "admin"
     }
 }
