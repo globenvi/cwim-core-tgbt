@@ -3,18 +3,12 @@
         "module": "index",
         "template": "tpl_index",
         "enabled": true,
-        "group_access": "all"
-    },
-    "/register": {
-        "module": "register",
-        "template": "tpl_register",
-        "enabled": true,
-        "group_access": "all"
+        "group_access": "guest"
     },
     "/admin": {
         "module": "admin",
         "template": "tpl_admin",
         "enabled": true,
-        "group_access": "all"
+        "group_access": "admin"
     }
 }
