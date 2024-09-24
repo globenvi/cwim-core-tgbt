@@ -1,7 +1,5 @@
 import sqlite3
 import flet as ft
-import asyncio
-
 from flet_core import ThemeMode
 
 
@@ -49,7 +47,6 @@ def tpl_chat(page: ft.Page):
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.theme_mode = ThemeMode.SYSTEM
-
     # Список для отображения сообщений
     messages_list = ft.Column(scroll=True, expand=True, alignment=ft.MainAxisAlignment.END)
 
@@ -90,8 +87,8 @@ def tpl_chat(page: ft.Page):
         )
     )
 
-    # Запускаем асинхронную задачу для обновления сообщений
-    asyncio.create_task(update_messages(page, messages_list))
+    # Запускаем асинхронную задачу для обновления сообщений с использованием Flet
+    page.start_background_task(update_messages, page, messages_list)
 
 def send_message(input_field, messages_list, page):
     """Отправляет сообщение в чат."""
