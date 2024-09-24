@@ -1,9 +1,6 @@
 import sqlite3
 import flet as ft
-import time
-
-from flet_core import ThemeMode
-
+import asyncio
 
 # Функция для подключения к базе данных SQLite и создания таблицы, если она не существует
 def init_db():
@@ -35,12 +32,28 @@ def save_message(message):
     conn.commit()
     conn.close()
 
+async def update_messages(page, messages_list):
+    while True:
+        await asyncio.sleep(2)  # Пауза между обновлениями
+        new_messages = load_messages()
+        messages_list.controls.clear()  # Очищаем список перед обновлением
+        for msg in new_messages:
+            messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
+        page.update()  # Обновляем страницу
+
 def tpl_chat(page: ft.Page):
     page.title = "Чат"
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
-    page.theme_mode = ThemeMode.SYSTEM
+    # Устанавливаем светлую тему
+    page.theme = ft.ThemeData(
+        primary_color=ft.Color(0xFF6200EE),
+        secondary_color=ft.Color(0xFF03DAC6),
+        background_color=ft.Color(0xFFFFFFFF),  # Белый фон
+        text_color=ft.Color(0xFF000000)  # Чёрный текст
+    )
+
     # Список для отображения сообщений
     messages_list = ft.Column(scroll=True, expand=True, alignment=ft.MainAxisAlignment.END)
 
@@ -81,18 +94,8 @@ def tpl_chat(page: ft.Page):
         )
     )
 
-    # Функция для периодического обновления сообщений
-    def update_messages():
-        while True:
-            time.sleep(2)  # Пауза между обновлениями
-            new_messages = load_messages()
-            messages_list.controls.clear()  # Очищаем список перед обновлением
-            for msg in new_messages:
-                messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
-            page.update()  # Обновляем страницу
-
-    # Запускаем поток для обновления сообщений
-    ft.run_async(update_messages)
+    # Запускаем асинхронную задачу для обновления сообщений
+    asyncio.create_task(update_messages(page, messages_list))
 
 def send_message(input_field, messages_list, page):
     """Отправляет сообщение в чат."""
