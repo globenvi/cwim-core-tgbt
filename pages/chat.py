@@ -1,5 +1,6 @@
 import sqlite3
 import flet as ft
+import asyncio
 from flet_core import ThemeMode
 
 
@@ -34,13 +35,16 @@ def save_message(message):
     conn.close()
 
 async def update_messages(page, messages_list):
+    last_message_count = len(load_messages())  # Начальное количество сообщений
     while True:
         await asyncio.sleep(2)  # Пауза между обновлениями
         new_messages = load_messages()
-        messages_list.controls.clear()  # Очищаем список перед обновлением
-        for msg in new_messages:
-            messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
-        page.update()  # Обновляем страницу
+        if len(new_messages) != last_message_count:  # Проверка, изменилось ли количество сообщений
+            messages_list.controls.clear()  # Очищаем список перед обновлением
+            for msg in new_messages:
+                messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
+            page.update()  # Обновляем страницу
+            last_message_count = len(new_messages)  # Обновляем счетчик
 
 def tpl_chat(page: ft.Page):
     page.title = "Чат"
