@@ -1,5 +1,9 @@
 import sqlite3
-from flet import *
+import flet as ft
+import time
+
+from flet_core import ThemeMode
+
 
 # Функция для подключения к базе данных SQLite и создания таблицы, если она не существует
 def init_db():
@@ -31,22 +35,22 @@ def save_message(message):
     conn.commit()
     conn.close()
 
-def tpl_chat(page: Page):
+def tpl_chat(page: ft.Page):
     page.title = "Чат"
-    page.vertical_alignment = MainAxisAlignment.START
-    page.horizontal_alignment = CrossAxisAlignment.CENTER
-    page.theme_mode = ThemeMode.SYSTEM
+    page.vertical_alignment = ft.MainAxisAlignment.START
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
 
+    page.theme_mode = ThemeMode.SYSTEM
     # Список для отображения сообщений
-    messages_list = Column(scroll=True, expand=True, alignment=MainAxisAlignment.END)
+    messages_list = ft.Column(scroll=True, expand=True, alignment=ft.MainAxisAlignment.END)
 
     # Загрузка существующих сообщений
     existing_messages = load_messages()
     for msg in existing_messages:
-        messages_list.controls.append(Text(msg, size=14, color="black", selectable=True))
+        messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
 
     # Поле для ввода сообщения
-    input_field = TextField(
+    input_field = ft.TextField(
         label="Ваше сообщение",
         multiline=False,
         width=300,
@@ -54,31 +58,41 @@ def tpl_chat(page: Page):
     )
 
     # Кнопка отправки сообщения
-    send_button = IconButton(
-        icon=icons.SEND,
+    send_button = ft.IconButton(
+        icon=ft.icons.SEND,
         on_click=lambda e: send_message(input_field, messages_list, page)
     )
 
     # Добавляем элементы на страницу
     page.add(
-        Column(
+        ft.Column(
             [
                 messages_list,
-                Row(
+                ft.Row(
                     [
                         input_field,
                         send_button,
                     ],
-                    alignment=MainAxisAlignment.END,  # Здесь используем только alignment
+                    alignment=ft.MainAxisAlignment.END,
                 ),
             ],
-            alignment=MainAxisAlignment.SPACE_BETWEEN,  # Вертикальное выравнивание элементов
+            alignment=ft.MainAxisAlignment.SPACE_BETWEEN,
             expand=True,
         )
     )
 
-    # Фиксация поля ввода и кнопки к низу экрана
-    page.update()
+    # Функция для периодического обновления сообщений
+    def update_messages():
+        while True:
+            time.sleep(2)  # Пауза между обновлениями
+            new_messages = load_messages()
+            messages_list.controls.clear()  # Очищаем список перед обновлением
+            for msg in new_messages:
+                messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
+            page.update()  # Обновляем страницу
+
+    # Запускаем поток для обновления сообщений
+    ft.run_async(update_messages)
 
 def send_message(input_field, messages_list, page):
     """Отправляет сообщение в чат."""
@@ -92,7 +106,7 @@ def send_message(input_field, messages_list, page):
         save_message(full_message)
 
         # Добавляем сообщение в список
-        messages_list.controls.append(Text(full_message, size=14, color="black", selectable=True))
+        messages_list.controls.append(ft.Text(full_message, size=14, color="black", selectable=True))
         input_field.value = ""  # Очищаем поле ввода
         messages_list.scroll = True  # Прокрутка вниз
         page.update()  # Обновляем страницу
