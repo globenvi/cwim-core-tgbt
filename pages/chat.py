@@ -1,8 +1,8 @@
 import sqlite3
 import flet as ft
 import asyncio
+import websockets
 from flet_core import ThemeMode
-
 
 # Функция для подключения к базе данных SQLite и создания таблицы, если она не существует
 def init_db():
@@ -26,51 +26,43 @@ def load_messages():
     conn.close()
     return messages
 
-# Функция для сохранения сообщения в базу данных
-def save_message(message):
-    conn = sqlite3.connect('chat_database.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO messages (text) VALUES (?)', (message,))
-    conn.commit()
-    conn.close()
+# Асинхронная функция для обработки сообщений
+async def websocket_client(messages_list, page):
+    uri = "ws://localhost:8765"  # URL вашего WebSocket-сервера
+    async with websockets.connect(uri) as websocket:
+        # Загрузка существующих сообщений при подключении
+        existing_messages = load_messages()
+        for msg in existing_messages:
+            messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
+        page.update()
 
-async def update_messages(page, messages_list):
-    last_message_count = len(load_messages())  # Начальное количество сообщений
-    while True:
-        await asyncio.sleep(2)  # Пауза между обновлениями
-        new_messages = load_messages()
-        if len(new_messages) != last_message_count:  # Проверка, изменилось ли количество сообщений
-            messages_list.controls.clear()  # Очищаем список перед обновлением
-            for msg in new_messages:
-                messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
+        # Бесконечный цикл для получения сообщений
+        while True:
+            message = await websocket.recv()
+            messages_list.controls.append(ft.Text(message, size=14, color="black", selectable=True))
+            messages_list.scroll = True  # Прокрутка вниз
             page.update()  # Обновляем страницу
-            last_message_count = len(new_messages)  # Обновляем счетчик
 
 def tpl_chat(page: ft.Page):
     page.title = "Чат"
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
     page.theme_mode = ThemeMode.SYSTEM
-    # Список для отображения сообщений
-    messages_list = ft.Column(scroll=True, expand=True, alignment=ft.MainAxisAlignment.END)
 
-    # Загрузка существующих сообщений
-    existing_messages = load_messages()
-    for msg in existing_messages:
-        messages_list.controls.append(ft.Text(msg, size=14, color="black", selectable=True))
+    messages_list = ft.Column(scroll=True, expand=True, alignment=ft.MainAxisAlignment.END)
 
     # Поле для ввода сообщения
     input_field = ft.TextField(
         label="Ваше сообщение",
         multiline=False,
         width=300,
-        on_submit=lambda e: send_message(input_field, messages_list, page)
+        on_submit=lambda e: send_message(input_field, messages_list)
     )
 
     # Кнопка отправки сообщения
     send_button = ft.IconButton(
         icon=ft.icons.SEND,
-        on_click=lambda e: send_message(input_field, messages_list, page)
+        on_click=lambda e: send_message(input_field, messages_list)
     )
 
     # Добавляем элементы на страницу
@@ -91,25 +83,30 @@ def tpl_chat(page: ft.Page):
         )
     )
 
-    # Запускаем асинхронную задачу для обновления сообщений с использованием Flet
-    page.start_background_task(update_messages, page, messages_list)
+    # Запускаем клиент WebSocket в фоновом режиме
+    page.start_background_task(websocket_client, messages_list, page)
 
-def send_message(input_field, messages_list, page):
+def send_message(input_field, messages_list):
     """Отправляет сообщение в чат."""
     message_text = input_field.value.strip()  # Получаем текст сообщения
     if message_text:  # Если текст не пустой
-        # Получаем имя пользователя из сессии, установив "Гость" как значение по умолчанию
-        name = page.session.get("user_name") or "Гость"
+        name = "Гость"  # Здесь можно добавить получение имени пользователя
         full_message = f"{name}: {message_text}"
 
-        # Сохраняем сообщение в базе данных
-        save_message(full_message)
+        # Отправляем сообщение на сервер WebSocket
+        asyncio.run(send_to_websocket(full_message))
 
         # Добавляем сообщение в список
         messages_list.controls.append(ft.Text(full_message, size=14, color="black", selectable=True))
         input_field.value = ""  # Очищаем поле ввода
         messages_list.scroll = True  # Прокрутка вниз
-        page.update()  # Обновляем страницу
+        messages_list.update()  # Обновляем список
+
+async def send_to_websocket(message):
+    uri = "ws://localhost:8765"  # URL вашего WebSocket-сервера
+    async with websockets.connect(uri) as websocket:
+        await websocket.send(message)
 
 # Инициализация базы данных
 init_db()
+
