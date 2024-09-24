@@ -41,13 +41,18 @@ def scan_pages():
                 for attr in dir(module):
                     if attr.startswith("tpl_"):
                         route = f"/{module_name}"
-                        routes[route] = {
-                            "module": module_name,
-                            "template": attr,
-                            "enabled": True,
-                            "group_access": "all"  # Можно указать группы для каждой страницы
-                        }
-                        print(f"Маршрут {route} добавлен.")
+
+                        # Проверяем, существует ли маршрут уже в routes.json
+                        if route in routes:
+                            print(f"Маршрут {route} уже существует. Пропускаем создание новой записи.")
+                        else:
+                            routes[route] = {
+                                "module": module_name,
+                                "template": attr,
+                                "enabled": True,
+                                "group_access": "all"  # Можно указать группы для каждой страницы
+                            }
+                            print(f"Маршрут {route} добавлен с доступом для всех групп.")
             except Exception as e:
                 print(f"Ошибка импорта {module_name}: {e}")
     save_routes(routes)
