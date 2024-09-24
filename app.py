@@ -92,11 +92,8 @@ def router(page: Page):
     print(f"Текущий маршрут: {route}")
 
     # Получаем группу пользователя (по умолчанию "all")
-    user_group = page.session.get("user_group", "all")
+    user_group = page.session.get("user_group") or "all"  # Исправлено: убран третий аргумент
     print(f"Группа пользователя: {user_group}")
-
-    # Выводим данные сессии для отладки
-    print(f"Данные сессии: user_group={user_group}")
 
     # Получаем шаблон страницы по маршруту
     page_template = get_page(route, user_group)
@@ -131,10 +128,6 @@ def main(page: Page):
 
     # Устанавливаем группу пользователя в сессии (можно настраивать через авторизацию)
     page.session.set("user_group", "all")  # Группу можно изменить на "admin" или другую
-
-    # Выводим данные сессии в консоль после установки группы пользователя
-    user_group = page.session.get("user_group", "all")
-    print(f"Данные сессии при старте: user_group={user_group}")
 
     # Запуск роутера
     router(page)
