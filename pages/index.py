@@ -25,7 +25,6 @@ def tpl_index(page: Page):
 
     # Поле для ввода пароля
     password_field = TextField(
-        label="Введите пароль:",
         password=True,
         can_reveal_password=True,
         width=300,
