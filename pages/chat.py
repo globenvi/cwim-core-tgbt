@@ -35,14 +35,7 @@ def tpl_chat(page: Page):
     page.title = "Чат"
     page.vertical_alignment = MainAxisAlignment.START
     page.horizontal_alignment = CrossAxisAlignment.CENTER
-
-    # Устанавливаем светлую тему
-    page.theme = ThemeData(
-        primary_color=Color(0xFF6200EE),
-        secondary_color=Color(0xFF03DAC6),
-        background_color=Color(0xFFFFFFFF),  # Белый фон
-        text_color=Color(0xFF000000)  # Чёрный текст
-    )
+    page.theme_mode = ThemeMode.SYSTEM
 
     # Список для отображения сообщений
     messages_list = Column(scroll=True, expand=True, alignment=MainAxisAlignment.END)

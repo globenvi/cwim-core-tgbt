@@ -63,6 +63,7 @@ def get_page(route, user_group="all"):
     routes = load_routes()
     print(f"Ищем маршрут для: {route}")
 
+
     # Отладка: Выводим все маршруты для проверки
     print("Существующие маршруты:", routes)
 
