@@ -107,6 +107,3 @@ def set_username(page: Page, username: str):
         page.snack_bar.open = True
         page.update()
 
-# Запуск Flet
-if __name__ == "__main__":
-    app(target=tpl_chat, view=AppView.WEB_BROWSER)
