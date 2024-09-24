@@ -75,7 +75,7 @@ def get_page(route, user_group="all"):
 
         try:
             module = importlib.import_module(f"pages.{route_info['module']}")
-            template_func = getattr(module, route_info["template"])
+            template_func = getattr(module, route_info['template'])
             return template_func
         except Exception as e:
             print(f"Ошибка загрузки страницы {route}: {e}")
@@ -91,7 +91,7 @@ def router(page: Page):
     print(f"Текущий маршрут: {route}")
 
     # Получаем группу пользователя (по умолчанию "all")
-    user_group = page.session.get("user_group") or "all"
+    user_group = page.session.get("user_group", "all")
     print(f"Группа пользователя: {user_group}")
 
     # Получаем шаблон страницы по маршруту
@@ -111,7 +111,7 @@ def router(page: Page):
 # Пример инициализации приложения Flet
 def main(page: Page):
     # Инициализация сессии пользователя
-    page.session["user_group"] = "all"  # Здесь можно установить группу пользователя, например, "admin" или "user"
+    page.session.set("user_group", "all")  # Здесь можно установить группу пользователя, например, "admin" или "user"
 
     # Сканируем страницы при старте приложения
     scan_pages()
