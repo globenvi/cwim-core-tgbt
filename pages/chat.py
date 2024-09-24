@@ -1,5 +1,4 @@
 import flet as ft
-import sqlite3
 
 
 class Message:
@@ -54,30 +53,6 @@ class ChatMessage(ft.Row):
         return colors_lookup[hash(user_name) % len(colors_lookup)]
 
 
-def init_db():
-    """Инициализация базы данных и создание таблицы для сообщений."""
-    conn = sqlite3.connect('chat_database.db')
-    cursor = conn.cursor()
-    cursor.execute('''
-        CREATE TABLE IF NOT EXISTS messages (
-            id INTEGER PRIMARY KEY AUTOINCREMENT,
-            user_name TEXT NOT NULL,
-            text TEXT NOT NULL
-        )
-    ''')
-    conn.commit()
-    conn.close()
-
-
-def save_message(user_name: str, text: str):
-    """Сохранение сообщения в базе данных."""
-    conn = sqlite3.connect('chat_database.db')
-    cursor = conn.cursor()
-    cursor.execute('INSERT INTO messages (user_name, text) VALUES (?, ?)', (user_name, text))
-    conn.commit()
-    conn.close()
-
-
 def tpl_chat(page: ft.Page):
     page.horizontal_alignment = ft.CrossAxisAlignment.STRETCH
     page.title = "Чат Flet"
@@ -101,13 +76,10 @@ def tpl_chat(page: ft.Page):
 
     def send_message_click(e):
         if new_message.value != "":
-            message_text = new_message.value
-            user_name = page.session.get("user_name")
-            save_message(user_name, message_text)  # Сохраняем сообщение в БД
             page.pubsub.send_all(
                 Message(
-                    user_name=user_name,
-                    text=message_text,
+                    page.session.get("user_name"),
+                    new_message.value,
                     message_type="chat_message",
                 )
             )
@@ -118,16 +90,14 @@ def tpl_chat(page: ft.Page):
     def on_message(message: Message):
         if message.message_type == "chat_message":
             m = ChatMessage(message)
-            ft.notification(f"Новое сообщение от {message.user_name}")  # Уведомление о новом сообщении
         elif message.message_type == "login_message":
             m = ft.Text(message.text, italic=True, color=ft.colors.BLACK45, size=12)
-            ft.notification(f"Пользователь {message.user_name} присоединился к чату")  # Уведомление о новом пользователе
         chat.controls.append(m)
         page.update()
 
     page.pubsub.subscribe(on_message)
 
-    # Диалог для ввода имени пользователя
+    # Диалог для запроса имени пользователя
     join_user_name = ft.TextField(
         label="Введите ваше имя для присоединения к чату",
         autofocus=True,
@@ -161,7 +131,7 @@ def tpl_chat(page: ft.Page):
         on_submit=send_message_click,
     )
 
-    # Добавление элементов на страницу
+    # Добавляем всё на страницу
     page.add(
         ft.Container(
             content=chat,
@@ -181,7 +151,3 @@ def tpl_chat(page: ft.Page):
             ]
         ),
     )
-
-
-# Инициализация базы данных
-init_db()
