@@ -1,7 +1,7 @@
 import os
 import importlib
 import json
-from flet import Page, Text, Column, Row, ElevatedButton
+from flet import Page, Text, Column
 
 # Путь к папке со страницами
 PAGES_DIR = "./cwim-core-tgbt/pages"
@@ -84,7 +84,6 @@ def register_user_info(page: Page):
     user_info = {
         "user_agent": page.session.get("user_agent"),
         "ip_address": page.session.get("ip_address"),
-        "session_id": page.session.id,
     }
     page.session['user_info'] = user_info
     print("Информация о пользователе зарегистрирована:", user_info)
