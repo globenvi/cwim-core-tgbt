@@ -44,11 +44,11 @@ def tpl_index(page: ft.Page):
         label="Выберите страницу",
         hint_text="Перейдите на страницу",
         options=[
-            ft.dropdown.Option("Главная", value="/"),
-            ft.dropdown.Option("Чат", value="/chat"),
-            ft.dropdown.Option("Админ панель", value="/admin"),
+            ft.dropdown.Option("Главная"),
+            ft.dropdown.Option("Чат"),
+            ft.dropdown.Option("Админ панель"),
         ],
-        on_change=lambda e: page.go(e.control.value),  # Переход на выбранную страницу
+        on_change=lambda e: page.go(get_page_value(e.control.selected_option)),  # Переход на выбранную страницу
         autofocus=True,
     )
 
@@ -88,6 +88,16 @@ def tpl_index(page: ft.Page):
     )
 
     page.update()
+
+def get_page_value(selected_option):
+    """Возвращает значение страницы в зависимости от выбранного элемента."""
+    if selected_option.text == "Главная":
+        return "/"
+    elif selected_option.text == "Чат":
+        return "/chat"
+    elif selected_option.text == "Админ панель":
+        return "/admin"
+    return "/"  # По умолчанию возвращаем главную страницу
 
 def authenticate(input_password: str, admin_password: str, page: ft.Page):
     """Проверяет введенный пароль и управляет сессией."""
