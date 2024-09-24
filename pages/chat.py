@@ -2,6 +2,9 @@ import sqlite3
 import flet as ft
 import asyncio
 
+from flet_core import ThemeMode
+
+
 # Функция для подключения к базе данных SQLite и создания таблицы, если она не существует
 def init_db():
     conn = sqlite3.connect('chat_database.db')
@@ -45,14 +48,7 @@ def tpl_chat(page: ft.Page):
     page.title = "Чат"
     page.vertical_alignment = ft.MainAxisAlignment.START
     page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
-
-    # Устанавливаем светлую тему
-    page.theme = ft.ThemeData(
-        primary_color=ft.Color(0xFF6200EE),
-        secondary_color=ft.Color(0xFF03DAC6),
-        background_color=ft.Color(0xFFFFFFFF),  # Белый фон
-        text_color=ft.Color(0xFF000000)  # Чёрный текст
-    )
+    page.theme_mode = ThemeMode.SYSTEM
 
     # Список для отображения сообщений
     messages_list = ft.Column(scroll=True, expand=True, alignment=ft.MainAxisAlignment.END)
