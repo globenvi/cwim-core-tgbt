@@ -28,6 +28,17 @@ def toggle_ban(user):
             return session['status']
     return None
 
+# Функция для получения доступных модулей из папки 'modules_extra'
+def get_modules():
+    """Возвращает список доступных модулей из папки 'modules_extra'."""
+    modules_path = 'modules_extra'
+    modules = []
+    if os.path.exists(modules_path):
+        for module_name in os.listdir(modules_path):
+            if os.path.isdir(os.path.join(modules_path, module_name)):
+                modules.append(module_name)
+    return modules
+
 # Функция для обновления блока сессий
 def update_session_block(page):
     session_col = page.controls[1]  # Поскольку контролы организованы в порядке, добавленном в tpl_admin
