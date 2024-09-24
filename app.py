@@ -9,13 +9,11 @@ PAGES_DIR = "./cwim-core-tgbt/pages"
 # Путь к файлу с роутами
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
-
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
     if not os.path.exists(ROUTES_FILE):
         with open(ROUTES_FILE, "w") as f:
             json.dump({}, f)
-
 
 # Чтение существующих роутов из файла
 def load_routes():
@@ -23,12 +21,10 @@ def load_routes():
     with open(ROUTES_FILE, "r") as f:
         return json.load(f)
 
-
 # Сохранение роутов в файл
 def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
-
 
 # Сканирование папки на наличие страниц
 def scan_pages():
@@ -51,7 +47,6 @@ def scan_pages():
             except Exception as e:
                 print(f"Ошибка импорта {module_name}: {e}")
     save_routes(routes)
-
 
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
@@ -78,18 +73,6 @@ def get_page(route, user_group="all"):
         print(f"Маршрут {route} не найден.")
     return None
 
-
-# Функция для регистрации информации о пользователе
-def register_user_info(page: Page):
-    user_info = {
-        "ip_address": page.session.get("ip_address"),
-        "user_agent": page.session.get("user_agent"),
-        "current_route": page.route,
-    }
-    page.session['user_info'] = user_info
-    print("Информация о пользователе зарегистрирована:", user_info)
-
-
 # Функция роутинга
 def router(page: Page):
     # Получаем маршрут из запроса, по умолчанию перенаправляем на "/index"
@@ -99,9 +82,6 @@ def router(page: Page):
     # Получаем группу пользователя (по умолчанию "all")
     user_group = page.session.get("user_group") or "all"
     print(f"Группа пользователя: {user_group}")
-
-    # Регистрация информации о пользователе
-    register_user_info(page)
 
     # Получаем шаблон страницы по маршруту
     page_template = get_page(route, user_group)
@@ -116,7 +96,6 @@ def router(page: Page):
         page.controls.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
         page.update()
 
-
 # Пример инициализации приложения Flet
 def main(page: Page):
     # Сканируем страницы при старте приложения
@@ -130,15 +109,14 @@ def main(page: Page):
     def on_route_change(e):
         router(page)
 
+
     # Слушаем изменения маршрута
     page.on_route_change = on_route_change
 
     # Запуск роутера
     router(page)
 
-
 # Запуск Flet
 if __name__ == "__main__":
     import flet as ft
-
     ft.app(target=main, view=ft.AppView.WEB_BROWSER)
