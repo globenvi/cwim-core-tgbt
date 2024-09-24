@@ -4,7 +4,7 @@ import flet as ft
 messages = []
 username = ""
 
-def main(page: ft.Page):
+def tpl_chat(page: ft.Page):
     global username
 
     def open_popup(e):
