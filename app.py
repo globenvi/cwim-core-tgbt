@@ -4,7 +4,7 @@ import json
 from flet import Page, Text, Column
 
 # Путь к папке со страницами
-PAGES_DIR = "./pages"
+PAGES_DIR = "./cwim-core-tgbt/pages"
 
 # Путь к файлу с роутами
 ROUTES_FILE = "routes.json"
