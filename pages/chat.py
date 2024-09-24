@@ -28,7 +28,7 @@ def tpl_chat(page: Page):
     # Загрузка существующих сообщений
     existing_messages = load_messages()
     for msg in existing_messages:
-        messages_list.add(Text(msg))
+        messages_list.controls.append(Text(msg))  # Изменено с add() на controls.append()
 
     # Поле для ввода сообщения
     input_field = TextField(
@@ -74,6 +74,6 @@ def send_message(input_field, messages_list, page):
         save_message(full_message)
 
         # Добавляем сообщение в список
-        messages_list.add(Text(full_message))
+        messages_list.controls.append(Text(full_message))  # Изменено с add() на controls.append()
         input_field.value = ""  # Очищаем поле ввода
         page.update()  # Обновляем страницу
