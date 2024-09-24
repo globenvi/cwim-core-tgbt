@@ -1,7 +1,7 @@
 import os
 import importlib
 import json
-from flet import Page, Text, Column, Row, TextField, ElevatedButton
+from flet import Page, Text, Column, TextField, ElevatedButton
 
 # Путь к папке со страницами
 PAGES_DIR = "./cwim-core-tgbt/pages"
@@ -67,7 +67,7 @@ def get_page(route, user_group="all"):
 
 # Функция для проверки авторизации пользователя
 def is_authorized(page):
-    return 'user_id' in page.session
+    return page.session.get('user_id') is not None
 
 # Функция для установки куки после авторизации
 def set_auth_cookie(page, user_id):
