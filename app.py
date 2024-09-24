@@ -9,11 +9,13 @@ PAGES_DIR = "./cwim-core-tgbt/pages"
 # Путь к файлу с роутами
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
+
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
     if not os.path.exists(ROUTES_FILE):
         with open(ROUTES_FILE, "w") as f:
             json.dump({}, f)
+
 
 # Чтение существующих роутов из файла
 def load_routes():
@@ -21,10 +23,12 @@ def load_routes():
     with open(ROUTES_FILE, "r") as f:
         return json.load(f)
 
+
 # Сохранение роутов в файл
 def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
+
 
 # Сканирование папки на наличие страниц
 def scan_pages():
@@ -48,15 +52,21 @@ def scan_pages():
                 print(f"Ошибка импорта {module_name}: {e}")
     save_routes(routes)
 
+
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
     routes = load_routes()
     print(f"Ищем маршрут для: {route}")
+
+    # Отладка: Выводим все маршруты для проверки
+    print("Существующие маршруты:", routes)
+
     if route in routes:
         route_info = routes[route]
         print(f"Маршрут найден: {route}, модуль: {route_info['module']}, шаблон: {route_info['template']}")
 
         if not route_info["enabled"]:
+            print(f"Маршрут {route} отключен.")
             return None  # Страница отключена
 
         if route_info["group_access"] != "all" and route_info["group_access"] != user_group:
@@ -70,8 +80,9 @@ def get_page(route, user_group="all"):
         except Exception as e:
             print(f"Ошибка загрузки страницы {route}: {e}")
     else:
-        print(f"Маршрут {route} не найден.")
+        print(f"Маршрут {route} не найден в routes.json.")
     return None
+
 
 # Функция роутинга
 def router(page: Page):
@@ -96,6 +107,7 @@ def router(page: Page):
         page.controls.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
         page.update()
 
+
 # Пример инициализации приложения Flet
 def main(page: Page):
     # Сканируем страницы при старте приложения
@@ -104,11 +116,11 @@ def main(page: Page):
     # Устанавливаем начальный маршрут, если он не задан
     if page.route == "/":
         page.route = "/index"
+        page.go('/index')
 
     # Обработчик события перехода по маршруту
     def on_route_change(e):
         router(page)
-
 
     # Слушаем изменения маршрута
     page.on_route_change = on_route_change
@@ -116,7 +128,9 @@ def main(page: Page):
     # Запуск роутера
     router(page)
 
+
 # Запуск Flet
 if __name__ == "__main__":
     import flet as ft
+
     ft.app(target=main, view=ft.AppView.WEB_BROWSER)
