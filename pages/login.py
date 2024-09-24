@@ -4,7 +4,7 @@ from flet import *
 
 # Функция для загрузки конфигурации из config.json
 def load_config():
-    with open('./config.json', 'r') as f:
+    with open('.cwim-core-tgbt/config.json', 'r') as f:
         return json.load(f)
 
 
