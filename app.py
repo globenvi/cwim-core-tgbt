@@ -91,7 +91,7 @@ def router(page: Page):
     print(f"Текущий маршрут: {route}")
 
     # Получаем группу пользователя из сессии, по умолчанию "guest"
-    user_group = page.session.get("user_group", "guest")
+    user_group = page.session.get("user_group") or "guest"
     print(f"Группа пользователя: {user_group}")
 
     # Получаем шаблон страницы по маршруту
@@ -112,7 +112,7 @@ def router(page: Page):
 def tpl_login(page: Page):
     def login_action(e):
         password = password_input.value
-        if authenticate(password):
+        if authenticate(password):  # Проверьте правильность пароля
             page.session["user_group"] = "admin"  # Установите группу пользователя в сессии
             page.route = "/index"  # Перенаправляем на главную страницу
             page.update()  # Обновляем страницу
