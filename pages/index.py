@@ -28,7 +28,7 @@ def tpl_index(page: Page):
         password=True,
         can_reveal_password=True,
         width=300,
-        text_align=TextAlign.CENTER,
+        text_align=TextAlign.LEFT,
     )
 
     # Кнопка авторизации
