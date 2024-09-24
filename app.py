@@ -1,7 +1,7 @@
 import os
 import importlib
 import json
-from flet import Page, Text, Column
+from flet import Page, Text, Column, Row, ElevatedButton
 
 # Путь к папке со страницами
 PAGES_DIR = "./cwim-core-tgbt/pages"
@@ -9,11 +9,13 @@ PAGES_DIR = "./cwim-core-tgbt/pages"
 # Путь к файлу с роутами
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
+
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
     if not os.path.exists(ROUTES_FILE):
         with open(ROUTES_FILE, "w") as f:
             json.dump({}, f)
+
 
 # Чтение существующих роутов из файла
 def load_routes():
@@ -21,10 +23,12 @@ def load_routes():
     with open(ROUTES_FILE, "r") as f:
         return json.load(f)
 
+
 # Сохранение роутов в файл
 def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
+
 
 # Сканирование папки на наличие страниц
 def scan_pages():
@@ -48,6 +52,7 @@ def scan_pages():
                 print(f"Ошибка импорта {module_name}: {e}")
     save_routes(routes)
 
+
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
     routes = load_routes()
@@ -55,14 +60,14 @@ def get_page(route, user_group="all"):
     if route in routes:
         route_info = routes[route]
         print(f"Маршрут найден: {route}, модуль: {route_info['module']}, шаблон: {route_info['template']}")
-        
+
         if not route_info["enabled"]:
             return None  # Страница отключена
-        
+
         if route_info["group_access"] != "all" and route_info["group_access"] != user_group:
             print(f"Доступ запрещен для группы: {user_group}")
             return None
-        
+
         try:
             module = importlib.import_module(f"pages.{route_info['module']}")
             template_func = getattr(module, route_info["template"])
@@ -72,6 +77,18 @@ def get_page(route, user_group="all"):
     else:
         print(f"Маршрут {route} не найден.")
     return None
+
+
+# Функция для регистрации информации о пользователе
+def register_user_info(page: Page):
+    user_info = {
+        "user_agent": page.session.get("user_agent"),
+        "ip_address": page.session.get("ip_address"),
+        "session_id": page.session.id,
+    }
+    page.session['user_info'] = user_info
+    print("Информация о пользователе зарегистрирована:", user_info)
+
 
 # Функция роутинга
 def router(page: Page):
@@ -83,9 +100,12 @@ def router(page: Page):
     user_group = page.session.get("user_group") or "all"
     print(f"Группа пользователя: {user_group}")
 
+    # Регистрация информации о пользователе
+    register_user_info(page)
+
     # Получаем шаблон страницы по маршруту
     page_template = get_page(route, user_group)
-    
+
     if page_template:
         print(f"Отображаем страницу: {route}")
         page.controls.clear()
@@ -95,6 +115,7 @@ def router(page: Page):
         page.controls.clear()
         page.controls.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
         page.update()
+
 
 # Пример инициализации приложения Flet
 def main(page: Page):
@@ -108,7 +129,6 @@ def main(page: Page):
     # Обработчик события перехода по маршруту
     def on_route_change(e):
         router(page)
-        
 
     # Слушаем изменения маршрута
     page.on_route_change = on_route_change
@@ -116,7 +136,9 @@ def main(page: Page):
     # Запуск роутера
     router(page)
 
+
 # Запуск Flet
 if __name__ == "__main__":
     import flet as ft
+
     ft.app(target=main, view=ft.AppView.WEB_BROWSER)
