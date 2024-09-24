@@ -39,16 +39,6 @@ def tpl_index(page: Page):
         width=200
     )
 
-    # Выпадающий список для навигации
-    dropdown = Dropdown(
-        options=[
-            DropdownOption(text="Админ панель", value="/admin"),
-            DropdownOption(text="Чат", value="/chat"),
-            DropdownOption(text="Настройки", value="/settings"),
-        ],
-        on_change=lambda e: page.go(e.control.value)  # Переход на выбранную страницу
-    )
-
     # Переключатель темной/светлой темы
     theme_switch = Switch(
         thumb_icon=icons.SUNNY,
@@ -56,12 +46,23 @@ def tpl_index(page: Page):
         on_change=lambda e: toggle_theme(page, e.control.value),
     )
 
-    # AppBar с выпадающим списком и переключателем темы
+    # Выпадающий список для навигации
+    page_selector = Dropdown(
+        options=[
+            dropdown.Option(text="Админ панель", value="/admin"),
+            dropdown.Option(text="Чат", value="/chat"),
+            # Добавьте другие страницы здесь
+        ],
+        on_change=lambda e: page.go(e.control.value),
+        width=200
+    )
+
+    # AppBar с переключателем темы и выпадающим списком
     page.appbar = AppBar(
         title=Text("Админ центр"),
         center_title=True,
         bgcolor=colors.BLUE,
-        leading=dropdown,  # Добавляем выпадающий список в левую часть
+        leading=page_selector,  # Добавляем выпадающий список в левую часть AppBar
         actions=[
             theme_switch
         ]
