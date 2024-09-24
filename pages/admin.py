@@ -1,59 +1,35 @@
 import os
-import geoip2.database
 from flet import *
 
-# Фиктивные данные о сессиях для примера
-sessions_data = [
-    {"user": "user1", "ip": "192.0.2.1", "os": "Windows 10", "status": "active"},
-]
 
-# Функция для получения местоположения по IP
-def get_ip_location(ip):
-    try:
-        reader = geoip2.database.Reader('GeoLite2-City.mmdb')  # Путь к вашей базе данных GeoLite2
-        response = reader.city(ip)
-        return f"{response.city.name}, {response.country.name}"
-    except Exception as e:
-        print(f"Ошибка при получении местоположения: {e}")
-        return "Неизвестно"
+# Функция для получения списка модулей из папки
+def get_modules():
+    modules_dir = './modules_extra'
+    if not os.path.exists(modules_dir):
+        os.makedirs(modules_dir)  # Создаем папку, если её нет
+    return [f for f in os.listdir(modules_dir) if os.path.isfile(os.path.join(modules_dir, f))]
 
-# Функция для бана/разбана пользователей
-def toggle_ban(user):
-    for session in sessions_data:
-        if session['user'] == user:
-            session['status'] = "banned" if session['status'] == "active" else "active"
-            return session['status']
-    return None
 
-# Функция для отображения блока с активными сессиями
+# Функция для отображения блока сессий
 def session_block():
-    rows = []
-    for session in sessions_data:
-        location = get_ip_location(session['ip'])
-        ban_button = ElevatedButton(
-            "Забанить" if session['status'] == "active" else "Разбанить",
-            on_click=lambda e, user=session['user']: update_session_status(user),
-            bgcolor=colors.RED if session['status'] == "active" else colors.GREEN
-        )
-        rows.append(
-            Row([
-                Text(f"Пользователь: {session['user']} | IP: {session['ip']} | ОС: {session['os']} | Локация: {location} | Статус: {session['status']}"),
-                ban_button
-            ], alignment=MainAxisAlignment.SPACE_BETWEEN)
-        )
+    # Здесь можно подключить реальные данные сессий
+    sessions = [
+        {"user": "user1", "status": "active", "time": "12:30"},
+        {"user": "user2", "status": "inactive", "time": "10:00"},
+    ]
+    return Column([
+        Text(f"Пользователь: {session['user']} | Статус: {session['status']} | Время: {session['time']}")
+        for session in sessions
+    ], spacing=10)
 
-    return Column(rows, spacing=10)
 
-# Функция для обновления статуса сессии
-def update_session_status(user):
-    new_status = toggle_ban(user)
-    print(f"Статус пользователя {user} изменен на: {new_status}")
-
-# Функция для отображения блока управления модулями
+# Функция для отображения блока модулей с возможностью включения/выключения
 def modules_block():
     modules = get_modules()
 
     def toggle_module(e, module_name):
+        # Логика для включения/выключения модуля
+        # Здесь можно управлять модулями, изменяя их статус (включен/выключен)
         print(f"Модуль {module_name} переключен")
 
     return Column([
@@ -64,28 +40,54 @@ def modules_block():
         for module in modules
     ], spacing=10)
 
+
 # Функция для админ-панели с блоками и пагинацией
 def tpl_admin(page: Page):
     page.title = "Админ центр"
     page.theme_mode = ThemeMode.SYSTEM
 
+    # Создаем пагинацию для переключения между блоками
+    blocks = {
+        "Сессии": session_block(),
+        "Модули": modules_block()
+    }
+
+    def change_page(e):
+        page.controls.clear()
+        page.controls.append(create_page_content(e.control.value))
+        page.update()
+
+    # Переключатель страниц (блоков)
+    page_selector = Dropdown(
+        options=[dropdown.Option("Сессии"), dropdown.Option("Модули")],
+        on_change=change_page,
+        width=150,
+    )
+
+    # Функция для создания контента страницы
+    def create_page_content(selected_page):
+        if selected_page == "Сессии":
+            return Column([
+                Text("Активные сессии", size=20, weight=FontWeight.BOLD),
+                session_block(),
+            ], alignment=MainAxisAlignment.CENTER)
+        elif selected_page == "Модули":
+            return Column([
+                Text("Управление модулями", size=20, weight=FontWeight.BOLD),
+                modules_block(),
+            ], alignment=MainAxisAlignment.CENTER)
+
+    # Установка стартовой страницы
     page.add(
         Column(
             [
-                Text("Админ Панель", size=20, weight=FontWeight.BOLD),
-                session_block(),
-                modules_block(),
+                page_selector,
+                create_page_content("Сессии"),  # Начальная страница "Сессии"
             ],
             alignment=MainAxisAlignment.CENTER,
             horizontal_alignment=CrossAxisAlignment.CENTER,
-            spacing=20,
+            expand=True
         )
     )
 
     page.update()
-
-# Запуск приложения
-def main(page: Page):
-    tpl_admin(page)
-
-app(target=main)
