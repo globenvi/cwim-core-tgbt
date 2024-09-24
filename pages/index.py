@@ -89,6 +89,7 @@ def authenticate(input_password: str, admin_password: str, page: Page):
         # Пароль верный, авторизуем пользователя
         page.snack_bar = SnackBar(Text("Авторизация успешна!"), bgcolor=colors.GREEN)
         page.snack_bar.open = True
+        user_group = page.session.get("user_group") or "admin"
         page.update()
         page.go('/admin')  # Переход на страницу админ-панели
     else:
