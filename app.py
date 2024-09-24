@@ -7,7 +7,7 @@ from flet import Page, Text, Column
 PAGES_DIR = "./cwim-core-tgbt/pages"
 
 # Путь к файлу с роутами
-ROUTES_FILE = "routes.json"
+ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
