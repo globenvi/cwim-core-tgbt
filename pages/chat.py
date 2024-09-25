@@ -9,7 +9,7 @@ class Message:
 
 
 class ChatMessage(ft.Row):
-    def __init__(self, message: Message):
+    def __init__(self, message: Message, is_admin: bool, on_delete):
         super().__init__()
         self.vertical_alignment = ft.CrossAxisAlignment.START
         self.controls = [
@@ -27,12 +27,21 @@ class ChatMessage(ft.Row):
                 spacing=5,
             ),
         ]
+        if is_admin:
+            self.controls.append(
+                ft.IconButton(
+                    icon=ft.icons.DELETE,
+                    tooltip="Удалить сообщение",
+                    on_click=lambda e: on_delete(message),
+                    icon_color=ft.colors.RED,
+                )
+            )
 
     def get_initials(self, user_name: str):
         if user_name:
             return user_name[:1].capitalize()
         else:
-            return "Неизвестно"  # или любое другое значение по умолчанию
+            return "Неизвестно"
 
     def get_avatar_color(self, user_name: str):
         colors_lookup = [
@@ -62,7 +71,11 @@ def tpl_chat(page: ft.Page):
             join_user_name.error_text = "Имя не может быть пустым!"
             join_user_name.update()
         else:
+            # Определяем группу пользователя
+            user_group = "admin" if join_user_name.value == "admin" else "user"
             page.session.set("user_name", join_user_name.value)
+            page.session.set("user_group", user_group)
+
             page.dialog.open = False
             new_message.prefix = ft.Text(f"{join_user_name.value}: ")
             page.pubsub.send_all(
@@ -88,8 +101,14 @@ def tpl_chat(page: ft.Page):
             page.update()
 
     def on_message(message: Message):
+        is_admin = page.session.get("user_group") == "admin"
+
+        def delete_message(msg):
+            chat.controls.remove(m)
+            page.update()
+
         if message.message_type == "chat_message":
-            m = ChatMessage(message)
+            m = ChatMessage(message, is_admin, delete_message)
         elif message.message_type == "login_message":
             m = ft.Text(message.text, italic=True, color=ft.colors.BLACK45, size=12)
         chat.controls.append(m)
