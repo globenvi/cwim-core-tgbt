@@ -10,7 +10,13 @@ PAGES_DIR = "./cwim-core-tgbt/pages"
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
 # Путь к файлу конфигурации
-CONFIG_PATH = "./cwim-core-tgbt/config.json"
+CONFIG_FILE = "./cwim-core-tgbt/config.json"
+
+
+# Загрузка конфигурации
+def load_config():
+    with open(CONFIG_FILE, "r") as f:
+        return json.load(f)
 
 
 # Проверка наличия файла и его создание, если не существует
@@ -31,20 +37,6 @@ def load_routes():
 def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
-
-
-# Функция для загрузки конфигурации, включая шаблон по умолчанию
-def load_config(config_path=CONFIG_PATH):
-    # Проверка наличия файла конфигурации
-    if not os.path.exists(config_path):
-        raise FileNotFoundError(f"Config file {config_path} not found")
-
-    with open(config_path, 'r') as config_file:
-        config_data = json.load(config_file)
-
-    # Получаем название шаблона по умолчанию
-    default_template = config_data.get("core_settings", {}).get("default_template", "template1")
-    return default_template
 
 
 # Сканирование папки на наличие страниц
@@ -75,6 +67,17 @@ def scan_pages():
     save_routes(routes)
 
 
+# Динамический импорт шаблона
+def dynamic_import_template(template_path):
+    """Динамически загружает шаблон по указанному пути."""
+    try:
+        module = importlib.import_module(template_path.replace("/", "."))
+        return module
+    except ModuleNotFoundError:
+        print(f"Шаблон {template_path} не найден.")
+        return None
+
+
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
     routes = load_routes()
@@ -96,16 +99,17 @@ def get_page(route, user_group="all"):
             print(f"Доступ запрещен для группы: {user_group}")
             return None
 
-        # Получаем название шаблона
-        default_template = load_config()
+        # Динамически загружаем шаблон
+        config = load_config()
+        template_path = f"templates.{config['core_settings']['default_template']}.{route_info['template']}"
+        module = dynamic_import_template(template_path)
 
-        # Импортируем модуль и получаем шаблон
-        try:
-            module = importlib.import_module(f"pages.{route_info['module']}")
-            template_func = getattr(module, f"tpl_{default_template}")  # Используем шаблон по умолчанию
-            return template_func
-        except Exception as e:
-            print(f"Ошибка загрузки страницы {route}: {e}")
+        if module is not None:
+            template_func = getattr(module, 'tpl_' + route_info['module'], None)
+            if template_func:
+                return template_func
+            else:
+                print(f"Функция для шаблона {template_path} не найдена.")
     else:
         print(f"Маршрут {route} не найден в routes.json.")
     return None

@@ -4,7 +4,7 @@
 
 
     "core_settings": {
-    "default_template": "standard"
+    "default_template": "Default"
   },
 
     "databases": {

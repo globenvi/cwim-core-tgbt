@@ -1,21 +1,17 @@
-# pages/index.py
+from flet import Page, Column, Text
 
-from flet import *
-from templates.Default.template import render_header, render_footer
-
-
+# Функция шаблона для главной страницы
 def tpl_index(page: Page):
-    page.controls.append(render_header("Welcome to My Flet App"))
-
-    # Основное содержание страницы
-    content = Column([
-        Text("This is the main content of the index page."),
-        Text("You can add more components here.")
-    ])
-
-    page.controls.append(content)
-    page.controls.append(render_footer())
-    page.update()
+    # Пример содержимого для главной страницы
+    page.controls.append(
+        Column([
+            Text("Добро пожаловать на главную страницу!", size=30, weight="bold"),
+            Text("Это пример динамически загружаемого контента.", size=20),
+            # Здесь можно добавить дополнительные элементы интерфейса
+        ])
+    )
+    page.update()  # Обновляем страницу после добавления контролов
+ # Обновляем страницу для отображения изменений
 
 # # Функция для загрузки конфигурации из config.json
 # def load_config():
