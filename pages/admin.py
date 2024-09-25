@@ -58,6 +58,3 @@ def tpl_admin(page: Page):
             ft.FloatingActionButton(icon=ft.icons.MENU, on_click=toggle_sidebar),  # Плавающая кнопка
         )
 
-    # Запускаем приложение
-    ft.app(target=main)
-
