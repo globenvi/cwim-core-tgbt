@@ -1,5 +1,3 @@
-# modules_extra/template.py
-
 from flet import *
 
 def render_header(title):

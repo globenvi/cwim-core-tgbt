@@ -1,6 +1,12 @@
 {
     "admin_pass": "Lolkalol1488",
 
+
+
+    "core_settings": {
+    "default_template": "standard"
+  },
+
     "databases": {
         "mysqldb": {
             "enabled": false,

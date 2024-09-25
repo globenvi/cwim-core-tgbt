@@ -1,11 +1,7 @@
-import json
-import flet as ft
-from flet_core import CupertinoFilledButton
-
 # pages/index.py
 
 from flet import *
-from modules_extra.template import render_header, render_footer
+from templates.Default.template import render_header, render_footer
 
 
 def tpl_index(page: Page):

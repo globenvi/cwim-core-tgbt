@@ -9,6 +9,9 @@ PAGES_DIR = "./cwim-core-tgbt/pages"
 # Путь к файлу с роутами
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
+# Путь к файлу конфигурации
+CONFIG_PATH = "./cwim-core-tgbt/config.json"
+
 
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
@@ -28,6 +31,20 @@ def load_routes():
 def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
+
+
+# Функция для загрузки конфигурации, включая шаблон по умолчанию
+def load_config(config_path=CONFIG_PATH):
+    # Проверка наличия файла конфигурации
+    if not os.path.exists(config_path):
+        raise FileNotFoundError(f"Config file {config_path} not found")
+
+    with open(config_path, 'r') as config_file:
+        config_data = json.load(config_file)
+
+    # Получаем название шаблона по умолчанию
+    default_template = config_data.get("core_settings", {}).get("default_template", "template1")
+    return default_template
 
 
 # Сканирование папки на наличие страниц
@@ -63,7 +80,6 @@ def get_page(route, user_group="all"):
     routes = load_routes()
     print(f"Ищем маршрут для: {route}")
 
-
     # Отладка: Выводим все маршруты для проверки
     print("Существующие маршруты:", routes)
 
@@ -80,9 +96,13 @@ def get_page(route, user_group="all"):
             print(f"Доступ запрещен для группы: {user_group}")
             return None
 
+        # Получаем название шаблона
+        default_template = load_config()
+
+        # Импортируем модуль и получаем шаблон
         try:
             module = importlib.import_module(f"pages.{route_info['module']}")
-            template_func = getattr(module, route_info["template"])
+            template_func = getattr(module, f"tpl_{default_template}")  # Используем шаблон по умолчанию
             return template_func
         except Exception as e:
             print(f"Ошибка загрузки страницы {route}: {e}")
