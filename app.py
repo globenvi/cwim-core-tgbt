@@ -2,22 +2,31 @@ import os
 import importlib
 import json
 from flet import Page, Text, Column
+from colorama import Fore, Style, init
+
+# Инициализация colorama
+init(autoreset=True)
 
 # Путь к папке со страницами
 PAGES_DIR = "./cwim-core-tgbt/pages"
-
-# Путь к файлу с роутами
+TEMPLATES_DIR = "./cwim-core-tgbt/templates"
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
-
-# Путь к файлу конфигурации
 CONFIG_FILE = "./cwim-core-tgbt/config.json"
 
+# Переменная для хранения состояния отладки
+DEBUG_MODE = False
 
-# Загрузка конфигурации
 def load_config():
-    with open(CONFIG_FILE, "r") as f:
-        return json.load(f)
+    global DEBUG_MODE
+    if not os.path.exists(CONFIG_FILE):
+        raise FileNotFoundError(f"Config file {CONFIG_FILE} not found")
 
+    with open(CONFIG_FILE, 'r') as config_file:
+        config_data = json.load(config_file)
+
+    # Проверяем режим отладки
+    DEBUG_MODE = config_data.get('core_settings', {}).get('debug_mode', False)
+    print(f"{Fore.GREEN}Debug mode is {'enabled' if DEBUG_MODE else 'disabled'}{Style.RESET_ALL}")
 
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
@@ -25,19 +34,16 @@ def check_routes_file():
         with open(ROUTES_FILE, "w") as f:
             json.dump({}, f)
 
-
 # Чтение существующих роутов из файла
 def load_routes():
     check_routes_file()
     with open(ROUTES_FILE, "r") as f:
         return json.load(f)
 
-
 # Сохранение роутов в файл
 def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
-
 
 # Сканирование папки на наличие страниц
 def scan_pages():
@@ -53,7 +59,7 @@ def scan_pages():
 
                         # Проверяем, существует ли маршрут уже в routes.json
                         if route in routes:
-                            print(f"Маршрут {route} уже существует. Пропускаем создание новой записи.")
+                            print(f"{Fore.YELLOW}Маршрут {route} уже существует. Пропускаем создание новой записи.{Style.RESET_ALL}")
                         else:
                             routes[route] = {
                                 "module": module_name,
@@ -61,87 +67,69 @@ def scan_pages():
                                 "enabled": True,
                                 "group_access": "all"  # Можно указать группы для каждой страницы
                             }
-                            print(f"Маршрут {route} добавлен с доступом для всех групп.")
+                            print(f"{Fore.GREEN}Маршрут {route} добавлен с доступом для всех групп.{Style.RESET_ALL}")
             except Exception as e:
-                print(f"Ошибка импорта {module_name}: {e}")
+                print(f"{Fore.RED}Ошибка импорта {module_name}: {e}{Style.RESET_ALL}")
     save_routes(routes)
-
-
-# Динамический импорт шаблона
-def dynamic_import_template(template_path):
-    """Динамически загружает шаблон по указанному пути."""
-    try:
-        module = importlib.import_module(template_path.replace("/", "."))
-        return module
-    except ModuleNotFoundError:
-        print(f"Шаблон {template_path} не найден.")
-        return None
-
 
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
     routes = load_routes()
-    print(f"Ищем маршрут для: {route}")
+    print(f"{Fore.BLUE}Ищем маршрут для: {route}{Style.RESET_ALL}")
 
     # Отладка: Выводим все маршруты для проверки
-    print("Существующие маршруты:", routes)
+    if DEBUG_MODE:
+        print(f"{Fore.BLUE}Существующие маршруты: {routes}{Style.RESET_ALL}")
 
     if route in routes:
         route_info = routes[route]
-        print(f"Маршрут найден: {route}, модуль: {route_info['module']}, шаблон: {route_info['template']}")
+        print(f"{Fore.GREEN}Маршрут найден: {route}, модуль: {route_info['module']}, шаблон: {route_info['template']}{Style.RESET_ALL}")
 
         if not route_info["enabled"]:
-            print(f"Маршрут {route} отключен.")
+            print(f"{Fore.RED}Маршрут {route} отключен.{Style.RESET_ALL}")
             return None  # Страница отключена
 
         # Проверяем доступ к странице по группе пользователя
         if route_info["group_access"] != "all" and route_info["group_access"] != user_group:
-            print(f"Доступ запрещен для группы: {user_group}")
+            print(f"{Fore.RED}Доступ запрещен для группы: {user_group}{Style.RESET_ALL}")
             return None
 
-        # Динамически загружаем шаблон
-        config = load_config()
-        template_path = f"templates.{config['core_settings']['default_template']}.{route_info['template']}"
-        module = dynamic_import_template(template_path)
-
-        if module is not None:
-            template_func = getattr(module, 'tpl_' + route_info['module'], None)
-            if template_func:
-                return template_func
-            else:
-                print(f"Функция для шаблона {template_path} не найдена.")
+        try:
+            module = importlib.import_module(f"pages.{route_info['module']}")
+            template_func = getattr(module, route_info["template"])
+            return template_func
+        except Exception as e:
+            print(f"{Fore.RED}Ошибка загрузки страницы {route}: {e}{Style.RESET_ALL}")
     else:
-        print(f"Маршрут {route} не найден в routes.json.")
+        print(f"{Fore.RED}Маршрут {route} не найден в routes.json.{Style.RESET_ALL}")
     return None
-
 
 # Функция роутинга
 def router(page: Page):
     # Получаем маршрут из запроса, по умолчанию перенаправляем на "/index"
     route = page.route or "/index"
-    print(f"Текущий маршрут: {route}")
+    print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
     # Получаем группу пользователя (по умолчанию "all")
     user_group = page.session.get("user_group") or "all"  # Исправлено: убран третий аргумент
-    print(f"Группа пользователя: {user_group}")
+    print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
 
     # Получаем шаблон страницы по маршруту
     page_template = get_page(route, user_group)
 
     if page_template:
-        print(f"Отображаем страницу: {route}")
+        print(f"{Fore.GREEN}Отображаем страницу: {route}{Style.RESET_ALL}")
         page.controls.clear()
         page_template(page)
     else:
-        print(f"Страница {route} не найдена или доступ запрещен.")
+        print(f"{Fore.RED}Страница {route} не найдена или доступ запрещен.{Style.RESET_ALL}")
         page.controls.clear()
         page.controls.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
         page.update()
 
-
 # Пример инициализации приложения Flet
 def main(page: Page):
-    # Сканируем страницы при старте приложения
+    load_config()  # Загружаем конфигурацию
     scan_pages()
 
     # Устанавливаем начальный маршрут, если он не задан
@@ -162,9 +150,7 @@ def main(page: Page):
     # Запуск роутера
     router(page)
 
-
 # Запуск Flet
 if __name__ == "__main__":
     import flet as ft
-
     ft.app(target=main, view=ft.AppView.WEB_BROWSER)
