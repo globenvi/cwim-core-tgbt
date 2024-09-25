@@ -1,17 +1,21 @@
-from flet import AppBar, Text, Row, IconButton, icons
+from flet import *
+
+def appbar_tpl(page: Page):
+
+    def check_item_clicked(e):
+        e.control.checked = not e.control.clicked
+        page.update()
 
 
-def render(page):
-    # Создаем AppBar с заголовком и кнопками
     app_bar = AppBar(
-        title=Text("Мое приложение"),
-        center_title=True,
-        leading=IconButton(icons.MENU, tooltip="Меню", on_click=lambda e: page.go("/menu")),
+        # leading=Icon(icons.PALLETE),
+        leading_width=40,
+        title=page.title,
+        center_title=False,
+        bgcolor=colors.AMBER,
         actions=[
-            IconButton(icons.SETTINGS, tooltip="Настройки", on_click=lambda e: page.go("/settings")),
-            IconButton(icons.LOGOUT, tooltip="Выход", on_click=lambda e: page.go("/logout")),
-        ],
+
+        ]
     )
 
-    # Добавляем AppBar в контролы страницы
     page.controls.append(app_bar)

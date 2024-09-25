@@ -10,5 +10,11 @@
         "template": "tpl_admin",
         "enabled": true,
         "group_access": "admin"
+    },
+    "/chat": {
+        "module": "chat",
+        "template": "tpl_chat",
+        "enabled": true,
+        "group_access": "all"
     }
 }
