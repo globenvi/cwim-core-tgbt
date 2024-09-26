@@ -7,16 +7,16 @@ from colorama import Fore, Style, init
 # Инициализация colorama
 init(autoreset=True)
 
-# Путь к файлу конфигурации и маршрутов
-CONFIG_FILE = "./cwim-core-tgbt/config.json"
+# Путь к папке шаблонов и другим файлам
+TEMPLATES_DIR = "./cwim-core-tgbt/templates/Default"
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
+CONFIG_FILE = "./cwim-core-tgbt/config.json"
 
-# Переменная для хранения состояния отладки и шаблона
+# Переменная для хранения состояния отладки
 DEBUG_MODE = False
-TEMPLATE_NAME = "default"
 
 def load_config():
-    global DEBUG_MODE, TEMPLATE_NAME
+    global DEBUG_MODE
     if not os.path.exists(CONFIG_FILE):
         raise FileNotFoundError(f"Config file {CONFIG_FILE} not found")
 
@@ -25,11 +25,9 @@ def load_config():
 
     # Проверяем режим отладки
     DEBUG_MODE = config_data.get('core_settings', {}).get('debug_mode', False)
-    TEMPLATE_NAME = config_data.get('core_settings', {}).get('default_template', "default")
     print(f"{Fore.GREEN}Debug mode is {'enabled' if DEBUG_MODE else 'disabled'}{Style.RESET_ALL}")
-    print(f"{Fore.GREEN}Using template: {TEMPLATE_NAME}{Style.RESET_ALL}")
 
-# Проверка наличия файла маршрутов
+# Проверка наличия файла и его создание, если не существует
 def check_routes_file():
     if not os.path.exists(ROUTES_FILE):
         with open(ROUTES_FILE, "w") as f:
@@ -46,34 +44,43 @@ def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
 
-# Сканирование папки шаблонов на наличие страниц
+# Сканирование папки на наличие страниц
 def scan_templates():
     routes = load_routes()
-    templates_dir = f"./cwim-core-tgbt/templates/{TEMPLATE_NAME}"
-
-    for file_name in os.listdir(templates_dir):
+    for file_name in os.listdir(TEMPLATES_DIR):
         if file_name.endswith(".py"):
             module_name = file_name[:-3]
-            try:
-                module = importlib.import_module(f"templates.{TEMPLATE_NAME}.{module_name}")
-                for attr in dir(module):
-                    if attr.startswith("tpl_"):
-                        route = f"/{module_name}"
+            route = f"/{module_name}"
 
-                        # Проверяем, существует ли маршрут уже в routes.json
-                        if route in routes:
-                            print(f"{Fore.YELLOW}Маршрут {route} уже существует. Пропускаем создание новой записи.{Style.RESET_ALL}")
-                        else:
-                            routes[route] = {
-                                "module": module_name,
-                                "template": attr,
-                                "enabled": True,
-                                "group_access": "all"  # Можно указать группы для каждой страницы
-                            }
-                            print(f"{Fore.GREEN}Маршрут {route} добавлен с доступом для всех групп.{Style.RESET_ALL}")
-            except Exception as e:
-                print(f"{Fore.RED}Ошибка импорта {module_name}: {e}{Style.RESET_ALL}")
+            # Проверяем, существует ли маршрут уже в routes.json
+            if route in routes:
+                print(f"{Fore.YELLOW}Маршрут {route} уже существует. Пропускаем.{Style.RESET_ALL}")
+            else:
+                routes[route] = {
+                    "module": module_name,
+                    "template": f"tpl_{module_name}",
+                    "enabled": True,
+                    "group_access": "all"  # Можно указать группы для каждой страницы
+                }
+                print(f"{Fore.GREEN}Маршрут {route} добавлен.{Style.RESET_ALL}")
+
     save_routes(routes)
+
+# Проверка доступа к странице
+def check_access(route_info, user_group):
+    required_group = route_info.get('group_access', 'all')
+
+    # Администратор имеет доступ ко всем страницам
+    if user_group == "admin":
+        print(f"{Fore.GREEN}Доступ разрешен для администратора{Style.RESET_ALL}")
+        return True
+
+    # Проверка для других групп
+    if required_group != "all" and required_group != user_group:
+        print(f"{Fore.RED}Доступ запрещен для группы: {user_group}. Требуется: {required_group}{Style.RESET_ALL}")
+        return False
+
+    return True
 
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
@@ -90,16 +97,15 @@ def get_page(route, user_group="all"):
 
         if not route_info["enabled"]:
             print(f"{Fore.RED}Маршрут {route} отключен.{Style.RESET_ALL}")
-            return None  # Страница отключена
+            return None
 
-        # Проверяем доступ к странице по группе пользователя
-        if route_info["group_access"] != "all" and route_info["group_access"] != user_group:
-            print(f"{Fore.RED}Доступ запрещен для группы: {user_group}{Style.RESET_ALL}")
+        # Проверяем доступ к странице
+        if not check_access(route_info, user_group):
             return None
 
         try:
-            # Динамический импорт страницы из директории шаблонов
-            module = importlib.import_module(f"templates.{TEMPLATE_NAME}.{route_info['module']}")
+            # Импортируем модуль страницы из шаблонов
+            module = importlib.import_module(f"templates.Default.{route_info['module']}")
             template_func = getattr(module, route_info["template"])
             return template_func
         except Exception as e:
@@ -115,7 +121,7 @@ def router(page: Page):
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
     # Получаем группу пользователя (по умолчанию "all")
-    user_group = page.session.get("user_group") or "all"  # Исправлено: убран третий аргумент
+    user_group = page.session.get("user_group") or "all"
     print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
 
     # Получаем шаблон страницы по маршруту
@@ -124,7 +130,7 @@ def router(page: Page):
     if page_template:
         print(f"{Fore.GREEN}Отображаем страницу: {route}{Style.RESET_ALL}")
         page.controls.clear()
-        page_template(page)
+        page_template(page)  # Отрисовка страницы
     else:
         print(f"{Fore.RED}Страница {route} не найдена или доступ запрещен.{Style.RESET_ALL}")
         page.controls.clear()
@@ -134,14 +140,14 @@ def router(page: Page):
 # Пример инициализации приложения Flet
 def main(page: Page):
     load_config()  # Загружаем конфигурацию
-    scan_templates()
+    scan_templates()  # Сканируем шаблоны и обновляем маршруты
 
     # Устанавливаем начальный маршрут, если он не задан
     if page.route == "/":
         page.route = "/index"
         page.go('/index')
 
-    # Обработчик события перехода по маршруту
+    # Обработчик события изменения маршрута
     def on_route_change(e):
         router(page)
 
