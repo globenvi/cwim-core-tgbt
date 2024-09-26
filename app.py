@@ -7,17 +7,16 @@ from colorama import Fore, Style, init
 # Инициализация colorama
 init(autoreset=True)
 
-# Путь к папке со страницами
-PAGES_DIR = "./cwim-core-tgbt/pages"
-TEMPLATES_DIR = "./cwim-core-tgbt/templates"
-ROUTES_FILE = "./cwim-core-tgbt/routes.json"
+# Путь к файлу конфигурации и маршрутов
 CONFIG_FILE = "./cwim-core-tgbt/config.json"
+ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 
-# Переменная для хранения состояния отладки
+# Переменная для хранения состояния отладки и шаблона
 DEBUG_MODE = False
+TEMPLATE_NAME = "default"
 
 def load_config():
-    global DEBUG_MODE
+    global DEBUG_MODE, TEMPLATE_NAME
     if not os.path.exists(CONFIG_FILE):
         raise FileNotFoundError(f"Config file {CONFIG_FILE} not found")
 
@@ -26,9 +25,11 @@ def load_config():
 
     # Проверяем режим отладки
     DEBUG_MODE = config_data.get('core_settings', {}).get('debug_mode', False)
+    TEMPLATE_NAME = config_data.get('core_settings', {}).get('default_template', "default")
     print(f"{Fore.GREEN}Debug mode is {'enabled' if DEBUG_MODE else 'disabled'}{Style.RESET_ALL}")
+    print(f"{Fore.GREEN}Using template: {TEMPLATE_NAME}{Style.RESET_ALL}")
 
-# Проверка наличия файла и его создание, если не существует
+# Проверка наличия файла маршрутов
 def check_routes_file():
     if not os.path.exists(ROUTES_FILE):
         with open(ROUTES_FILE, "w") as f:
@@ -45,14 +46,16 @@ def save_routes(routes):
     with open(ROUTES_FILE, "w") as f:
         json.dump(routes, f, indent=4)
 
-# Сканирование папки на наличие страниц
-def scan_pages():
+# Сканирование папки шаблонов на наличие страниц
+def scan_templates():
     routes = load_routes()
-    for file_name in os.listdir(PAGES_DIR):
+    templates_dir = f"./cwim-core-tgbt/templates/{TEMPLATE_NAME}"
+
+    for file_name in os.listdir(templates_dir):
         if file_name.endswith(".py"):
             module_name = file_name[:-3]
             try:
-                module = importlib.import_module(f"pages.{module_name}")
+                module = importlib.import_module(f"templates.{TEMPLATE_NAME}.{module_name}")
                 for attr in dir(module):
                     if attr.startswith("tpl_"):
                         route = f"/{module_name}"
@@ -95,7 +98,8 @@ def get_page(route, user_group="all"):
             return None
 
         try:
-            module = importlib.import_module(f"pages.{route_info['module']}")
+            # Динамический импорт страницы из директории шаблонов
+            module = importlib.import_module(f"templates.{TEMPLATE_NAME}.{route_info['module']}")
             template_func = getattr(module, route_info["template"])
             return template_func
         except Exception as e:
@@ -130,7 +134,7 @@ def router(page: Page):
 # Пример инициализации приложения Flet
 def main(page: Page):
     load_config()  # Загружаем конфигурацию
-    scan_pages()
+    scan_templates()
 
     # Устанавливаем начальный маршрут, если он не задан
     if page.route == "/":
