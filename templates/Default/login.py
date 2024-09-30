@@ -1,4 +1,3 @@
-from attr.setters import validate
 from flet import *
 from flet_core.alignment import center
 from flet_core.cupertino_icons import BOLD_UNDERLINE
