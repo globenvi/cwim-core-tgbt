@@ -68,5 +68,3 @@ def main(page: Page):
         )
     )
     page.update()
-
-app(main)
