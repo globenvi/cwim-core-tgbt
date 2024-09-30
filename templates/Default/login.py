@@ -4,7 +4,7 @@ from flet_core.alignment import center
 from flet_core.cupertino_icons import BOLD_UNDERLINE
 
 
-def main(page: Page):
+def tpl_login(page: Page):
     page.title = 'Авторизация'
     page.theme_mode = ThemeMode.SYSTEM
     page.vertical_alignment = MainAxisAlignment.CENTER
