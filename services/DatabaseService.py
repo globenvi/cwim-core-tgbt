@@ -175,9 +175,3 @@ async def main():
     finally:
         # Закрытие соединений
         await db_service.close()
-
-
-# Запуск программы
-if __name__ == "__main__":
-    import asyncio
-    asyncio.run(main())
