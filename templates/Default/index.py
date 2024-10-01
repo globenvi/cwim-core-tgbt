@@ -13,12 +13,6 @@ def tpl_index(page: Page):
         print(f"Menu item clicked: {e.control.selected_index}")
 
     rail = NavigationRail(
-        selected_index=0,
-        label_type=NavigationRailLabelType.ALL,
-        min_width=100,
-        min_extended_width=400,
-        leading=FloatingActionButton(icon=icons.CREATE, text="Add"),
-        group_alignment=-0.9,
         destinations=[
             NavigationRailDestination(
                 icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED, selected_icon=icons.ADMIN_PANEL_SETTINGS_ROUNDED, label="Админ Панель"
