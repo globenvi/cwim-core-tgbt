@@ -154,6 +154,7 @@ def tpl_admin(page: Page):
                     body_content,  # Контент расположен сверху
                 ],
                 expand=True,
+                width=800,
             ),
             footer
         ]
