@@ -14,8 +14,8 @@ def tpl_admin(page: Page):
     # AppBar с проверкой на стартовую страницу. Если это не стартовая страница, показываем кнопку "Назад".
     header = AppBar(
         title=Text("SRC CMS"),
-        bgcolor="#1976D2",
-        color="#FFFFFF",
+        bgcolor=colors.PRIMARY,
+        color=colors.ON_PRIMARY,
         leading=IconButton(  # Кнопка "Назад", прикреплённая к левой части AppBar
             icon=icons.ARROW_BACK,
             tooltip="Назад",
