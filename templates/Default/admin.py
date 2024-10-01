@@ -65,10 +65,10 @@ def tpl_admin(page: Page):
                                 border_radius=5,
                                 height=400,
                                 content=Container(
-                                    bgcolor=colors.ON_PRIMARY,
-                                    padding=10,
+                                    bgcolor=colors.PRIMARY,
+                                    expand=True,
                                     height=50,
-                                    content=Text("Список Пользователей", size=18)
+                                    content=Text("Список Пользователей", size=18, color=colors.ON_PRIMARY)
                                 )
                             ),
                             Row(
