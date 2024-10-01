@@ -4,36 +4,32 @@ def tpl_index(page):
     page.title = 'Главная страница'
     page.theme_mode = ThemeMode.SYSTEM
 
-    def handle_change(e):
-        page.add(Text(f"Selected Index changed: {e.selected_index}"))
-        page.close(drawer)
-
     def check_item_clicked(e):
         e.control.checked = not e.control.checked
         page.update()
 
+    def handle_dismissal(e):
+        page.add(Text("Drawer dismissed"))
+
+    def handle_change(e):
+        page.add(Text(f"Selected Index changed: {e.selected_index}"))
+        # page.close(drawer)
+
     drawer = NavigationDrawer(
+        on_dismiss=handle_dismissal,
         on_change=handle_change,
         controls=[
             Container(height=12),
-            # ExpansionTile(
-            #     title=Text("ExpansionTile 1"),
-            #     subtitle=Text("Trailing expansion arrow icon"),
-            #     affinity=TileAffinity.PLATFORM,
-            #     maintain_state=True,
-            #     collapsed_text_color=colors.ON_PRIMARY,
-            #     text_color=colors.ON_PRIMARY,
-            #     controls=[
-            #         ListTile(
-            #             title=Text("This is sub-tile number 1")
-            #         )
-            #     ],
-            # ),
+            NavigationDrawerDestination(
+                label="Item 1",
+                icon=icons.DOOR_BACK_DOOR_OUTLINED,
+                selected_icon_content=Icon(icons.DOOR_BACK_DOOR),
+            ),
             Divider(thickness=2),
             NavigationDrawerDestination(
-                icon_content=Icon(icons.PERSON),
-                label="Профиль",
-                selected_icon=icons.PERSON,
+                icon_content=Icon(icons.MAIL_OUTLINED),
+                label="Item 2",
+                selected_icon=icons.MAIL,
             ),
             NavigationDrawerDestination(
                 icon_content=Icon(icons.PHONE_OUTLINED),
