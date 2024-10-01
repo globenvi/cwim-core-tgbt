@@ -22,7 +22,7 @@ def tpl_register(page: Page):
     user_email_input = TextField(label='Email')
     user_telegramid_input = TextField(label='Telegram ID', visible=False, password=True)
 
-    pb = ProgressBar(width=300)
+    pb = ProgressBar(width=300, value=0, visible=False)
 
     def err_snack(e, err_text):
         page.snack_bar = SnackBar(content=Text(f'{err_text}', weight=BOLD_UNDERLINE))
@@ -71,6 +71,8 @@ def tpl_register(page: Page):
                 err_snack(e, 'Пароль должен быть не менее 8 символов!')
                 return
 
+            pb.visible = True
+            page.update()
             await collect_data()
             success_snack(e, 'Регистрация прошла успешно!')
 
