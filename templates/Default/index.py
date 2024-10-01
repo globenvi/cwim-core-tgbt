@@ -1,112 +1,60 @@
 from flet import *
 
-
 def tpl_index(page: Page):
     page.vertical_alignment = "start"
-
-    # Получаем текущие настройки темы и основной цвет из сессии
-    is_dark_mode = page.session.get('is_dark_mode', True)  # По умолчанию темная тема
-    primary_color = page.session.get('primary_color', colors.PRIMARY)  # По умолчанию основной цвет
-
-    def toggle_theme(e):
-        nonlocal is_dark_mode
-        is_dark_mode = not is_dark_mode
-        page.session.set('is_dark_mode', is_dark_mode)
-        page.theme_mode = "dark" if is_dark_mode else "light"
-        page.update()
-
-    def change_palette(e):
-        nonlocal primary_color
-        # Пример смены палитры
-        primary_color = colors.GREEN if primary_color == colors.PRIMARY else colors.PRIMARY
-        page.session.set('primary_color', primary_color)
-        page.update()
-
     user_group = page.session.get('user_group')
+
+    # Функция для смены темы
+    def toggle_theme(e):
+        if page.theme_mode == "light":
+            page.theme_mode = "dark"
+        else:
+            page.theme_mode = "light"
+        page.update()
+
+    # Функция для смены цветовой палитры
+    def change_color_palette(e):
+        new_color = colors.AMBER if page.bgcolor != colors.AMBER else colors.PRIMARY
+        page.bgcolor = new_color
+        page.update()
 
     header = AppBar(
         title=Text("SRC CMS"),
-        bgcolor=primary_color,  # Используем основной цвет из сессии
+        bgcolor=colors.PRIMARY,
         color=colors.ON_PRIMARY,
         actions=[  # Элементы справа
-            IconButton(
-                icon=icons.LIGHT_MODE if is_dark_mode else icons.DARK_MODE,
-                tooltip="Переключить тему",
-                on_click=toggle_theme
-            ),
-            IconButton(
-                icon=icons.PALETTE,
-                tooltip="Сменить цветовую палитру",
-                on_click=change_palette
-            ),
             IconButton(
                 icon=icons.PERSON,
                 tooltip="Профиль",
                 on_click=lambda e: page.go("/profile"),
-                visible=False if user_group == 'guest' else True  # Укажите путь к странице профиля
+                visible=False if user_group == 'guest' else True
             ),
             IconButton(
                 icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
                 tooltip="Админ Панель",
                 on_click=lambda e: page.go("/admin"),
-                visible=False if user_group != 'admin' else True  # Укажите путь к админ панели
+                visible=False if user_group != 'admin' else True
+            ),
+            Switch(
+                value=page.theme_mode == "dark",
+                on_change=toggle_theme,
+                label="Темная тема"
+            ),
+            IconButton(
+                icon=icons.COLOR_LENS,
+                tooltip="Сменить цветовую палитру",
+                on_click=change_color_palette
             ),
         ],
     )
 
     def menu_clicked(e):
-        if e.control.selected_index == 5:  # Кнопка "Logout"
-            if user_group != "guest":
-                page.session.clear()
-                page.client_storage.clear()
-                page.go("/login")
-                page.go('/index')  # Переходим на страницу авторизации
-                page.update()
-            else:
-                page.go("/login")  # Переходим на страницу авторизации
-        if e.control.selected_index == 0:  # Кнопка "Главная"
-            page.go("/index")  # Переходим на страницу главной
-        if e.control.selected_index == 1:  # Кнопка "Серверы"
-            page.go("/servers")  # Переходим на страницу серверов
-        if e.control.selected_index == 2:  # Кнопка "Список банов"
-            page.go("/bans")  # Переходим на страницу списка банов
-        if e.control.selected_index == 3:  # Кнопка "Список Мутов/Гагов"
-            page.go("/mutes")  # Переходим на страницу списка Мутов/Гагов
-        if e.control.selected_index == 4:  # Кнопка "Админ-лист"
-            page.go("/admin_list")  # Переходим на страницу админ-листа
+        # Логика навигации
+        pass
 
     rail = NavigationRail(
         destinations=[
-            NavigationRailDestination(
-                icon=icons.HOME,
-                selected_icon=icons.HOME,
-                label="Главная"
-            ),
-            NavigationRailDestination(
-                icon=icons.CABLE_OUTLINED,
-                selected_icon=icons.CABLE_OUTLINED,
-                label="Серверы"
-            ),
-            NavigationRailDestination(
-                icon=icons.LOCK,
-                selected_icon=icons.LOCK,
-                label="Список банов"
-            ),
-            NavigationRailDestination(
-                icon=icons.VOICE_OVER_OFF,
-                selected_icon=icons.VOICE_OVER_OFF,
-                label="Список Мутов/Гагов"
-            ),
-            NavigationRailDestination(
-                icon=icons.STAR_HALF,
-                selected_icon=icons.STAR_HALF,
-                label="Админ-лист",
-            ),
-            NavigationRailDestination(
-                icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,  # Меняем иконку в зависимости от группы
-                selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
-                label="Logout" if user_group != "guest" else "Войти",  # Меняем текст в зависимости от группы
-            ),
+            # Элементы навигации
         ],
         on_change=lambda e: menu_clicked(e),
     )
