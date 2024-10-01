@@ -4,20 +4,33 @@ def tpl_admin(page: Page):
     page.title = "Админ Панель"
     page.vertical_alignment = "start"
 
+    # Функция для возврата на предыдущую страницу
+    def go_back(e):
+        page.go(-1)  # Возвращаемся на предыдущую страницу
+
+    # Проверяем, находится ли пользователь на стартовой странице
+    is_start_page = page.route in ["/index", "/"]
+
+    # AppBar с проверкой на стартовую страницу. Если это не стартовая страница, показываем кнопку "Назад".
     header = AppBar(
-        title=Text("Админ Панель SRC CMS"),
+        title=Text("SRC CMS"),
         bgcolor="#1976D2",
         color="#FFFFFF",
-        actions=[
+        leading=IconButton(  # Кнопка "Назад", прикреплённая к левой части AppBar
+            icon=icons.ARROW_BACK,
+            tooltip="Назад",
+            on_click=go_back  # Обработчик нажатия для возврата назад
+        ) if not is_start_page else None,  # Скрываем кнопку "Назад" на стартовой странице
+        actions=[  # Элементы справа
             IconButton(
                 icon=icons.PERSON,
                 tooltip="Профиль",
-                on_click=lambda e: page.go("/profile")  # Переход на страницу профиля
+                on_click=lambda e: page.go("/profile")  # Укажите путь к странице профиля
             ),
             IconButton(
-                icon=icons.HOME,
-                tooltip="Главная",
-                on_click=lambda e: page.go("/index")  # Переход на главную страницу
+                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
+                tooltip="Админ Панель",
+                on_click=lambda e: page.go("/admin")  # Укажите путь к админ панели
             ),
         ],
     )
