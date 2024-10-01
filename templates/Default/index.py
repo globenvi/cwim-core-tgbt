@@ -4,20 +4,9 @@ def tpl_index(page):
     page.title = 'Главная страница'
     page.theme_mode = ThemeMode.SYSTEM
 
-    def handle_expansion_tile_change(e):
-        page.open(
-            SnackBar(
-                Text(f"ExpansionTile was {'expanded' if e.data == 'true' else 'collapsed'}"),
-                duration=1000,
-            )
-        )
-        if e.control.trailing:
-            e.control.trailing.name = (
-                icons.ARROW_DROP_DOWN
-                if e.control.trailing.name == icons.ARROW_DROP_DOWN_CIRCLE
-                else icons.ARROW_DROP_DOWN_CIRCLE
-            )
-            page.update()
+    def handle_change(e):
+        page.add(Text(f"Selected Index changed: {e.selected_index}"))
+        # page.close(drawer)
 
     def check_item_clicked(e):
         e.control.checked = not e.control.checked
@@ -44,7 +33,6 @@ def tpl_index(page):
                 icon_content=Icon(icons.PERSON),
                 label="Профиль",
                 selected_icon=icons.PERSON,
-
             ),
             NavigationDrawerDestination(
                 icon_content=Icon(icons.PHONE_OUTLINED),
