@@ -22,7 +22,7 @@ def tpl_admin(page: Page):
         ],
     )
 
-    user_group = page.session.get('user_group', 'guest')  # Получаем группу пользователя
+    user_group = page.session.get('user_group')  # Получаем группу пользователя
 
     def menu_clicked(e):
         if e.control.selected_index == 5:  # Кнопка "Logout"
