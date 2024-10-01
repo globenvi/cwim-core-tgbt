@@ -117,6 +117,7 @@ def get_page(route, user_group="all"):
 # Функция роутинга
 def router(page: Page):
     # Получаем маршрут из запроса, по умолчанию перенаправляем на "/index"
+    page.client_storage.clear()
     route = page.route or "/index"
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 

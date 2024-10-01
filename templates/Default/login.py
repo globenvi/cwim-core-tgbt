@@ -49,7 +49,6 @@ def tpl_login(page: Page):
                 page.session.set('password', user_data.get('password'))
                 page.go('/index')
                 if check_remember.value:
-                    page.client_storage.clear()
                     page.client_storage.set('id', user_data.get('id'))
                     page.client_storage.set('login', user_data.get('login'))
                     page.client_storage.set('email', user_data.get('email'))
