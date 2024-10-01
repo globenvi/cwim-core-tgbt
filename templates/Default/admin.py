@@ -2,7 +2,6 @@ from flet import *
 
 def tpl_admin(page: Page):
     page.title = "Админ Панель"
-    page.vertical_alignment = "start"
 
     user_group = page.session.get('user_group')
 
