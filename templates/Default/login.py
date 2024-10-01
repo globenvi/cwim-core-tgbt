@@ -1,11 +1,8 @@
 from flet import *
 from flet_core.alignment import center
 from flet_core.cupertino_icons import BOLD_UNDERLINE
-
 import time
-
 from services.DatabaseService import JSONService
-
 
 def tpl_login(page: Page):
     page.title = 'Авторизация'
@@ -38,68 +35,23 @@ def tpl_login(page: Page):
         else:
             db_service = JSONService()
             user_data = db_service.find_one('users', {'login': user_login_input.value})
-            login = user_data.get('login')
-            psqd = user_data.get('password')
-            if  login == user_login_input.value and psqd == user_password_input.value:
+            if user_data and user_data.get('password') == user_password_input.value:
                 success_snack(e, 'Вы успешно авторизовались!')
-                page.session.set('id', user_data.get('id'))
-                page.session.set('login', user_data.get('login'))
-                page.session.set('email', user_data.get('email'))
-                page.session.set('user_group', user_data.get('user_group'))
-                page.session.set('password', user_data.get('password'))
+                # Установить значения в сессии
+                page.session.update(user_data)
                 page.go('/index')
-                if check_remember.value:
-                    page.client_storage.set('id', user_data.get('id'))
-                    page.client_storage.set('login', user_data.get('login'))
-                    page.client_storage.set('email', user_data.get('email'))
-                    page.client_storage.set('user_group', user_data.get('user_group'))
-                    page.client_storage.set('route', f'{page.route}')
-                    page.go('/index')
             else:
-                err_snack(e, 'Пользователь не найден или не верно веден логин, или пароль!')
-                page.update()
-                return
-
+                err_snack(e, 'Пользователь не найден или неверный логин/пароль!')
 
     submit_button = CupertinoFilledButton('Войти', on_click=validate_form, alignment=center)
 
-    page.add(
-        Container(
-            # border= border.all(color=colors.GREY_100),
-            border_radius=5,
-            margin=10,
-            bgcolor=colors.ON_SECONDARY,
-            width=350,
-            content=Column(
-                [
-                    Row(
-                        [
-                            Column(
-                                [
-                                    Container(
-                                        bgcolor=colors.PRIMARY,
-                                        width=350,
-                                        padding=10,
-                                        content=Text(page.title, color=colors.ON_PRIMARY, size=25),
-                                    ),
-                                    Container(
-                                        padding=25,
-                                        content=Column(
-                                            [
-                                                user_login_input,
-                                                user_password_input,
-                                                check_remember,
-                                                submit_button
-                                            ],
-                                        )
-                                    )
-                                ],
-                            )
-                        ],
-                        alignment=MainAxisAlignment.CENTER,
-                    )
-                ]
-            )
-        )
+    return Column(
+        controls=[
+            Text(page.title, size=25, weight="bold"),
+            user_login_input,
+            user_password_input,
+            check_remember,
+            submit_button
+        ],
+        alignment=MainAxisAlignment.CENTER
     )
-    page.update()

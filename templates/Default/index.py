@@ -1,7 +1,6 @@
 from flet import *
 
 def tpl_index(page: Page):
-    page.title = "Home Page"
     page.vertical_alignment = "start"
 
     header = AppBar(
@@ -49,15 +48,17 @@ def tpl_index(page: Page):
         alignment=alignment.center
     )
 
-    page.add(
-        header,
-        Row(
-            [
-                rail,
-                VerticalDivider(width=1),
-                content,
-            ],
-            expand=True,
-        ),
-        footer
+    return Column(
+        controls=[
+            header,
+            Row(
+                [
+                    rail,
+                    VerticalDivider(width=1),
+                    content,
+                ],
+                expand=True,
+            ),
+            footer
+        ]
     )
