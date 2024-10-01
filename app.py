@@ -11,7 +11,7 @@ init(autoreset=True)
 TEMPLATES_DIR = "./cwim-core-tgbt/templates/Default"
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 CONFIG_FILE = "./cwim-core-tgbt/config.json"
-DATABASE_FILE = "./cwim-core-tgbt/datafiles/database.json"
+DATABASE_FILE = "./datafiles/database.json"
 
 # Переменная для хранения состояния отладки
 DEBUG_MODE = False
@@ -35,6 +35,7 @@ def load_database():
     with open(DATABASE_FILE, 'r') as db_file:
         return json.load(db_file)
 
+# Загрузка базы данных
 database = load_database()
 
 # Проверка наличия файла и его создание, если не существует
@@ -78,15 +79,17 @@ def scan_templates():
 
 # Проверка доступа к странице
 def check_access(route_info, user_group):
-    required_groups = route_info.get('group_access', 'all').split(", ")
+    required_groups = [grp.strip() for grp in route_info.get('group_access', 'all').split(",")]
     user_permissions = []
 
-    # Найдем группу пользователя в database.json
-    for group, members in database["users_groups"].items():
-        if group == user_group:
-            # Извлекаем права доступа пользователя
-            user_permissions = members[0].get('permissions', [])
-            break
+    # Проверяем, находится ли user_group в базе данных
+    # Предполагается, что 'users_groups' является списком с одним элементом, содержащим группы
+    users_groups = database.get("users_groups", [])
+    if users_groups:
+        users_groups_dict = users_groups[0]  # Извлекаем первый элемент списка
+        group_info = users_groups_dict.get(user_group, [])
+        if group_info:
+            user_permissions = group_info[0].get('permissions', [])
 
     # Если у пользователя есть права на все страницы
     if 'all' in user_permissions:
@@ -94,15 +97,15 @@ def check_access(route_info, user_group):
         return True
 
     # Проверяем, имеет ли пользователь доступ к странице на основе групп
-    if user_group in required_groups or 'all' in required_groups:
+    if 'all' in required_groups or user_group in required_groups:
         print(f"{Fore.GREEN}Доступ разрешен для {user_group}{Style.RESET_ALL}")
         return True
-    else:
-        print(f"{Fore.RED}Доступ запрещен для группы {user_group}. Требуются группы: {required_groups}{Style.RESET_ALL}")
-        return False
+
+    print(f"{Fore.RED}Доступ запрещен для группы {user_group}. Требуются группы: {required_groups}{Style.RESET_ALL}")
+    return False
 
 # Получение страницы по маршруту
-def get_page(route, user_group="all"):
+def get_page(route, user_group="guest"):
     routes = load_routes()
     print(f"{Fore.BLUE}Ищем маршрут для: {route}{Style.RESET_ALL}")
 
@@ -124,7 +127,7 @@ def get_page(route, user_group="all"):
 
         try:
             # Импортируем модуль страницы из шаблонов
-            module = importlib.import_module(f"templates.Default.{route_info['module']}")
+            module = importlib.import_module(f"cwim_core_tgbt.templates.Default.{route_info['module']}")
             template_func = getattr(module, route_info["template"])
             return template_func
         except Exception as e:
@@ -140,7 +143,7 @@ def router(page: Page):
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
     # Получаем группу пользователя (по умолчанию "guest")
-    user_group = page.session.get("user_group", "guest")
+    user_group = page.session.get("user_group") or "guest"  # Исправлено: убран второй аргумент
     print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
 
     # Получаем шаблон страницы по маршруту
@@ -158,15 +161,28 @@ def router(page: Page):
 
 # Пример инициализации приложения Flet
 def main(page: Page):
-    load_config()  # Загружаем конфигурацию
-    scan_templates()  # Сканируем шаблоны и обновляем маршруты
+    try:
+        load_config()  # Загружаем конфигурацию
+    except Exception as e:
+        print(f"{Fore.RED}Ошибка загрузки конфигурации: {e}{Style.RESET_ALL}")
+        page.controls.append(Column([Text("Ошибка загрузки конфигурации.")]))
+        page.update()
+        return
+
+    try:
+        scan_templates()  # Сканируем шаблоны и обновляем маршруты
+    except Exception as e:
+        print(f"{Fore.RED}Ошибка сканирования шаблонов: {e}{Style.RESET_ALL}")
+        page.controls.append(Column([Text("Ошибка сканирования шаблонов.")]))
+        page.update()
+        return
 
     # Устанавливаем начальный маршрут, если он не задан
     if page.route == "/":
         page.route = "/index"
 
     # Обработчик события изменения маршрута
-    def on_route_change(e):
+    async def on_route_change(e):
         router(page)
 
     # Слушаем изменения маршрута
