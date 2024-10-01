@@ -5,6 +5,8 @@ from flet_core.cupertino_colors import ON_PRIMARY
 def tpl_index(page: Page):
     page.vertical_alignment = "start"
 
+    user_group = page.session.get('user_group')
+
     header = AppBar(
         title=Text("SRC CMS"),
         bgcolor=colors.PRIMARY,
@@ -14,18 +16,16 @@ def tpl_index(page: Page):
                 icon=icons.PERSON,
                 tooltip="Профиль",
                 on_click=lambda e: page.go("/profile"),
-                visible=False if page.session.get('user_group') == 'guest' else True # Укажите путь к странице профиля
+                visible=False if user_group == 'guest' else True # Укажите путь к странице профиля
             ),
             IconButton(
                 icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
                 tooltip="Админ Панель",
                 on_click=lambda e: page.go("/admin"),
-                visible=False if page.session.get('user_group') != 'admin' else True # Укажите путь к админ панели
+                visible=False if user_group != 'admin' else True # Укажите путь к админ панели
             ),
         ],
     )
-
-    user_group = page.session.get('user_group')  # Получаем группу пользователя
 
     def menu_clicked(e):
         if e.control.selected_index == 5:  # Кнопка "Logout"
