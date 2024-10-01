@@ -25,7 +25,12 @@ def tpl_index(page):
 
     drawer = NavigationDrawer(
         controls=[
-            Container(height=12),
+            Container(
+                padding=10,
+                border_radius=5,
+                margin=10,
+                bgcolor=colors.ON_PRIMARY
+            ),
             ExpansionTile(
                 title=Text("ExpansionTile 1"),
                 subtitle=Text("Trailing expansion arrow icon"),
