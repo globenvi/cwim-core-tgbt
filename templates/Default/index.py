@@ -1,6 +1,6 @@
 from flet import *
 
-def main(page: Page):
+def tpl_index(page: Page):
     # Флаг для отслеживания состояния меню
     menu_open = Ref[bool](True)
 
