@@ -70,6 +70,15 @@ def tpl_admin(page: Page):
                                 alignment=alignment.top_left,
                                 border_radius=5,
                                 height=400,
+                                content=DataTable(
+                                    columns=[
+                                        DataColumn(Text("ID")),
+                                        DataColumn(Text("Логин")),
+                                        DataColumn(Text("Email")),
+                                        DataColumn(Text("Группа")),
+                                        DataColumn(Text("Действия"))
+                                    ]
+                                )
                             )
                         ]
                     )
