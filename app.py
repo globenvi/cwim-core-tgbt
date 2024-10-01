@@ -108,19 +108,20 @@ def router(page: Page):
     user_group = page.session.get("user_group")  # По умолчанию группа "guest"
     print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
 
-    page_template = get_page(route, user_group)
+    page_template_func = get_page(route, user_group)
 
     # Очистка views и добавление новой страницы
     page.views.clear()
-    if page_template:
+    if page_template_func:
         print(f"{Fore.GREEN}Отображаем страницу: {route}{Style.RESET_ALL}")
-        page_template(page)  # Отрисовка страницы
-        page.views.append(page_template)  # Добавляем страницу в views
+        page_view = page_template_func(page)  # Вызываем функцию, чтобы получить объект страницы
+        page.views.append(page_view)  # Добавляем страницу в views
     else:
         print(f"{Fore.RED}Страница {route} не найдена или доступ запрещен.{Style.RESET_ALL}")
         page.views.append(Column([Text(f"Страница {route} не найдена или доступ запрещен.")]))
 
     page.update()  # Обновляем страницу для отображения изменений
+
 
 def main(page: Page):
     load_config()  # Загружаем конфигурацию
