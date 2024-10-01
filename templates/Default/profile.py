@@ -2,7 +2,7 @@ from flet import *
 from services.DatabaseService import JSONService
 # Страница профиля
 def tpl_profile(page: Page):
-    user_group = page.session.get('user_group', 'guest')  # Получаем группу пользователя
+    user_group = page.session.get('user_group')  # Получаем группу пользователя
 
     # Если группа пользователя 'guest', отображаем сообщение
     if user_group == 'guest':

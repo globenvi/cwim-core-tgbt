@@ -32,13 +32,13 @@ def tpl_admin(page: Page):
             else:
                 page.go("/login")  # Переход на страницу авторизации
         elif e.control.selected_index == 0:  # Кнопка "Управление пользователями"
-            page.go("/admin/users")  # Переход на страницу управления пользователями
+            pass
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
-            page.go("/admin/sessions")  # Переход на страницу активных сессий
+            pass # Переход на страницу активных сессий
         elif e.control.selected_index == 2:  # Кнопка "Управление модулями"
-            page.go("/admin/modules")  # Переход на страницу управления модулями
+            pass  # Переход на страницу управления модулями
         elif e.control.selected_index == 3:  # Кнопка "Настройки системы"
-            page.go("/admin/settings")  # Переход на страницу настроек системы
+            pass # Переход на страницу настроек системы
 
     # Навигационное меню
     rail = NavigationRail(
