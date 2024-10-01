@@ -67,23 +67,23 @@ def scan_templates():
     save_routes(routes)
 
 # Проверка доступа к странице
-def check_access(route_info, user_group):
+def check_access(route_info, role):
     required_group = route_info.get('group_access', 'all')
 
     # Администратор имеет доступ ко всем страницам
-    if user_group == "admin":
+    if role == "admin":
         print(f"{Fore.GREEN}Доступ разрешен для администратора{Style.RESET_ALL}")
         return True
 
     # Проверка для других групп
-    if required_group != "all" and required_group != user_group:
-        print(f"{Fore.RED}Доступ запрещен для группы: {user_group}. Требуется: {required_group}{Style.RESET_ALL}")
+    if required_group != "all" and required_group != role:
+        print(f"{Fore.RED}Доступ запрещен для группы: {role}. Требуется: {required_group}{Style.RESET_ALL}")
         return False
 
     return True
 
 # Получение страницы по маршруту
-def get_page(route, user_group="all"):
+def get_page(route, role="all"):
     routes = load_routes()
     print(f"{Fore.BLUE}Ищем маршрут для: {route}{Style.RESET_ALL}")
 
@@ -100,7 +100,7 @@ def get_page(route, user_group="all"):
             return None
 
         # Проверяем доступ к странице
-        if not check_access(route_info, user_group):
+        if not check_access(route_info, role):
             return None
 
         try:
@@ -121,11 +121,11 @@ def router(page: Page):
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
     # Получаем группу пользователя (по умолчанию "all")
-    user_group = page.session.get("user_group") or "all"
-    print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
+    role = page.session.get("role") or "all"
+    print(f"{Fore.BLUE}Группа пользователя: {role}{Style.RESET_ALL}")
 
     # Получаем шаблон страницы по маршруту
-    page_template = get_page(route, user_group)
+    page_template = get_page(route, role)
 
     if page_template:
         print(f"{Fore.GREEN}Отображаем страницу: {route}{Style.RESET_ALL}")
@@ -154,7 +154,7 @@ def main(page: Page):
     page.on_route_change = on_route_change
 
     # Устанавливаем группу пользователя в сессии (можно настраивать через авторизацию)
-    page.session.set("user_group", "all")  # Группу можно изменить на "admin" или другую
+    page.session.set("role", "all")  # Группу можно изменить на "admin" или другую
 
     # Запуск роутера
     router(page)
