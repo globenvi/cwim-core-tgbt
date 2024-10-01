@@ -1,24 +1,45 @@
-from flet import *
+# admin.py
+from flet import Page, AppBar, Column, Text, Row, Container, IconButton, icons, NavigationRail
 
-from services.DatabaseService import JSONService
+def tpl_admin(page: Page):
+    page.title = "Admin Panel"
+    page.vertical_alignment = "start"
 
-def tpl_admin(page):
-    def on_delete_user(e):
-        user_item = e.control.data
-        page.controls[1].controls.remove(user_item)
-        page.update()
-    db_service = JSONService()
-    users = db_service.read("users")
+    # Header
+    header = AppBar(
+        title=Text("Admin Panel"),
+        bgcolor="#1976D2",
+        color="#FFFFFF"
+    )
 
-    user_list = ListView(controls=[
-        Row([
-            Text(user, size=20),
-            IconButton(icons.DELETE, data=user, on_click=on_delete_user)
-        ]) for user in users
-    ])
+    # Side Menu (Navigation Rail)
+    side_menu = NavigationRail(
+        extended=True,
+        destinations=[
+            icons.NavigationRailDestination(icon=icons.DASHBOARD, label="Dashboard"),
+            icons.NavigationRailDestination(icon=icons.SETTINGS, label="Settings"),
+            icons.NavigationRailDestination(icon=icons.PERSON, label="Profile"),
+            icons.NavigationRailDestination(icon=icons.LOGOUT, label="Logout"),
+        ],
+        selected_index=0,  # Начальный индекс выбранного пункта
+    )
 
-    page.controls.append(Column([
-        Text("Административная панель", size=30),
-        Text("Здесь вы можете управлять пользователями.", size=20),
-        user_list
-    ]))
+    # Content area
+    content = Column(
+        controls=[
+            Text("Welcome to the Admin Panel!", size=24),
+            Text("Here you can manage users and settings.", size=16),
+        ],
+        alignment="center",
+        scroll=True,
+    )
+
+    # Footer
+    footer = Container(
+        content=Text("© 2024 Admin Panel"),
+        padding=10,
+        alignment="center"
+    )
+
+    # Добавляем компоненты на страницу
+    page.add(header, Row([side_menu, content]), footer)
