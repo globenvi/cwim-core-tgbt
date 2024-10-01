@@ -9,7 +9,7 @@ def tpl_index(page):
         page.update()
 
     page.appbar = AppBar(
-        leading=Icon(icons.PALETTE),
+        leading=IconButton(icons.MENU),
         leading_width=40,
         title=Text("AppBar Example", color=colors.ON_PRIMARY),
         center_title=False,
