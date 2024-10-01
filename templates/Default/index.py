@@ -11,7 +11,7 @@ def tpl_index(page):
     page.appbar = AppBar(
         leading=Icon(icons.PALETTE),
         leading_width=40,
-        title=Text("AppBar Example"),
+        title=Text("AppBar Example", color=colors.ON_PRIMARY),
         center_title=False,
         bgcolor=colors.PRIMARY,
         actions=[
