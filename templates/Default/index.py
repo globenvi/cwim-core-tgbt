@@ -9,8 +9,8 @@ def tpl_index(page: Page):
         color="#FFFFFF"
     )
 
-    def handler_menu_click(e):
-        print(f"Menu item clicked: {e.control.label}")
+    def menu_clicked(e):
+        print(f"Menu item clicked: {e.control.selected_index}")
 
     rail = NavigationRail(
         selected_index=0,
@@ -33,7 +33,7 @@ def tpl_index(page: Page):
                 icon=icons.LOGOUT, selected_icon=icons.LOGOUT, label="Logout"
             ),
         ],
-        on_change=lambda e: handler_menu_click,
+        on_change=lambda e: menu_clicked),
     )
 
     content = Column(
