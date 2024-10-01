@@ -42,12 +42,14 @@ def tpl_login(page: Page):
             psqd = user_data.get('password')
             if  login == user_login_input.value and psqd == user_password_input.value:
                 success_snack(e, 'Вы успешно авторизовались!')
+                page.session.set('id', user_data.get('id'))
                 page.session.set('login', user_data.get('login'))
                 page.session.set('email', user_data.get('email'))
                 page.session.set('user_group', user_data.get('user_group'))
                 page.session.set('password', user_data.get('password'))
                 page.go('/index')
                 if check_remember.value:
+                    page.client_storage.set('id', user_data.get('id'))
                     page.client_storage.set('login', user_data.get('login'))
                     page.client_storage.set('email', user_data.get('email'))
                     page.client_storage.set('user_group', user_data.get('user_group'))
