@@ -72,6 +72,7 @@ def tpl_admin(page: Page):
                                         alignment=alignment.top_left,
                                         border_radius=5,
                                         height=400,
+                                        width=800,
                                         content=DataTable(
                                             show_checkbox_column=True,
                                             sort_ascending=True,
