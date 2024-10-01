@@ -33,7 +33,7 @@ def tpl_index(page: Page):
                 icon=icons.LOGOUT, selected_icon=icons.LOGOUT, label="Logout"
             ),
         ],
-        on_change=lambda e: menu_clicked,
+        on_change=lambda e: menu_clicked(e),
     )
 
     content = Column(
