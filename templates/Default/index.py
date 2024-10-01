@@ -41,9 +41,9 @@ def tpl_index(page):
             # ),
             Divider(thickness=2),
             NavigationDrawerDestination(
-                icon_content=Icon(icons.VERIFIED_USER),
+                icon_content=Icon(icons.PERSON),
                 label="Профиль",
-                selected_icon=icons.VERIFIED_USER,
+                selected_icon=icons.PERSON,
 
             ),
             NavigationDrawerDestination(
