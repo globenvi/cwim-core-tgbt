@@ -41,8 +41,8 @@ def tpl_index(page):
                     bgcolor=colors.GREEN,
                     padding=20,
                     expand=True,
+                    bottom=0
                 )
             ],
-            bottom=0
         )
     )
