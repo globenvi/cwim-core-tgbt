@@ -12,7 +12,8 @@ def tpl_index(page):
                     border_radius=5,
                     bgcolor=colors.RED,
                     padding=20,
-                    margin=20
+                    margin=20,
+                    rtl=True,
                 )
             ]
         )
