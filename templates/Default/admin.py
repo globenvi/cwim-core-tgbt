@@ -53,7 +53,6 @@ def tpl_admin(page: Page):
             update_body_content([
                 Container(
                     expand=True,
-                    height=1300,
                     alignment=alignment.top_left,
                     content=Column(
                         [
@@ -63,7 +62,8 @@ def tpl_admin(page: Page):
                                 margin=5,
                                 expand=True,
                                 alignment=alignment.top_left,
-                                border_radius=5
+                                border_radius=5,
+                                height=400
                             ),
                             Row(
                                 [
@@ -73,7 +73,8 @@ def tpl_admin(page: Page):
                                         margin=5,
                                         expand=True,
                                         alignment=alignment.top_left,
-                                        border_radius=5
+                                        border_radius=5,
+                                        height=300
                                     ),
                                     Container(
                                         bgcolor=colors.ON_SECONDARY,
@@ -81,7 +82,8 @@ def tpl_admin(page: Page):
                                         margin=5,
                                         expand=True,
                                         alignment=alignment.top_left,
-                                        border_radius=5
+                                        border_radius=5,
+                                        height=300
                                     )
                                 ]
                             )
