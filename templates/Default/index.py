@@ -8,16 +8,7 @@ def tpl_index(page):
         e.control.checked = not e.control.checked
         page.update()
 
-    def handle_dismissal(e):
-        page.add(Text("Drawer dismissed"))
-
-    def handle_change(e):
-        page.add(Text(f"Selected Index changed: {e.selected_index}"))
-        # page.close(drawer)
-
     drawer = NavigationDrawer(
-        on_dismiss=handle_dismissal,
-        on_change=handle_change,
         controls=[
             Container(height=12),
             NavigationDrawerDestination(
