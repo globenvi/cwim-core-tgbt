@@ -52,24 +52,26 @@ def tpl_admin(page: Page):
 
             update_body_content([
                 Container(
-                    bgcolor=colors.ON_SECONDARY,
-                    padding=20,
                     expand=True,
                     height=750,
                     alignment=alignment.top_left,
                     content=Column(
                         [
                             Container(
-                                bgcolor=colors.RED,
-                                padding=10,
+                                bgcolor=colors.ON_SECONDARY,
+                                padding=5,
+                                margin=5,
                                 expand=True,
                                 alignment=alignment.top_left,
+                                border_radius=5
                             ),
                             Container(
-                                bgcolor=colors.RED,
-                                padding=10,
+                                bgcolor=colors.ON_SECONDARY,
+                                padding=5,
+                                margin=5,
                                 expand=True,
                                 alignment=alignment.top_left,
+                                border_radius=5
                             )
                         ]
                     )
