@@ -16,5 +16,24 @@ def tpl_index(page):
                     expand=True,
                 )
             ]
+        ),
+        Row(
+            [
+                Container(
+                    border_radius=5,
+                    bgcolor=colors.BLUE,
+                    width=300,
+                    padding=20,
+                    margin=20,
+                    expand=True,
+                ),
+                Container(
+                    border_radius=5,
+                    bgcolor=colors.BLUE,
+                    padding=20,
+                    margin=20,
+                    expand=True,
+                )
+            ]
         )
     )
