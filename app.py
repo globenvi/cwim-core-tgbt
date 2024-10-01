@@ -122,11 +122,12 @@ def load_database():
 
 
 def router(page: Page):
-    page.client_storage.clear()
+    page.session.set('route', f'{page.route}')
+    page.session.set('user_group', 'guest')
     route = page.route or "/index"
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
-    user_group = page.session.get("user_group", "guest")
+    user_group = page.session.get('user_group')
     print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
 
     page_template = get_page(route, user_group)
