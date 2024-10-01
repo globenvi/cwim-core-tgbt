@@ -100,6 +100,7 @@ def tpl_admin(page: Page):
                                     ),
                                     Container(
                                         expand=True,
+                                        bgcolor=colors.ON_SECONDARY,
                                         alignment=alignment.top_left,
                                         border_radius=5,
                                         height=400,
