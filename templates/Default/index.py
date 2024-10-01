@@ -5,7 +5,10 @@ def tpl_index(page: Page):
 
     # Функция для возврата на предыдущую страницу
     def go_back(e):
-        page.go(-1)  # Возвращаемся на предыдущую страницу
+        if len(page.history) > 1:  # Проверяем, есть ли предыдущие страницы
+            page.go(-1)  # Возвращаемся на предыдущую страницу
+        else:
+            print("Нет предыдущей страницы для возврата")
 
     # Проверяем, находится ли пользователь на стартовой странице
     is_start_page = page.route in ["/index", "/"]
@@ -13,12 +16,12 @@ def tpl_index(page: Page):
     # AppBar с проверкой на стартовую страницу. Если это не стартовая страница, показываем кнопку "Назад".
     header = AppBar(
         title=Text("SRC CMS"),
-        bgcolor=colors.PRIMARY,
-        color=colors.ON_PRIMARY,
+        bgcolor="#1976D2",
+        color="#FFFFFF",
         leading=IconButton(  # Кнопка "Назад", прикреплённая к левой части AppBar
             icon=icons.ARROW_BACK,
             tooltip="Назад",
-            on_click=go_back  # Обработчик нажатия для возврата назад
+            on_click=go_back,  # Обработчик нажатия для возврата назад
         ) if not is_start_page else None,  # Скрываем кнопку "Назад" на стартовой странице
         actions=[  # Элементы справа
             IconButton(
