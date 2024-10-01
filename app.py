@@ -11,7 +11,7 @@ init(autoreset=True)
 TEMPLATES_DIR = "./cwim-core-tgbt/templates/Default"
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 CONFIG_FILE = "./cwim-core-tgbt/config.json"
-DATABASE_FILE = "./datafiles/database.json"
+DATABASE_FILE = "./cwim-core-tgbt/datafiles/database.json"
 
 # Переменная для хранения состояния отладки
 DEBUG_MODE = False
