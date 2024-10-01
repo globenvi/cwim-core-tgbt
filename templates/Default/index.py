@@ -13,7 +13,7 @@ def tpl_index(page):
         leading_width=40,
         title=Text("AppBar Example"),
         center_title=False,
-        bgcolor=colors.SURFACE_VARIANT,
+        bgcolor=colors.PRIMARY,
         actions=[
             IconButton(icons.WB_SUNNY_OUTLINED),
             IconButton(icons.FILTER_3),
