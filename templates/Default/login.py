@@ -55,6 +55,10 @@ def tpl_login(page: Page):
                     page.client_storage.set('user_group', user_data.get('user_group'))
                     page.client_storage.set('route', f'{page.route}')
                     page.go('/index')
+            else:
+                err_snack(e, 'Пользователь не найден или не верно веден логин, или пароль!')
+                page.update()
+                return 
 
 
     submit_button = CupertinoFilledButton('Войти', on_click=validate_form, alignment=center)
