@@ -30,20 +30,19 @@ def tpl_index(page):
                 #border_radius=5,
                 #margin=10,
                 #bgcolor=colors.ON_PRIMARY
-            Container(
-                content=Row(
-                    [
-                        ExpansionTile(
-                            title=Text("ExpansionTile 1"),
-                            subtitle=Text("Trailing expansion arrow icon"),
-                            affinity=TileAffinity.PLATFORM,
-                            maintain_state=True,
-                            collapsed_text_color=colors.RED,
-                            text_color=colors.RED,
-                            controls=[ListTile(title=Text("This is sub-tile number 1"))],
-                        )
-                    ]
-                )
+            ExpansionTile(
+                title=Text("ExpansionTile 1"),
+                subtitle=Text("Trailing expansion arrow icon"),
+                opacity=3,
+                affinity=TileAffinity.PLATFORM,
+                maintain_state=True,
+                collapsed_text_color=colors.ON_PRIMARY,
+                text_color=colors.ON_PRIMARY,
+                controls=[
+                    ListTile(
+                        title=Text("This is sub-tile number 1")
+                    )
+                ],
             ),
             Divider(thickness=2),
             NavigationDrawerDestination(
