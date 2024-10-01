@@ -4,24 +4,52 @@ from flet import *
 def tpl_index(page: Page):
     page.vertical_alignment = "start"
 
+    # Получаем текущие настройки темы и основной цвет из сессии
+    is_dark_mode = page.session.get('is_dark_mode', True)  # По умолчанию темная тема
+    primary_color = page.session.get('primary_color', colors.PRIMARY)  # По умолчанию основной цвет
+
+    def toggle_theme(e):
+        nonlocal is_dark_mode
+        is_dark_mode = not is_dark_mode
+        page.session.set('is_dark_mode', is_dark_mode)
+        page.theme_mode = "dark" if is_dark_mode else "light"
+        page.update()
+
+    def change_palette(e):
+        nonlocal primary_color
+        # Пример смены палитры
+        primary_color = colors.GREEN if primary_color == colors.PRIMARY else colors.PRIMARY
+        page.session.set('primary_color', primary_color)
+        page.update()
+
     user_group = page.session.get('user_group')
 
     header = AppBar(
         title=Text("SRC CMS"),
-        bgcolor=colors.PRIMARY,
+        bgcolor=primary_color,  # Используем основной цвет из сессии
         color=colors.ON_PRIMARY,
         actions=[  # Элементы справа
+            IconButton(
+                icon=icons.LIGHT_MODE if is_dark_mode else icons.DARK_MODE,
+                tooltip="Переключить тему",
+                on_click=toggle_theme
+            ),
+            IconButton(
+                icon=icons.PALETTE,
+                tooltip="Сменить цветовую палитру",
+                on_click=change_palette
+            ),
             IconButton(
                 icon=icons.PERSON,
                 tooltip="Профиль",
                 on_click=lambda e: page.go("/profile"),
-                visible=False if user_group == 'guest' else True # Укажите путь к странице профиля
+                visible=False if user_group == 'guest' else True  # Укажите путь к странице профиля
             ),
             IconButton(
                 icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
                 tooltip="Админ Панель",
                 on_click=lambda e: page.go("/admin"),
-                visible=False if user_group != 'admin' else True # Укажите путь к админ панели
+                visible=False if user_group != 'admin' else True  # Укажите путь к админ панели
             ),
         ],
     )
@@ -32,7 +60,7 @@ def tpl_index(page: Page):
                 page.session.clear()
                 page.client_storage.clear()
                 page.go("/login")
-                page.go('/index')# Переходим на страницу авторизации
+                page.go('/index')  # Переходим на страницу авторизации
                 page.update()
             else:
                 page.go("/login")  # Переходим на страницу авторизации
@@ -46,7 +74,6 @@ def tpl_index(page: Page):
             page.go("/mutes")  # Переходим на страницу списка Мутов/Гагов
         if e.control.selected_index == 4:  # Кнопка "Админ-лист"
             page.go("/admin_list")  # Переходим на страницу админ-листа
-
 
     rail = NavigationRail(
         destinations=[
@@ -75,7 +102,6 @@ def tpl_index(page: Page):
                 selected_icon=icons.STAR_HALF,
                 label="Админ-лист",
             ),
-
             NavigationRailDestination(
                 icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,  # Меняем иконку в зависимости от группы
                 selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
