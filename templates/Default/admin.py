@@ -67,6 +67,8 @@ def tpl_admin(page: Page):
                                 content=Container(
                                     bgcolor=colors.ON_PRIMARY,
                                     padding=10,
+                                    height=50,
+                                    content=Text("Список Пользователей", size=18)
                                 )
                             ),
                             Row(
