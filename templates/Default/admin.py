@@ -73,7 +73,6 @@ def tpl_admin(page: Page):
 
     return Column(
         controls=[
-            header,
             Row(
                 [
                     rail,
