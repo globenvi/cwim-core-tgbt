@@ -5,7 +5,7 @@ def tpl_index(page: Page):
     page.vertical_alignment = "start"
 
     header = AppBar(
-        title=Text("Home"),
+        title=Text("SRC CMS"),
         bgcolor="#1976D2",
         color="#FFFFFF"
     )
@@ -19,7 +19,7 @@ def tpl_index(page: Page):
         group_alignment=-0.9,
         destinations=[
             NavigationRailDestination(
-                icon=icons.HOME, selected_icon=icons.HOME, label="Home"
+                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED, selected_icon=icons.ADMIN_PANEL_SETTINGS_ROUNDED, label="Админ Панель"
             ),
             NavigationRailDestination(
                 icon=icons.PERSON, selected_icon=icons.PERSON, label="Profile"
@@ -36,8 +36,7 @@ def tpl_index(page: Page):
 
     content = Column(
         controls=[
-            Text("Welcome to the Home Page!", size=24),
-            Text("Here is some important information.", size=16),
+            Text('Body!')
         ],
         alignment=MainAxisAlignment.CENTER,
         scroll=True,
