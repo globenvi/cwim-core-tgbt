@@ -32,7 +32,8 @@ def tpl_index(page: Page):
             if user_group != "guest":
                 page.session.clear()
                 page.client_storage.clear()
-                page.go("/index")  # Переходим на страницу авторизации
+                page.go("/login")
+                page.go('/index')# Переходим на страницу авторизации
                 page.update()
             else:
                 page.go("/login")  # Переходим на страницу авторизации
