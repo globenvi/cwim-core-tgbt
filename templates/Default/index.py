@@ -1,67 +1,81 @@
 from flet import *
 
 def tpl_index(page: Page):
-    # Флаг для отслеживания состояния меню
-    menu_open = Ref[bool](True)
+    page.title = "Home Page"
+    page.vertical_alignment = "start"
 
-    # Функция для переключения состояния меню
-    def toggle_menu(e):
-        menu_open.value = not menu_open.value
+    # Состояние для управления видимостью бокового меню
+    show_rail = Value(True)
+
+    def toggle_rail(e):
+        show_rail.value = not show_rail.value
         page.update()
 
-    # Определение выдвижного меню
-    menu = NavigationRail(
+    header = AppBar(
+        title=Text("Home"),
+        bgcolor="#1976D2",
+        color="#FFFFFF",
+        actions=[
+            IconButton(
+                icon=icons.MENU,
+                tooltip="Toggle Menu",
+                on_click=toggle_rail,
+            )
+        ]
+    )
+
+    rail = NavigationRail(
         selected_index=0,
         label_type=NavigationRailLabelType.ALL,
         min_width=100,
-        leading=FloatingActionButton(
-            icon=icons.MENU,
-            text="Menu",
-            on_click=toggle_menu,
-        ),
+        min_extended_width=400,
+        leading=FloatingActionButton(icon=icons.CREATE, text="Add"),
         group_alignment=-0.9,
         destinations=[
             NavigationRailDestination(
-                icon=icons.FAVORITE_BORDER,
-                selected_icon=icons.FAVORITE,
-                label="Index",
+                icon=icons.HOME, selected_icon=icons.HOME, label="Home"
             ),
             NavigationRailDestination(
-                icon_content=Icon(icons.BOOKMARK_BORDER),
-                selected_icon_content=Icon(icons.BOOKMARK),
-                label="Profile",
+                icon=icons.PERSON, selected_icon=icons.PERSON, label="Profile"
             ),
             NavigationRailDestination(
-                icon=icons.SETTINGS_OUTLINED,
-                selected_icon_content=Icon(icons.SETTINGS),
-                label_content=Text("Settings"),
+                icon=icons.SETTINGS_OUTLINED, selected_icon=icons.SETTINGS, label="Settings"
+            ),
+            NavigationRailDestination(
+                icon=icons.LOGOUT, selected_icon=icons.LOGOUT, label="Logout"
             ),
         ],
         on_change=lambda e: print("Selected destination:", e.control.selected_index),
+        width=show_rail.value and 200 or 0  # Устанавливаем ширину в зависимости от видимости
     )
 
-    # Добавляем контент страницы
-    content = Column([
-        Text("Welcome to the Home Page!", size=30),
-        Text("Here you can find various functionalities."),
-        Text("Use the navigation menu to switch between pages."),
-    ])
+    content = Column(
+        controls=[
+            Text("Welcome to the Home Page!", size=24),
+            Text("Here is some important information.", size=16),
+        ],
+        alignment=MainAxisAlignment.CENTER,
+        scroll=True,
+        expand=True,
+    )
 
-    # Основная структура страницы
+    footer = Container(
+        content=Text("© 2024 Home Page"),
+        padding=10,
+        alignment=alignment.center
+    )
+
     page.add(
+        header,
         Row(
             [
-                Column(
-                    [
-                        menu if menu_open.value else Container(),
-                        VerticalDivider(width=1),
-                        content,
-                    ],
-                    expand=True,
-                ),
+                rail,
+                VerticalDivider(width=1),
+                content,
             ],
             expand=True,
-        )
+        ),
+        footer
     )
 
     content = Column(
