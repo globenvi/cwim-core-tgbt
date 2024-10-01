@@ -17,20 +17,31 @@ def tpl_index(page: Page):
     rail = NavigationRail(
         destinations=[
             NavigationRailDestination(
-                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
-                selected_icon=icons.ADMIN_PANEL_SETTINGS_ROUNDED,
-                label="Админ Панель"
+                icon=icons.HOME,
+                selected_icon=icons.HOME,
+                label="Главная"
             ),
             NavigationRailDestination(
-                icon=icons.PERSON,
-                selected_icon=icons.PERSON,
-                label="Profile"
+                icon=icons.ROOM_SERVICE,
+                selected_icon=icons.ROOM_SERVICE,
+                label="Серверы"
             ),
             NavigationRailDestination(
-                icon=icons.SETTINGS_OUTLINED,
-                selected_icon=icons.SETTINGS,
-                label="Settings"
+                icon=icons.LOCK,
+                selected_icon=icons.LOCK,
+                label="Список банов"
             ),
+            NavigationRailDestination(
+                icon=icons.VOLUME_MUTE,
+                selected_icon=icons.VOLUME_MUTE,
+                label="Список Мутов/Гагов"
+            ),
+            NavigationRailDestination(
+                icon=icons.LIST,
+                selected_icon=icons.LIST,
+                label="Админ-лист"
+            ),
+
             NavigationRailDestination(
                 icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,  # Меняем иконку в зависимости от группы
                 selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
