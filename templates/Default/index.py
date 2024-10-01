@@ -3,22 +3,23 @@ from flet import *
 def tpl_index(page):
     page.title = 'Главная страница'
     page.theme_mode = ThemeMode.SYSTEM
-    page.color = colors.ON_PRIMARY
 
-    def handle_expansion_tile_change(e):
-        page.open(
-            SnackBar(
-                Text(f"ExpansionTile was {'expanded' if e.data == 'true' else 'collapsed'}"),
-                duration=1000,
+    def handle_change(e: ft.ControlEvent):
+        print(f"change on panel with index {e.data}")
+
+    panel = ExpansionPanelList(
+        expand_icon_color=colors.AMBER,
+        elevation=8,
+        divider_color=colors.AMBER,
+        on_change=handle_change,
+        controls=[
+            ExpansionPanel(
+                # has no header and content - placeholders will be used
+                bgcolor=colors.BLUE_400,
+                expanded=True,
             )
-        )
-        if e.control.trailing:
-            e.control.trailing.name = (
-                icons.ARROW_DROP_DOWN
-                if e.control.trailing.name == icons.ARROW_DROP_DOWN_CIRCLE
-                else icons.ARROW_DROP_DOWN_CIRCLE
-            )
-            page.update()
+        ]
+    )
 
     def check_item_clicked(e):
         e.control.checked = not e.control.checked
@@ -27,15 +28,11 @@ def tpl_index(page):
     drawer = NavigationDrawer(
         controls=[
             Container(height=12),
-            ExpansionTile(
-                title=Text("ExpansionTile 1"),
-                subtitle=Text("Trailing expansion arrow icon"),
-                affinity=TileAffinity.PLATFORM,
-                maintain_state=True,
-                collapsed_text_color=colors.RED,
-                text_color=colors.RED,
-                controls=[ListTile(title=Text("This is sub-tile number 1"))],
-            ),
+            ExpansionPanel(
+                bgcolor=colors.ON_PRIMARY,
+                header=ListTile(title=Text(f"Panel name")),
+            )
+            ,
             Divider(thickness=2),
             NavigationDrawerDestination(
                 icon_content=Icon(icons.MAIL_OUTLINED),
