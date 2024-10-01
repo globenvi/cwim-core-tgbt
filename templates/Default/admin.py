@@ -21,10 +21,26 @@ def tpl_admin(page: Page):
                 icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
                 tooltip="Админ Панель",
                 on_click=lambda e: page.go("/admin"),
-                visible=False if user_group != 'admin' else True  # Укажите путь к админ панели
+                visible=False if user_group != 'admin' else True
             ),
         ],
     )
+
+    # Начальное содержимое админки
+    body_content = Column(
+        controls=[
+            Text('Добро пожаловать в админ-панель!', size=20),
+            Text('Здесь вы можете управлять системой.', size=16)
+        ],
+        alignment=MainAxisAlignment.START,
+        scroll=True,
+        expand=True,
+    )
+
+    def update_body_content(content_controls):
+        body_content.controls.clear()  # Очистка текущего содержимого
+        body_content.controls.extend(content_controls)  # Обновление содержимого
+        page.update()
 
     def menu_clicked(e):
         if e.control.selected_index == 5:  # Кнопка "Logout"
@@ -34,13 +50,14 @@ def tpl_admin(page: Page):
             else:
                 page.go("/login")  # Переход на страницу авторизации
         elif e.control.selected_index == 0:  # Кнопка "Управление пользователями"
-            pass
+            users = ["User1", "User2", "User3"]  # Пример списка пользователей
+            update_body_content([Text(f"Список пользователей:", size=18)] + [Text(user) for user in users])
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
-            pass # Переход на страницу активных сессий
+            update_body_content([Text("Список активных сессий", size=18)])  # Заменить содержимым активных сессий
         elif e.control.selected_index == 2:  # Кнопка "Управление модулями"
-            pass  # Переход на страницу управления модулями
+            update_body_content([Text("Управление модулями", size=18)])  # Заменить содержимым для модулей
         elif e.control.selected_index == 3:  # Кнопка "Настройки системы"
-            pass # Переход на страницу настроек системы
+            update_body_content([Text("Настройки системы", size=18)])  # Заменить содержимым настроек
 
     # Навигационное меню
     rail = NavigationRail(
@@ -74,17 +91,6 @@ def tpl_admin(page: Page):
         on_change=lambda e: menu_clicked(e),
     )
 
-    # Основное содержимое админки
-    content = Column(
-        controls=[
-            Text('Добро пожаловать в админ-панель!', size=20),
-            Text('Здесь вы можете управлять системой.', size=16)
-        ],
-        alignment=MainAxisAlignment.START,
-        scroll=True,
-        expand=True,
-    )
-
     footer = Container(
         content=Text("© 2024 Admin Panel"),
         padding=10,
@@ -97,12 +103,11 @@ def tpl_admin(page: Page):
             Row(
                 [
                     rail,
-                    VerticalDivider(width=1),
-                    content,
+                    VerticalDivider(width=2),
+                    body_content,
                 ],
                 expand=True,
             ),
             footer
         ]
     )
-
