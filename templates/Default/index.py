@@ -3,6 +3,7 @@ from flet import *
 def tpl_index(page):
     page.title = 'Главная страница'
     page.theme_mode = ThemeMode.SYSTEM
+    page.color = colors.ON_PRIMARY
 
     def handle_expansion_tile_change(e):
         page.open(
