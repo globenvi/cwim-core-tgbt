@@ -55,8 +55,24 @@ def tpl_admin(page: Page):
                     bgcolor=colors.ON_SECONDARY,
                     padding=20,
                     expand=True,
-                    height=700,
+                    height=750,
                     alignment=alignment.top_left,
+                    content=Row(
+                        [
+                            Container(
+                                bgcolor=colors.RED,
+                                padding=10,
+                                expand=True,
+                                alignment=alignment.top_left,
+                            ),
+                            Container(
+                                bgcolor=colors.RED,
+                                padding=10,
+                                expand=True,
+                                alignment=alignment.top_left,
+                            )
+                        ]
+                    )
                 )
             ])
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
