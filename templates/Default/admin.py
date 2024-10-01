@@ -97,9 +97,11 @@ def tpl_admin(page: Page):
                             ),
                             Container(
                                 bgcolor=colors.ON_SECONDARY,
+                                padding=10,
                                 expand=True,
                                 alignment=alignment.top_left,
                                 border_radius=5,
+                            )
                         ]
                     )
                 )
