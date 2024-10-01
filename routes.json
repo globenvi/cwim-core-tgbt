@@ -3,7 +3,7 @@
         "module": "index",
         "template": "tpl_index",
         "enabled": true,
-        "group_access": "user"
+        "group_access": "all"
     },
     "/register": {
         "module": "register",
