@@ -25,20 +25,25 @@ def tpl_index(page):
 
     drawer = NavigationDrawer(
         controls=[
+            Container(height=12),
+                #padding=10,
+                #border_radius=5,
+                #margin=10,
+                #bgcolor=colors.ON_PRIMARY
             Container(
-                padding=10,
-                border_radius=5,
-                margin=10,
-                bgcolor=colors.ON_PRIMARY
-            ),
-            ExpansionTile(
-                title=Text("ExpansionTile 1"),
-                subtitle=Text("Trailing expansion arrow icon"),
-                affinity=TileAffinity.PLATFORM,
-                maintain_state=True,
-                collapsed_text_color=colors.RED,
-                text_color=colors.RED,
-                controls=[ListTile(title=Text("This is sub-tile number 1"))],
+                content=Row(
+                    [
+                        ExpansionTile(
+                            title=Text("ExpansionTile 1"),
+                            subtitle=Text("Trailing expansion arrow icon"),
+                            affinity=TileAffinity.PLATFORM,
+                            maintain_state=True,
+                            collapsed_text_color=colors.RED,
+                            text_color=colors.RED,
+                            controls=[ListTile(title=Text("This is sub-tile number 1"))],
+                        )
+                    ]
+                )
             ),
             Divider(thickness=2),
             NavigationDrawerDestination(
