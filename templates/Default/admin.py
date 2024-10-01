@@ -63,7 +63,11 @@ def tpl_admin(page: Page):
                                 expand=True,
                                 alignment=alignment.top_left,
                                 border_radius=5,
-                                height=400
+                                height=400,
+                                content=Container(
+                                    bgcolor=colors.ON_PRIMARY,
+                                    padding=10,
+                                )
                             ),
                             Row(
                                 [
