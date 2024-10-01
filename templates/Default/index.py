@@ -8,8 +8,17 @@ def tpl_index(page: Page):
         bgcolor="#1976D2",
         color="#FFFFFF",
         actions=[
-            CupertinoFilledButton(text='Профиль')
-        ]
+            IconButton(
+                icon=icons.PERSON,
+                tooltip="Профиль",
+                on_click=lambda e: page.go("/profile")  # Укажите путь к странице профиля
+            ),
+            IconButton(
+                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
+                tooltip="Админ Панель",
+                on_click=lambda e: page.go("/admin")  # Укажите путь к админ панели
+            ),
+        ],
     )
 
     def menu_clicked(e):
