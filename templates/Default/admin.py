@@ -8,8 +8,8 @@ def tpl_admin(page):
         page.controls[1].controls.remove(user_item)
         page.update()
     db_service = JSONService()
-    users = db_service.find_all("users")
-    
+    users = db_service.read("users")
+
     user_list = ListView(controls=[
         Row([
             Text(user, size=20),
