@@ -53,6 +53,7 @@ def tpl_admin(page: Page):
             update_body_content([
                 Container(
                     expand=True,
+                    height=1300,
                     alignment=alignment.top_left,
                     content=Column(
                         [
