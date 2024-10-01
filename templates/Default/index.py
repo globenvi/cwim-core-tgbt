@@ -12,19 +12,29 @@ def tpl_index(page: Page):
     def menu_clicked(e):
         print(f"Menu item clicked: {e.control.selected_index}")
 
+    user_group = page.session.get('user_group')  # Получаем группу пользователя
+
     rail = NavigationRail(
         destinations=[
             NavigationRailDestination(
-                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED, selected_icon=icons.ADMIN_PANEL_SETTINGS_ROUNDED, label="Админ Панель"
+                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
+                selected_icon=icons.ADMIN_PANEL_SETTINGS_ROUNDED,
+                label="Админ Панель"
             ),
             NavigationRailDestination(
-                icon=icons.PERSON, selected_icon=icons.PERSON, label="Profile"
+                icon=icons.PERSON,
+                selected_icon=icons.PERSON,
+                label="Profile"
             ),
             NavigationRailDestination(
-                icon=icons.SETTINGS_OUTLINED, selected_icon=icons.SETTINGS, label="Settings"
+                icon=icons.SETTINGS_OUTLINED,
+                selected_icon=icons.SETTINGS,
+                label="Settings"
             ),
             NavigationRailDestination(
-                icon=icons.LOGOUT, selected_icon=icons.LOGOUT, label="Logout" if page.session.get('user_group') != "guest" else "Войти"
+                icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,  # Меняем иконку в зависимости от группы
+                selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
+                label="Logout" if user_group != "guest" else "Войти"  # Меняем текст в зависимости от группы
             ),
         ],
         on_change=lambda e: menu_clicked(e),
