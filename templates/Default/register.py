@@ -39,8 +39,10 @@ def tpl_register(page: Page):
 
     async def collect_data():
         db_service = JSONService()
+        pb.value = 50
 
         if not db_service.find_one('users', {'login': user_login_input.value}):
+            pb.value = 75
             db_service.create('users', {
                 'login': user_login_input.value,
                 'password': user_password_input.value,
@@ -48,6 +50,7 @@ def tpl_register(page: Page):
                 'role': 'user',  # Значение по умолчанию
                 'telegram_id': user_telegramid_input.value if user_telegramid_checkbox.value else None,
                 'registration_date': time.strftime('%Y-%m-%d %H:%M:%S')})
+            pb.value = 100
             page.go('/login')
 
 
@@ -73,7 +76,9 @@ def tpl_register(page: Page):
 
             pb.visible = True
             page.update()
+            pb.value = 10
             await collect_data()
+            pb.value = 35
             success_snack(e, 'Регистрация прошла успешно!')
 
 
