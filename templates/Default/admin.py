@@ -56,7 +56,8 @@ def tpl_admin(page: Page):
                     bgcolor=colors.ON_SECONDARY,
                     padding=20,
                     expand=True,
-                    height=300
+                    height=300,
+                    alignment=alignment.top_left
                 )
             ])
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
