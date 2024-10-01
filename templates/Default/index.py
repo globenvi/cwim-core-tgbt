@@ -21,10 +21,15 @@ def tpl_index(page: Page):
         ],
     )
 
-    def menu_clicked(e):
-        print(f"Menu item clicked: {e.control.selected_index}")
-
     user_group = page.session.get('user_group')  # Получаем группу пользователя
+
+    def menu_clicked(e):
+        if e.control.selected_index == 5:  # Кнопка "Logout"
+            if user_group != "guest":
+                page.session.clear()  # Удаляем значения в сессии
+                page.go("/index")  # Переходим на страницу авторизации
+            else:
+                page.go("/login")  # Переходим на страницу авторизации
 
     rail = NavigationRail(
         destinations=[
@@ -57,7 +62,7 @@ def tpl_index(page: Page):
             NavigationRailDestination(
                 icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,  # Меняем иконку в зависимости от группы
                 selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
-                label="Logout" if user_group != "guest" else "Войти"  # Меняем текст в зависимости от группы
+                label="Logout" if user_group != "guest" else "Войти",  # Меняем текст в зависимости от группы
             ),
         ],
         on_change=lambda e: menu_clicked(e),
