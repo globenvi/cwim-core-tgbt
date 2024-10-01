@@ -33,7 +33,6 @@ def tpl_index(page):
             ExpansionTile(
                 title=Text("ExpansionTile 1"),
                 subtitle=Text("Trailing expansion arrow icon"),
-                opacity=3,
                 affinity=TileAffinity.PLATFORM,
                 maintain_state=True,
                 collapsed_text_color=colors.ON_PRIMARY,
