@@ -57,7 +57,7 @@ def tpl_admin(page: Page):
                     expand=True,
                     height=750,
                     alignment=alignment.top_left,
-                    content=Row(
+                    content=Column(
                         [
                             Container(
                                 bgcolor=colors.RED,
