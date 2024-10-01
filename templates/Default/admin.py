@@ -64,43 +64,47 @@ def tpl_admin(page: Page):
                                 border_radius=5,
                                 content=Text("Управление пользователями", size=18, color=colors.ON_PRIMARY)
                             ),
-                            Container(
-                                bgcolor=colors.ON_SECONDARY,
-                                expand=True,
-                                alignment=alignment.top_left,
-                                border_radius=5,
-                                height=400,
-                                content=DataTable(
-                                    columns=[
-                                        DataColumn(Text("ID")),
-                                        DataColumn(Text("Логин")),
-                                        DataColumn(Text("Email")),
-                                        DataColumn(Text("Telegram ID")),
-                                        DataColumn(Text("Группа")),
-                                        DataColumn(Text("Дата регистрации")),
-                                        DataColumn(Text("Действия"))
-                                    ],
-                                    rows=[
-                                        DataRow(
-                                            cells=[
-                                                DataCell(Text("1")),
-                                                DataCell(Text("dottenv")),
-                                                DataCell(Text("alexgolubev1404@gmail.com")),
-                                                DataCell(Text("1234567890")),
-                                                DataCell(Text("admin")),
-                                                DataCell(Text("2022-01-01 12:00:00")),
-                                                DataCell(Container(content=IconButton(icon=icons.REMOVE_RED_EYE)))
+                            Column(
+                                [
+                                    Container(
+                                        bgcolor=colors.ON_SECONDARY,
+                                        expand=True,
+                                        alignment=alignment.top_left,
+                                        border_radius=5,
+                                        height=400,
+                                        content=DataTable(
+                                            columns=[
+                                                DataColumn(Text("ID")),
+                                                DataColumn(Text("Логин")),
+                                                DataColumn(Text("Email")),
+                                                DataColumn(Text("Telegram ID")),
+                                                DataColumn(Text("Группа")),
+                                                DataColumn(Text("Дата регистрации")),
+                                                DataColumn(Text("Действия"))
                                             ],
+                                            rows=[
+                                                DataRow(
+                                                    cells=[
+                                                        DataCell(Text("1")),
+                                                        DataCell(Text("dottenv")),
+                                                        DataCell(Text("alexgolubev1404@gmail.com")),
+                                                        DataCell(Text("1234567890")),
+                                                        DataCell(Text("admin")),
+                                                        DataCell(Text("2022-01-01 12:00:00")),
+                                                        DataCell(
+                                                            Container(content=IconButton(icon=icons.REMOVE_RED_EYE)))
+                                                    ],
+                                                )
+                                            ]
                                         )
-                                    ]
-                                )
-                            ),
-                            Container(
-                                bgcolor=colors.ON_SECONDARY,
-                                padding=10,
-                                expand=True,
-                                alignment=alignment.top_left,
-                                border_radius=5,
+                                    ),
+                                    Container(
+                                        expand=True,
+                                        alignment=alignment.top_left,
+                                        border_radius=5,
+                                        height=400,
+                                    )
+                                ]
                             )
                         ]
                     )
