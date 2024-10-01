@@ -29,3 +29,4 @@ def tpl_index(page):
     )
 
     page.add(Text("Body!"))
+    user_data = page.client_storage.get('role')
