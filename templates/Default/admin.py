@@ -59,7 +59,6 @@ def tpl_admin(page: Page):
                             Container(
                                 bgcolor=colors.ON_SECONDARY,
                                 padding=5,
-                                margin=5,
                                 expand=True,
                                 alignment=alignment.top_left,
                                 border_radius=5,
@@ -68,7 +67,7 @@ def tpl_admin(page: Page):
                                     bgcolor=colors.PRIMARY,
                                     expand=True,
                                     height=50,
-                                    content=Text("Список Пользователей", size=18, color=colors.ON_PRIMARY)
+                                    content=Text("Список Пользователей", size=15, color=colors.ON_PRIMARY)
                                 )
                             ),
                             Row(
