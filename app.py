@@ -129,7 +129,7 @@ def router(page: Page):
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
     # Получаем группу пользователя (по умолчанию "all")
-    user_group = page.session.get("user_group", "guest")  # Заменяем "all" на "guest"
+    user_group = page.session.get("user_group")  # Заменяем "all" на "guest"
     print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
 
     # Получаем шаблон страницы по маршруту
