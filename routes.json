@@ -9,7 +9,7 @@
         "module": "register",
         "template": "tpl_register",
         "enabled": true,
-        "group_access": "all"
+        "group_access": "guest"
     },
     "/admin": {
         "module": "admin",
@@ -21,6 +21,6 @@
         "module": "login",
         "template": "tpl_login",
         "enabled": true,
-        "group_access": "all"
+        "group_access": "guest"
     }
 }
