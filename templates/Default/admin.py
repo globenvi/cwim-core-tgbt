@@ -1,19 +1,24 @@
-from flet import Column, Text, ElevatedButton, Container
+from flet import *
+
+from services.DatabaseService import JSONService
 
 def tpl_admin(page):
-    # Контент админ-панели
-    content = Container(
-        content=Column(
-            controls=[
-                Text("Админ-панель", size=20, weight="bold"),
-                ElevatedButton("Управление пользователями", on_click=lambda e: page.go("/users")),
-                ElevatedButton("Настройки системы", on_click=lambda e: page.go("/settings")),
-            ],
-            alignment="center"
-        ),
-        alignment="center",
-        width=300,
-        padding=10,
-    )
-    page.controls.append(content)
-    page.update()
+    def on_delete_user(e):
+        user_item = e.control.data
+        page.controls[1].controls.remove(user_item)
+        page.update()
+    db_service = JSONService()
+    users = db_service.find_all("users")
+    
+    user_list = ListView(controls=[
+        Row([
+            Text(user, size=20),
+            IconButton(icons.DELETE, data=user, on_click=on_delete_user)
+        ]) for user in users
+    ])
+
+    page.controls.append(Column([
+        Text("Административная панель", size=30),
+        Text("Здесь вы можете управлять пользователями.", size=20),
+        user_list
+    ]))
