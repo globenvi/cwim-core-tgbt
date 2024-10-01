@@ -15,6 +15,7 @@ def tpl_login(page: Page):
 
     user_login_input = TextField(label='Login')
     user_password_input = TextField(label='Password', password=True)
+    not_account = TextButton('Еще не зарегистрированы?', on_click=lambda e: page.go('/register'))
     check_remember = Checkbox(label='Remember me')
 
     def err_snack(e, err_text):
@@ -66,6 +67,7 @@ def tpl_login(page: Page):
             user_login_input,
             user_password_input,
             check_remember,
+            not_account,
             submit_button
         ],
         alignment=MainAxisAlignment.CENTER
