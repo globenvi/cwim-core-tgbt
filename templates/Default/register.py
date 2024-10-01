@@ -99,7 +99,7 @@ def tpl_register(page: Page):
             border_radius=5,
             margin=10,
             bgcolor=colors.ON_SECONDARY,
-            width=350,
+            width=360,
             content=Column(
                 [
                     Row(
