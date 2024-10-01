@@ -11,8 +11,6 @@ def tpl_index(page):
                 Container(
                     border_radius=5,
                     bgcolor=colors.RED,
-                    width="100%",
-                    height="100%",
                     padding=20,
                     margin=20
                 )
