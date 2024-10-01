@@ -94,7 +94,12 @@ def tpl_admin(page: Page):
                                         )
                                     ]
                                 )
-                            )
+                            ),
+                            Container(
+                                bgcolor=colors.ON_SECONDARY,
+                                expand=True,
+                                alignment=alignment.top_left,
+                                border_radius=5,
                         ]
                     )
                 )
@@ -154,7 +159,6 @@ def tpl_admin(page: Page):
                     body_content,  # Контент расположен сверху
                 ],
                 expand=True,
-                width=800,
             ),
             footer
         ]
