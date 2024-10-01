@@ -33,7 +33,7 @@ def tpl_index(page: Page):
             ),
             NavigationRailDestination(
                 icon=icons.VOLUME_MUTE,
-                selected_icon=icons.VOLUME_MUTE,
+                selected_icon=icons.VOLUME_MUTE_SHARP,
                 label="Список Мутов/Гагов"
             ),
             NavigationRailDestination(
