@@ -47,7 +47,10 @@ def tpl_login(page: Page):
                     page.client_storage.set('user_group', user_data.get('user_group'))
                     page.client_storage.set('login', user_data.get('login'))
                     page.client_storage.set('email', user_data.get('email'))
-                    page.client_storage.set('telegram_id', user_data.get('telegram_id'))
+                    if user_data.get('telegram_id'):
+                        page.client_storage.set('telegram_id', user_data.get('telegram_id'))
+                    else:
+                        page.client_storage.set('telegram_id', False)
                     # Запомнить время последнего входа
                     page.client_storage.set('last_login', time.time())
                 if page.session.get('user_group') != 'guest':
