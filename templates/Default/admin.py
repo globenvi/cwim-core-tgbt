@@ -1,38 +1,92 @@
 from flet import *
 
 def tpl_admin(page: Page):
+    page.title = "Админ Панель"
     page.vertical_alignment = "start"
 
     header = AppBar(
-        title=Text("Admin Panel"),
+        title=Text("Админ Панель SRC CMS"),
         bgcolor="#1976D2",
-        color="#FFFFFF"
-    )
-
-    rail = NavigationRail(
-        selected_index=0,
-        label_type=NavigationRailLabelType.ALL,
-        min_width=100,
-        min_extended_width=400,
-        leading=FloatingActionButton(icon=icons.CREATE, text="Add"),
-        group_alignment=-0.9,
-        destinations=[
-            NavigationRailDestination(icon=icons.DASHBOARD, label="Dashboard"),
-            NavigationRailDestination(icon=icons.PERSON, label="Users"),
-            NavigationRailDestination(icon=icons.SETTINGS_OUTLINED, label="Settings"),
-            NavigationRailDestination(icon=icons.LOGOUT, label="Logout"),
+        color="#FFFFFF",
+        actions=[
+            IconButton(
+                icon=icons.PERSON,
+                tooltip="Профиль",
+                on_click=lambda e: page.go("/profile")  # Переход на страницу профиля
+            ),
+            IconButton(
+                icon=icons.HOME,
+                tooltip="Главная",
+                on_click=lambda e: page.go("/index")  # Переход на главную страницу
+            ),
         ],
-        on_change=lambda e: print("Selected destination:", e.control.selected_index),
     )
 
+    user_group = page.session.get('user_group', 'guest')  # Получаем группу пользователя
+
+    def menu_clicked(e):
+        if e.control.selected_index == 5:  # Кнопка "Logout"
+            if user_group != "guest":
+                page.session.clear()  # Очищаем сессию при выходе
+                page.go("/login")  # Переход на страницу авторизации
+            else:
+                page.go("/login")  # Переход на страницу авторизации
+        elif e.control.selected_index == 0:  # Кнопка "Управление пользователями"
+            page.go("/admin/users")  # Переход на страницу управления пользователями
+        elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
+            page.go("/admin/sessions")  # Переход на страницу активных сессий
+        elif e.control.selected_index == 2:  # Кнопка "Управление модулями"
+            page.go("/admin/modules")  # Переход на страницу управления модулями
+        elif e.control.selected_index == 3:  # Кнопка "Настройки системы"
+            page.go("/admin/settings")  # Переход на страницу настроек системы
+
+    # Навигационное меню
+    rail = NavigationRail(
+        destinations=[
+            NavigationRailDestination(
+                icon=icons.PEOPLE_OUTLINE,
+                selected_icon=icons.PEOPLE,
+                label="Управление пользователями"
+            ),
+            NavigationRailDestination(
+                icon=icons.MONITOR_HEART,
+                selected_icon=icons.MONITOR_HEART,
+                label="Активные сессии"
+            ),
+            NavigationRailDestination(
+                icon=icons.EXTENSION_OUTLINED,
+                selected_icon=icons.EXTENSION,
+                label="Управление модулями"
+            ),
+            NavigationRailDestination(
+                icon=icons.SETTINGS_OUTLINED,
+                selected_icon=icons.SETTINGS,
+                label="Настройки системы"
+            ),
+            NavigationRailDestination(
+                icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
+                selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
+                label="Logout" if user_group != "guest" else "Войти",
+            ),
+        ],
+        on_change=lambda e: menu_clicked(e),
+    )
+
+    # Основное содержимое админки
     content = Column(
         controls=[
-            Text("Welcome to the Admin Panel!", size=24),
-            Text("Here you can manage users and settings.", size=16),
+            Text('Добро пожаловать в админ-панель!', size=20),
+            Text('Здесь вы можете управлять системой.', size=16)
         ],
-        alignment=MainAxisAlignment.CENTER,
+        alignment=MainAxisAlignment.START,
         scroll=True,
         expand=True,
+    )
+
+    footer = Container(
+        content=Text("© 2024 Admin Panel"),
+        padding=10,
+        alignment=alignment.center
     )
 
     return Column(
@@ -46,6 +100,7 @@ def tpl_admin(page: Page):
                 ],
                 expand=True,
             ),
-            Container(content=Text("© 2024 Admin Panel"), padding=10, alignment=alignment.center)
+            footer
         ]
     )
+

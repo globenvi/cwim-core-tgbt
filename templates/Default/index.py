@@ -41,7 +41,7 @@ def tpl_index(page: Page):
         if e.control.selected_index == 4:  # Кнопка "Админ-лист"
             page.go("/admin_list")  # Переходим на страницу админ-листа
 
-            
+
     rail = NavigationRail(
         destinations=[
             NavigationRailDestination(
@@ -67,7 +67,7 @@ def tpl_index(page: Page):
             NavigationRailDestination(
                 icon=icons.STAR_HALF,
                 selected_icon=icons.STAR_HALF,
-                label="Админ-лист"
+                label="Админ-лист",
             ),
 
             NavigationRailDestination(
