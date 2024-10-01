@@ -57,12 +57,12 @@ def tpl_admin(page: Page):
                     content=Column(
                         [
                             Container(
-                                bgcolor=colors.SECONDARY,
+                                bgcolor=colors.PRIMARY,
                                 padding=10,
                                 expand=True,
                                 alignment=alignment.top_left,
                                 border_radius=5,
-                                content=Text("Управление пользователями", size=18, color=colors.ON_SECONDARY)
+                                content=Text("Управление пользователями", size=18, color=colors.ON_PRIMARY)
                             ),
                             Container(
                                 bgcolor=colors.ON_SECONDARY,
@@ -70,12 +70,6 @@ def tpl_admin(page: Page):
                                 alignment=alignment.top_left,
                                 border_radius=5,
                                 height=400,
-                                content=Container(
-                                    bgcolor=colors.PRIMARY,
-                                    expand=True,
-                                    height=50,
-                                    content=Text("Список Пользователей", size=15, color=colors.ON_PRIMARY)
-                                )
                             )
                         ]
                     )
