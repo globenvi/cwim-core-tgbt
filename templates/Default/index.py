@@ -9,7 +9,7 @@ def tpl_index(page: Page):
         color="#FFFFFF"
     )
 
-    def hendle_menu_click(e):
+    def handler_menu_click(e):
         print(f"Menu item clicked: {e.control.label}")
 
     rail = NavigationRail(
@@ -33,7 +33,7 @@ def tpl_index(page: Page):
                 icon=icons.LOGOUT, selected_icon=icons.LOGOUT, label="Logout"
             ),
         ],
-        on_change=lambda e: print("Selected destination:", e.control.selected_index),
+        on_change=lambda e: handler_menu_click,
     )
 
     content = Column(
