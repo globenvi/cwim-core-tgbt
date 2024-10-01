@@ -12,8 +12,7 @@ def tpl_index(page):
             border_radius=5,
             margin=10,
             padding=10,
-            bgcolor=colors.ON_SECONDARY,
-            width=350,
+            bgcolor=colors.ON_PRIMARY,
             content=Text('Главная страница', color=colors.ON_PRIMARY, size=25)
         )
     )
