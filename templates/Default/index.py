@@ -22,7 +22,7 @@ def tpl_index(page):
                     border_radius=5,
                     bgcolor=colors.BLUE,
                     width=300,
-                    height=805,
+                    height=850,
                     padding=20,
                 ),
                 Container(
@@ -42,6 +42,7 @@ def tpl_index(page):
                     padding=20,
                     expand=True,
                 )
-            ]
+            ],
+            alignment=MainAxisAlignment.SPACE_EVENLY
         )
     )
