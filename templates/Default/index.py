@@ -30,7 +30,18 @@ def tpl_index(page: Page):
                 page.go("/index")  # Переходим на страницу авторизации
             else:
                 page.go("/login")  # Переходим на страницу авторизации
+        if e.control.selected_index == 0:  # Кнопка "Главная"
+            page.go("/index")  # Переходим на страницу главной
+        if e.control.selected_index == 1:  # Кнопка "Серверы"
+            page.go("/servers")  # Переходим на страницу серверов
+        if e.control.selected_index == 2:  # Кнопка "Список банов"
+            page.go("/bans")  # Переходим на страницу списка банов
+        if e.control.selected_index == 3:  # Кнопка "Список Мутов/Гагов"
+            page.go("/mutes")  # Переходим на страницу списка Мутов/Гагов
+        if e.control.selected_index == 4:  # Кнопка "Админ-лист"
+            page.go("/admin_list")  # Переходим на страницу админ-листа
 
+            
     rail = NavigationRail(
         destinations=[
             NavigationRailDestination(
