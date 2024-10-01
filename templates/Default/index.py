@@ -11,7 +11,7 @@ def tpl_index(page):
     page.appbar = AppBar(
         leading=TextButton(icons.MENU),
         leading_width=40,
-        title=Text("AppBar Example", color=colors.ON_PRIMARY),
+        title=Text('SourceSMS', color=colors.ON_PRIMARY),
         center_title=False,
         bgcolor=colors.PRIMARY,
         actions=[
