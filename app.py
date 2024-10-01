@@ -145,7 +145,6 @@ def main(page: Page):
     # Устанавливаем начальный маршрут, если он не задан
     if page.route == "/":
         page.route = "/index"
-        page.go('/index')
 
     # Обработчик события изменения маршрута
     def on_route_change(e):
