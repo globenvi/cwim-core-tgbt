@@ -6,7 +6,6 @@ def tpl_index(page):
 
     def handle_change(e):
         page.add(Text(f"Selected Index changed: {e.selected_index}"))
-        print(e.selected_index)
         page.close(drawer)
 
     def check_item_clicked(e):
