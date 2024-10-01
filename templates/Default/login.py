@@ -13,7 +13,7 @@ def tpl_login(page: Page):
     page.vertical_alignment = MainAxisAlignment.CENTER
     page.horizontal_alignment = CrossAxisAlignment.CENTER
 
-    if page.session.get('role') == 'user' or page.client_storage.get('role') == 'user':
+    if page.session.get('user_group') == 'user' or page.client_storage.get('user_group') == 'user':
         page.go('/index')
 
     user_login_input = TextField(label='Login')
@@ -44,13 +44,13 @@ def tpl_login(page: Page):
                 success_snack(e, 'Вы успешно авторизовались!')
                 page.session.set('login', user_data.get('login'))
                 page.session.set('email', user_data.get('email'))
-                page.session.set('role', user_data.get('role'))
+                page.session.set('user_group', user_data.get('user_group'))
                 page.session.set('password', user_data.get('password'))
                 page.go('/index')
                 if check_remember.value:
                     page.client_storage.set('login', user_data.get('login'))
                     page.client_storage.set('email', user_data.get('email'))
-                    page.client_storage.set('role', user_data.get('role'))
+                    page.client_storage.set('user_group', user_data.get('user_group'))
                     page.client_storage.set('route', f'{page.route}')
                     page.go('/index')
 

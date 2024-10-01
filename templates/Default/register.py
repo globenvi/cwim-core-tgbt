@@ -14,7 +14,7 @@ def tpl_register(page: Page):
     page.vertical_alignment = MainAxisAlignment.CENTER
     page.horizontal_alignment = CrossAxisAlignment.CENTER
 
-    if page.session.get('role') == 'user' or page.client_storage.get('role') == 'user':
+    if page.session.get('user_group') == 'user' or page.client_storage.get('user_group') == 'user':
         page.go('/index')
 
     user_login_input = TextField(label='Login')
@@ -47,7 +47,7 @@ def tpl_register(page: Page):
                 'login': user_login_input.value,
                 'password': user_password_input.value,
                 'email': user_email_input.value,
-                'role': 'user',  # Значение по умолчанию
+                'user_group': 'user',  # Значение по умолчанию
                 'telegram_id': user_telegramid_input.value if user_telegramid_checkbox.value else None,
                 'registration_date': time.strftime('%Y-%m-%d %H:%M:%S')})
             pb.value = 100
