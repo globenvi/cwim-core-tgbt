@@ -5,11 +5,41 @@ def tpl_admin(page: Page):
 
     user_group = page.session.get('user_group')
 
+    # Загрузка текущих настроек темы и палитры из сессии
+    is_dark_mode = page.session.get('is_dark_mode', True)  # По умолчанию темная тема
+    primary_color = page.session.get('primary_color', colors.PRIMARY)  # По умолчанию основной цвет
+
+    def toggle_theme(e):
+        nonlocal is_dark_mode
+        is_dark_mode = not is_dark_mode
+        page.session.set('is_dark_mode', is_dark_mode)
+        page.theme_mode = "dark" if is_dark_mode else "light"
+        page.update()
+
+    def change_palette(e):
+        nonlocal primary_color
+        # Пример смены палитры, можно добавить больше цветов на выбор
+        primary_color = colors.GREEN if primary_color == colors.PRIMARY else colors.PRIMARY
+        page.session.set('primary_color', primary_color)
+        page.update()
+
+    user_group = page.session.get('user_group')
+
     header = AppBar(
         title=Text("SRC-CMS | Admin"),
-        bgcolor=colors.PRIMARY,
+        bgcolor=primary_color,  # Основной цвет из сессии
         color=colors.ON_PRIMARY,
         actions=[  # Элементы справа
+            IconButton(
+                icon=icons.LIGHT_MODE if is_dark_mode else icons.DARK_MODE,
+                tooltip="Переключить тему",
+                on_click=toggle_theme
+            ),
+            IconButton(
+                icon=icons.PALETTE,
+                tooltip="Сменить цветовую палитру",
+                on_click=change_palette
+            ),
             IconButton(
                 icon=icons.PERSON,
                 tooltip="Профиль",
