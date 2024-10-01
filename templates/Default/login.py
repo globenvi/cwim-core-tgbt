@@ -58,7 +58,7 @@ def tpl_login(page: Page):
             else:
                 err_snack(e, 'Пользователь не найден или не верно веден логин, или пароль!')
                 page.update()
-                return 
+                return
 
 
     submit_button = CupertinoFilledButton('Войти', on_click=validate_form, alignment=center)

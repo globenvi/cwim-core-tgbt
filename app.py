@@ -11,6 +11,7 @@ init(autoreset=True)
 TEMPLATES_DIR = "./cwim-core-tgbt/templates/Default"
 ROUTES_FILE = "./cwim-core-tgbt/routes.json"
 CONFIG_FILE = "./cwim-core-tgbt/config.json"
+DATABASE_FILE = "./datafiles/database.json"
 
 # Переменная для хранения состояния отладки
 DEBUG_MODE = False
@@ -26,6 +27,15 @@ def load_config():
     # Проверяем режим отладки
     DEBUG_MODE = config_data.get('core_settings', {}).get('debug_mode', False)
     print(f"{Fore.GREEN}Debug mode is {'enabled' if DEBUG_MODE else 'disabled'}{Style.RESET_ALL}")
+
+def load_database():
+    if not os.path.exists(DATABASE_FILE):
+        raise FileNotFoundError(f"Database file {DATABASE_FILE} not found")
+
+    with open(DATABASE_FILE, 'r') as db_file:
+        return json.load(db_file)
+
+database = load_database()
 
 # Проверка наличия файла и его создание, если не существует
 def check_routes_file():
@@ -68,19 +78,28 @@ def scan_templates():
 
 # Проверка доступа к странице
 def check_access(route_info, user_group):
-    required_group = route_info.get('group_access', 'all')
+    required_groups = route_info.get('group_access', 'all').split(", ")
+    user_permissions = []
 
-    # Администратор имеет доступ ко всем страницам
-    if user_group == "admin":
-        print(f"{Fore.GREEN}Доступ разрешен для администратора{Style.RESET_ALL}")
+    # Найдем группу пользователя в database.json
+    for group, members in database["users_groups"].items():
+        if group == user_group:
+            # Извлекаем права доступа пользователя
+            user_permissions = members[0].get('permissions', [])
+            break
+
+    # Если у пользователя есть права на все страницы
+    if 'all' in user_permissions:
+        print(f"{Fore.GREEN}Доступ разрешен для {user_group} (все разрешения){Style.RESET_ALL}")
         return True
 
-    # Проверка для других групп
-    if required_group != "all" and required_group != user_group:
-        print(f"{Fore.RED}Доступ запрещен для группы: {user_group}. Требуется: {required_group}{Style.RESET_ALL}")
+    # Проверяем, имеет ли пользователь доступ к странице на основе групп
+    if user_group in required_groups or 'all' in required_groups:
+        print(f"{Fore.GREEN}Доступ разрешен для {user_group}{Style.RESET_ALL}")
+        return True
+    else:
+        print(f"{Fore.RED}Доступ запрещен для группы {user_group}. Требуются группы: {required_groups}{Style.RESET_ALL}")
         return False
-
-    return True
 
 # Получение страницы по маршруту
 def get_page(route, user_group="all"):
@@ -117,12 +136,11 @@ def get_page(route, user_group="all"):
 # Функция роутинга
 def router(page: Page):
     # Получаем маршрут из запроса, по умолчанию перенаправляем на "/index"
-    page.client_storage.clear()
     route = page.route or "/index"
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
-    # Получаем группу пользователя (по умолчанию "all")
-    user_group = page.session.get("user_group") or "all"
+    # Получаем группу пользователя (по умолчанию "guest")
+    user_group = page.session.get("user_group", "guest")
     print(f"{Fore.BLUE}Группа пользователя: {user_group}{Style.RESET_ALL}")
 
     # Получаем шаблон страницы по маршруту
@@ -155,7 +173,7 @@ def main(page: Page):
     page.on_route_change = on_route_change
 
     # Устанавливаем группу пользователя в сессии (можно настраивать через авторизацию)
-    page.session.set("user_group", "all")  # Группу можно изменить на "admin" или другую
+    page.session.set("user_group", "guest")  # Группу можно изменить на "admin" или другую
 
     # Запуск роутера
     router(page)
