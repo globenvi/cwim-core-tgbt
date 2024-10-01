@@ -38,8 +38,13 @@ def tpl_login(page: Page):
             if user_data and user_data.get('password') == user_password_input.value:
                 success_snack(e, 'Вы успешно авторизовались!')
                 # Установить значения в сессии
-                page.session.update(user_data)
-                page.go('/index')
+                page.session.set('id', user_data.get('id'))
+                page.session.set('user_group', user_data.get('user_group'))
+                page.session.set('login', user_data.get('login'))
+                page.session.set('email',  user_data.get('email'))
+                page.session.set('telegram_id', user_data.get('telegram_id'))
+                if page.session.get('user_group') != 'guest':
+                    page.go('/index')
             else:
                 err_snack(e, 'Пользователь не найден или неверный логин/пароль!')
 
