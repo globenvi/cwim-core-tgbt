@@ -12,7 +12,6 @@ def tpl_index(page):
                     border_radius=5,
                     bgcolor=colors.RED,
                     padding=20,
-                    margin=20,
                     expand=True,
                 )
             ]
@@ -23,15 +22,14 @@ def tpl_index(page):
                     border_radius=5,
                     bgcolor=colors.BLUE,
                     width=300,
+                    height=800,
                     padding=20,
-                    margin=20,
-                    expand=True,
                 ),
                 Container(
                     border_radius=5,
                     bgcolor=colors.BLUE,
+                    height=800,
                     padding=20,
-                    margin=20,
                     expand=True,
                 )
             ]
