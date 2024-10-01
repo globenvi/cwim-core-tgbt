@@ -31,8 +31,9 @@ def tpl_index(page: Page):
         if e.control.selected_index == 5:  # Кнопка "Logout"
             if user_group != "guest":
                 page.session.clear()
-                page.update()# Удаляем значения в сессии
+                page.client_storage.clear()
                 page.go("/index")  # Переходим на страницу авторизации
+                page.update()
             else:
                 page.go("/login")  # Переходим на страницу авторизации
         if e.control.selected_index == 0:  # Кнопка "Главная"
