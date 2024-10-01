@@ -8,9 +8,9 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # Путь к папке шаблонов и другим файлам
-TEMPLATES_DIR = "templates/Default"
-ROUTES_FILE = "routes.json"
-CONFIG_FILE = "config.json"
+TEMPLATES_DIR = "./cwim-core-tgbt/templates/Default"
+ROUTES_FILE = "./cwim-core-tgbt/routes.json"
+CONFIG_FILE = "./cwim-core-tgbt/config.json"
 
 # Переменная для хранения состояния отладки
 DEBUG_MODE = False
