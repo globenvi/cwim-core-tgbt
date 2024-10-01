@@ -55,7 +55,7 @@ def tpl_admin(page: Page):
                     bgcolor=colors.ON_SECONDARY,
                     padding=20,
                     expand=True,
-                    height=800,
+                    height=700,
                     alignment=alignment.top_left,
                 )
             ])
