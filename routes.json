@@ -5,15 +5,21 @@
         "enabled": true,
         "group_access": "all"
     },
+    "/register": {
+        "module": "register",
+        "template": "tpl_register",
+        "enabled": true,
+        "group_access": "all"
+    },
     "/admin": {
         "module": "admin",
         "template": "tpl_admin",
         "enabled": true,
         "group_access": "admin"
     },
-    "/chat": {
-        "module": "chat",
-        "template": "tpl_chat",
+    "/login": {
+        "module": "login",
+        "template": "tpl_login",
         "enabled": true,
         "group_access": "all"
     }

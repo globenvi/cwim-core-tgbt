@@ -7,27 +7,12 @@
     },
 
     "databases": {
-        "mysqldb": {
-            "enabled": false,
-            "user": "",
-            "password": "",
-            "database": "",
-            "host": "",
-            "port": 3306
-        },
-        "mongodb": {
-            "enabled": false,
-            "host": "",
-            "port": 3306,
-            "database": ""
-        },
-        "postgresql": {
-            "enabled": false,
-            "user": "",
-            "password": "",
-            "database": "",
-            "host": "",
-            "port": 5432
+        "mysql": {
+        "host": "localhost",
+        "port": 3306,
+        "user": "root",
+        "password": "password",
+        "database": "my_database"
         }
     }
 }

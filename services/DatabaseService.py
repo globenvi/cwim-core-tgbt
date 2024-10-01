@@ -1,177 +1,122 @@
-import aiomysql
-import motor.motor_asyncio
-import asyncpg
-import aiosqlite
 import json
 import os
 
-class DatabaseService:
-    def __init__(self, config_path="cwim-core-tgbt/config.json"):
-        self.config = None
-        self.connection_pool = None
-        self.mongo_client = None
-        self.mongo_db = None
-        self.sqlite_connection = None
-        self.config_path = config_path
-        self.active_db = None  # Для хранения информации о текущей активной базе данных
 
-    async def load_config(self):
-        """Загрузка конфигурации из файла"""
-        if not os.path.exists(self.config_path):
-            raise FileNotFoundError(f"Config file {self.config_path} not found")
+class JSONService:
+    def __init__(self, data_file_path="./datafiles/database.json"):
+        self.data_file_path = data_file_path
+        self.data = self.load_data()
 
-        with open(self.config_path, 'r') as config_file:
-            config_data = json.load(config_file)
+    def load_data(self):
+        """Загрузка данных из файла JSON"""
+        if not os.path.exists(self.data_file_path):
+            with open(self.data_file_path, 'w') as f:
+                json.dump({}, f)  # Создаем пустой JSON объект
+        with open(self.data_file_path, 'r') as f:
+            return json.load(f)
 
-        # Проверка наличия секции databases
-        if 'databases' not in config_data:
-            raise ValueError("No databases configuration found")
+    def save_data(self):
+        """Сохранение данных в файл JSON"""
+        with open(self.data_file_path, 'w') as f:
+            json.dump(self.data, f, indent=4)
 
-        # Проверка доступных баз данных и выбора активной
-        if 'mysqldb' in config_data['databases'] and config_data['databases']['mysqldb'].get('enabled', False):
-            self.config = config_data['databases']['mysqldb']
-            self.active_db = 'mysql'
-            print("Using MySQL database")
-        elif 'mongodb' in config_data['databases'] and config_data['databases']['mongodb'].get('enabled', False):
-            self.config = config_data['databases']['mongodb']
-            self.active_db = 'mongodb'
-            print("Using MongoDB database")
-        elif 'postgresql' in config_data['databases'] and config_data['databases']['postgresql'].get('enabled', False):
-            self.config = config_data['databases']['postgresql']
-            self.active_db = 'postgresql'
-            print("Using PostgreSQL database")
-        else:
-            # Если ни одна база не активна, переключаемся на SQLite
-            self.active_db = 'sqlite'
-            db_path = "cwim-core-tgbt/datafiles/sqlite.db"
-            os.makedirs(os.path.dirname(db_path), exist_ok=True)  # Создание директорий, если их нет
-            self.sqlite_connection = await aiosqlite.connect(db_path)
-            print(f"SQLite database created at {db_path}")
+    def create(self, section, record):
+        """Создание записи в указанном разделе JSON"""
+        if section not in self.data:
+            self.data[section] = []
 
-    async def init_connection(self):
-        """Инициализация соединений с базой данных"""
-        if self.active_db == 'mysql':
-            self.connection_pool = await aiomysql.create_pool(
-                user=self.config.get("user"),
-                password=self.config.get("password"),
-                db=self.config.get("database"),
-                host=self.config.get("host", "localhost"),
-                port=self.config.get("port", 3306),
-                minsize=1,
-                maxsize=10,
-            )
-        elif self.active_db == 'mongodb':
-            self.mongo_client = motor.motor_asyncio.AsyncIOMotorClient(
-                self.config.get("host", "localhost"),
-                self.config.get("port", 27017)
-            )
-            self.mongo_db = self.mongo_client[self.config.get("database")]
-            print(f"Connected to MongoDB: {self.config.get('database')}")
-        elif self.active_db == 'postgresql':
-            self.connection_pool = await asyncpg.create_pool(
-                user=self.config.get("user"),
-                password=self.config.get("password"),
-                database=self.config.get("database"),
-                host=self.config.get("host", "localhost"),
-                port=self.config.get("port", 5432),
-            )
-        else:
-            print("SQLite connection already initialized")
+        # Проверка на дубликаты по всем полям
+        for existing_record in self.data[section]:
+            if all(existing_record.get(key) == value for key, value in record.items()):
+                print(f"Duplicate record found: {record}. Record not created.")
+                return
 
-    async def execute_query(self, query, *args):
-        """Выполнение запроса для MySQL или PostgreSQL"""
-        if self.active_db == 'mysql':
-            async with self.connection_pool.acquire() as connection:
-                async with connection.cursor() as cursor:
-                    await cursor.execute(query, args)
-                    await connection.commit()
-        elif self.active_db == 'postgresql':
-            async with self.connection_pool.acquire() as connection:
-                async with connection.transaction():
-                    await connection.execute(query, *args)
+        # Генерация уникального ID
+        record_id = self._generate_id(section)
+        record['id'] = record_id
 
-    async def insert_document(self, collection_name, document):
-        """Вставка документа в MongoDB"""
-        if self.active_db == 'mongodb':
-            collection = self.mongo_db[collection_name]
-            result = await collection.insert_one(document)
-            return result.inserted_id
+        self.data[section].append(record)
+        self.save_data()
+        print(f"Record created in section '{section}': {record}")
 
-    async def fetch_all(self, query=None, collection_name=None):
-        """Получение всех документов из базы данных"""
-        if self.active_db == 'mongodb':
-            collection = self.mongo_db[collection_name]
-            documents = await collection.find().to_list(length=None)
-            return documents
-        elif self.active_db in ('mysql', 'postgresql'):
-            async with self.connection_pool.acquire() as connection:
-                if self.active_db == 'mysql':
-                    async with connection.cursor(aiomysql.DictCursor) as cursor:
-                        await cursor.execute(query)
-                        result = await cursor.fetchall()
-                        return result
-                else:  # PostgreSQL
-                    async with connection.transaction():
-                        return await connection.fetch(query)
+    def read(self, section):
+        """Чтение всех записей из указанного раздела JSON"""
+        return self.data.get(section, [])
 
-    async def fetch_one(self, query, *args):
-        """Получение одной строки результата для MySQL или PostgreSQL"""
-        if self.active_db == 'mysql':
-            async with self.connection_pool.acquire() as connection:
-                async with connection.cursor(aiomysql.DictCursor) as cursor:
-                    await cursor.execute(query, args)
-                    result = await cursor.fetchone()
-                    return result
-        elif self.active_db == 'postgresql':
-            async with self.connection_pool.acquire() as connection:
-                async with connection.transaction():
-                    return await connection.fetchrow(query, *args)
+    def update(self, section, record_id, updated_record):
+        """Обновление записи по ID в указанном разделе"""
+        if section in self.data:
+            for idx, record in enumerate(self.data[section]):
+                if record['id'] == record_id:
+                    self.data[section][idx].update(updated_record)
+                    self.save_data()
+                    print(f"Record updated in section '{section}': {self.data[section][idx]}")
+                    return
+        print(f"Record with ID {record_id} not found in section '{section}'.")
 
-    async def close(self):
-        """Закрытие соединений"""
-        if self.active_db == 'mysql' and self.connection_pool:
-            self.connection_pool.close()
-            await self.connection_pool.wait_closed()
-        elif self.active_db == 'mongodb':
-            self.mongo_client.close()
-        elif self.active_db == 'postgresql' and self.connection_pool:
-            self.connection_pool.close()
-            await self.connection_pool.wait_closed()
-        elif self.sqlite_connection:
-            await self.sqlite_connection.close()
+    def delete(self, section, record_id):
+        """Удаление записи по ID в указанном разделе"""
+        if section in self.data:
+            for idx, record in enumerate(self.data[section]):
+                if record['id'] == record_id:
+                    deleted_record = self.data[section].pop(idx)
+                    self.save_data()
+                    print(f"Record deleted from section '{section}': {deleted_record}")
+                    return
+        print(f"Record with ID {record_id} not found in section '{section}'.")
+
+    def find_one(self, section, query):
+        """Поиск одной записи по критериям в указанном разделе"""
+        if section in self.data:
+            for record in self.data[section]:
+                if all(record.get(key) == value for key, value in query.items()):
+                    return record
+        return None
+
+    def find_all(self, section, query):
+        """Поиск всех записей по критериям в указанном разделе"""
+        if section in self.data:
+            return [record for record in self.data[section] if all(record.get(key) == value for key, value in query.items())]
+        return []
+
+    def _generate_id(self, section):
+        """Генерация уникального ID для новой записи"""
+        if section not in self.data or not self.data[section]:
+            return 1
+        return max(record['id'] for record in self.data[section]) + 1
 
 
-# Пример использования
-async def main():
-    db_service = DatabaseService()
-
-    try:
-        # Загрузка конфигурации
-        await db_service.load_config()
-
-        # Инициализация соединений
-        await db_service.init_connection()
-
-        # Пример выполнения запроса (для MySQL/PostgreSQL)
-        if db_service.active_db in ('mysql', 'postgresql'):
-            await db_service.execute_query(
-                "CREATE TABLE IF NOT EXISTS users (id SERIAL PRIMARY KEY, name TEXT)"
-            )
-            await db_service.execute_query(
-                "INSERT INTO users (name) VALUES ($1)", "John Doe"
-            )
-
-            # Получение данных
-            rows = await db_service.fetch_all("SELECT * FROM users")
-            for row in rows:
-                print(row)
-
-        # Пример вставки документа в MongoDB
-        elif db_service.active_db == 'mongodb':
-            await db_service.insert_document("users", {"name": "John Doe"})
-            documents = await db_service.fetch_all(collection_name="users")
-            print("MongoDB Documents:", documents)
-
-    finally:
-        # Закрытие соединений
-        await db_service.close()
+# # Пример использования
+# async def main():
+#     db_service = JSONService()
+#
+#     # Создание записей
+#     db_service.create('users', {'login': 'user1', 'password': 'pass1', 'email': 'user1@example.com'})
+#     db_service.create('users', {'login': 'user1', 'password': 'pass2', 'email': 'user2@example.com'})  # Дубликат по login и email
+#     db_service.create('users', {'login': 'user2', 'password': 'pass2', 'email': 'user2@example.com'})  # Новый
+#
+#     # Поиск одной записи
+#     user_record = db_service.find_one('users', {'login': 'user1'})
+#     print("Found record:", user_record)
+#
+#     # Поиск всех записей с определённым условием
+#     all_users = db_service.find_all('users', {'password': 'pass2'})
+#     print("All matching records:", all_users)
+#
+#     # Чтение всех записей
+#     records = db_service.read('users')
+#     print("Current records in 'users':", records)
+#
+#     # Обновление записи
+#     if records:
+#         db_service.update('users', records[0]['id'], {'password': 'new_password'})
+#
+#     # Удаление записи
+#     if records:
+#         db_service.delete('users', records[0]['id'])
+#
+#
+# # Запуск примера
+# if __name__ == "__main__":
+#     import asyncio
+#     asyncio.run(main())
