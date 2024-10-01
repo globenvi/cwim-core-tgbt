@@ -57,8 +57,14 @@ def tpl_admin(page: Page):
                     content=Column(
                         [
                             Container(
+                                bgcolor=colors.PRIMARY,
+                                expand=True,
+                                alignment=alignment.top_left,
+                                border_radius=5,
+                                content=Text("Управление пользователями", size=15, color=colors.ON_PRIMARY)
+                            ),
+                            Container(
                                 bgcolor=colors.ON_SECONDARY,
-                                padding=5,
                                 expand=True,
                                 alignment=alignment.top_left,
                                 border_radius=5,
@@ -69,28 +75,6 @@ def tpl_admin(page: Page):
                                     height=50,
                                     content=Text("Список Пользователей", size=15, color=colors.ON_PRIMARY)
                                 )
-                            ),
-                            Row(
-                                [
-                                    Container(
-                                        bgcolor=colors.ON_SECONDARY,
-                                        padding=5,
-                                        margin=5,
-                                        expand=True,
-                                        alignment=alignment.top_left,
-                                        border_radius=5,
-                                        height=300
-                                    ),
-                                    Container(
-                                        bgcolor=colors.ON_SECONDARY,
-                                        padding=5,
-                                        margin=5,
-                                        expand=True,
-                                        alignment=alignment.top_left,
-                                        border_radius=5,
-                                        height=300
-                                    )
-                                ]
                             )
                         ]
                     )
