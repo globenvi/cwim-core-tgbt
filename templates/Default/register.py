@@ -22,7 +22,7 @@ def tpl_register(page: Page):
     user_email_input = TextField(label='Email')
     user_telegramid_input = TextField(label='Telegram ID', visible=False, password=True)
 
-    pb = ProgressBar(max=100, value=0, width=350)
+    pb = ProgressBar(width=350)
 
     def err_snack(e, err_text):
         page.snack_bar = SnackBar(content=Text(f'{err_text}', weight=BOLD_UNDERLINE))
