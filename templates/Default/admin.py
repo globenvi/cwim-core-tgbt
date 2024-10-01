@@ -31,7 +31,7 @@ def tpl_admin(page: Page):
             Text('Добро пожаловать в админ-панель!', size=20),
             Text('Здесь вы можете управлять системой.', size=16)
         ],
-        alignment=MainAxisAlignment.START,
+        # alignment=MainAxisAlignment.START,
         scroll=True,
         expand=True,
     )
@@ -56,7 +56,7 @@ def tpl_admin(page: Page):
                     padding=20,
                     expand=True,
                     height=300,
-                    alignment=alignment.top_left
+                    # alignment=alignment.top_left
                 )
             ])
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
