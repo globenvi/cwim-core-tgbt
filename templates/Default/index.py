@@ -30,7 +30,8 @@ def tpl_index(page: Page):
     def menu_clicked(e):
         if e.control.selected_index == 5:  # Кнопка "Logout"
             if user_group != "guest":
-                page.session.clear()  # Удаляем значения в сессии
+                page.session.clear()
+                page.update()# Удаляем значения в сессии
                 page.go("/index")  # Переходим на страницу авторизации
             else:
                 page.go("/login")  # Переходим на страницу авторизации
