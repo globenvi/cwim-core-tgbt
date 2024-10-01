@@ -65,13 +65,25 @@ def tpl_admin(page: Page):
                                 alignment=alignment.top_left,
                                 border_radius=5
                             ),
-                            Container(
-                                bgcolor=colors.ON_SECONDARY,
-                                padding=5,
-                                margin=5,
-                                expand=True,
-                                alignment=alignment.top_left,
-                                border_radius=5
+                            Row(
+                                [
+                                    Container(
+                                        bgcolor=colors.ON_SECONDARY,
+                                        padding=5,
+                                        margin=5,
+                                        expand=True,
+                                        alignment=alignment.top_left,
+                                        border_radius=5
+                                    ),
+                                    Container(
+                                        bgcolor=colors.ON_SECONDARY,
+                                        padding=5,
+                                        margin=5,
+                                        expand=True,
+                                        alignment=alignment.top_left,
+                                        border_radius=5
+                                    )
+                                ]
                             )
                         ]
                     )
