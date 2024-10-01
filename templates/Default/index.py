@@ -4,7 +4,7 @@ def tpl_index(page):
     page.title = 'Главная страница'
     page.theme_mode = ThemeMode.SYSTEM
 
-    def handle_change(e: ft.ControlEvent):
+    def handle_change(e: ControlEvent):
         print(f"change on panel with index {e.data}")
 
     panel = ExpansionPanelList(
