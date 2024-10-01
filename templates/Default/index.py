@@ -14,6 +14,7 @@ def tpl_index(page):
         page.update()
 
     drawer = NavigationDrawer(
+        on_change=handle_change,
         controls=[
             Container(height=12),
             # ExpansionTile(
