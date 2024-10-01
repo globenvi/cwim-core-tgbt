@@ -6,7 +6,10 @@ def tpl_index(page: Page):
     header = AppBar(
         title=Text("SRC CMS"),
         bgcolor="#1976D2",
-        color="#FFFFFF"
+        color="#FFFFFF",
+        actions=[
+            CupertinoFilledButton(text='Профиль')
+        ]
     )
 
     def menu_clicked(e):
@@ -22,8 +25,8 @@ def tpl_index(page: Page):
                 label="Главная"
             ),
             NavigationRailDestination(
-                icon=icons.ROOM_SERVICE,
-                selected_icon=icons.ROOM_SERVICE,
+                icon=icons.CABLE_OUTLINED,
+                selected_icon=icons.CABLE_OUTLINED,
                 label="Серверы"
             ),
             NavigationRailDestination(
@@ -32,8 +35,8 @@ def tpl_index(page: Page):
                 label="Список банов"
             ),
             NavigationRailDestination(
-                icon=icons.VOLUME_MUTE,
-                selected_icon=icons.VOLUME_MUTE_SHARP,
+                icon=icons.VOICE_OVER_OFF,
+                selected_icon=icons.VOICE_OVER_OFF,
                 label="Список Мутов/Гагов"
             ),
             NavigationRailDestination(
