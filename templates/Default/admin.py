@@ -73,6 +73,9 @@ def tpl_admin(page: Page):
                                         border_radius=5,
                                         height=400,
                                         content=DataTable(
+                                            show_checkbox_column=True,
+                                            sort_ascending=True,
+                                            expand_loose=True,
                                             columns=[
                                                 DataColumn(Text("ID")),
                                                 DataColumn(Text("Логин")),
@@ -104,6 +107,7 @@ def tpl_admin(page: Page):
                                         alignment=alignment.top_left,
                                         border_radius=5,
                                         height=400,
+                                        width=300
                                     )
                                 ]
                             )
