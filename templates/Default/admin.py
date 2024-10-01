@@ -4,7 +4,27 @@ def tpl_admin(page: Page):
     page.title = "Админ Панель"
     page.vertical_alignment = "start"
 
-    user_group = page.session.get('user_group')  # Получаем группу пользователя
+    user_group = page.session.get('user_group')
+
+    header = AppBar(
+        title=Text("SRC-CMS | Admin"),
+        bgcolor=colors.PRIMARY,
+        color=colors.ON_PRIMARY,
+        actions=[  # Элементы справа
+            IconButton(
+                icon=icons.PERSON,
+                tooltip="Профиль",
+                on_click=lambda e: page.go("/profile"),
+                visible=False if user_group == 'guest' else True
+            ),
+            IconButton(
+                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
+                tooltip="Админ Панель",
+                on_click=lambda e: page.go("/admin"),
+                visible=False if user_group != 'admin' else True  # Укажите путь к админ панели
+            ),
+        ],
+    )
 
     def menu_clicked(e):
         if e.control.selected_index == 5:  # Кнопка "Logout"
@@ -73,6 +93,7 @@ def tpl_admin(page: Page):
 
     return Column(
         controls=[
+            header,
             Row(
                 [
                     rail,
