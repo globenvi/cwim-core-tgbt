@@ -122,8 +122,6 @@ def load_database():
 
 
 def router(page: Page):
-    page.session.set('route', f'{page.route}')
-    page.session.set('user_group', 'guest')
     route = page.route or "/index"
     print(f"{Fore.BLUE}Текущий маршрут: {route}{Style.RESET_ALL}")
 
