@@ -40,10 +40,11 @@ def tpl_index(page):
             #     ],
             # ),
             Divider(thickness=2),
-            NavigationDrawer(
+            NavigationDrawerDestination(
                 icon_content=Icon(icons.VERIFIED_USER),
-                label="Item 2",
-                selected_icon=icons.MAIL,
+                label="Профиль",
+                selected_icon=icons.VERIFIED_USER,
+
             ),
             NavigationDrawerDestination(
                 icon_content=Icon(icons.PHONE_OUTLINED),
