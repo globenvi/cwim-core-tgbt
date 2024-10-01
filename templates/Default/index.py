@@ -9,6 +9,9 @@ def tpl_index(page: Page):
         color="#FFFFFF"
     )
 
+    def hendle_menu_click(e):
+        print(f"Menu item clicked: {e.control.label}")
+
     rail = NavigationRail(
         selected_index=0,
         label_type=NavigationRailLabelType.ALL,
