@@ -22,13 +22,23 @@ def tpl_index(page):
                     border_radius=5,
                     bgcolor=colors.BLUE,
                     width=300,
-                    height=800,
+                    height=805,
                     padding=20,
                 ),
                 Container(
                     border_radius=5,
                     bgcolor=colors.BLUE,
-                    height=800,
+                    height=850,
+                    padding=20,
+                    expand=True,
+                )
+            ]
+        ),
+        Row(
+            [
+                Container(
+                    border_radius=5,
+                    bgcolor=colors.GREEN,
                     padding=20,
                     expand=True,
                 )
