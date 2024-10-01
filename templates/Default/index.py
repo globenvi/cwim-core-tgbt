@@ -1,5 +1,4 @@
 from flet import *
-from flet_core.cupertino_colors import ON_PRIMARY
 
 
 def tpl_index(page: Page):

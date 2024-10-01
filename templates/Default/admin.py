@@ -49,14 +49,14 @@ def tpl_admin(page: Page):
             else:
                 page.go("/login")  # Переход на страницу авторизации
         elif e.control.selected_index == 0:  # Кнопка "Управление пользователями"
-            users = ["User1", "User2", "User3"]  # Пример списка пользователей
+
             update_body_content([
                 Container(
                     bgcolor=colors.ON_SECONDARY,
                     padding=20,
                     expand=True,
-                    height=300,
-                    alignment=alignment.top_left
+                    height=600,
+                    alignment=alignment.top_left,
                 )
             ])
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
