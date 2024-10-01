@@ -4,10 +4,24 @@ def tpl_index(page: Page):
     page.title = "Home Page"
     page.vertical_alignment = "start"
 
+    # Состояние для управления видимостью бокового меню
+    show_rail = Value(True)
+
+    def toggle_rail(e):
+        show_rail.value = not show_rail.value
+        page.update()
+
     header = AppBar(
         title=Text("Home"),
         bgcolor="#1976D2",
-        color="#FFFFFF"
+        color="#FFFFFF",
+        actions=[
+            IconButton(
+                icon=icons.MENU,
+                tooltip="Toggle Menu",
+                on_click=toggle_rail,
+            )
+        ]
     )
 
     rail = NavigationRail(
@@ -32,6 +46,36 @@ def tpl_index(page: Page):
             ),
         ],
         on_change=lambda e: print("Selected destination:", e.control.selected_index),
+        width=show_rail.value and 200 or 0  # Устанавливаем ширину в зависимости от видимости
+    )
+
+    content = Column(
+        controls=[
+            Text("Welcome to the Home Page!", size=24),
+            Text("Here is some important information.", size=16),
+        ],
+        alignment=MainAxisAlignment.CENTER,
+        scroll=True,
+        expand=True,
+    )
+
+    footer = Container(
+        content=Text("© 2024 Home Page"),
+        padding=10,
+        alignment=alignment.center
+    )
+
+    page.add(
+        header,
+        Row(
+            [
+                rail,
+                VerticalDivider(width=1),
+                content,
+            ],
+            expand=True,
+        ),
+        footer
     )
 
     content = Column(
