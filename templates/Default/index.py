@@ -4,6 +4,21 @@ def tpl_index(page):
     page.title = 'Главная страница'
     page.theme_mode = ThemeMode.SYSTEM
 
+    def handle_expansion_tile_change(e):
+        page.open(
+            SnackBar(
+                Text(f"ExpansionTile was {'expanded' if e.data == 'true' else 'collapsed'}"),
+                duration=1000,
+            )
+        )
+        if e.control.trailing:
+            e.control.trailing.name = (
+                icons.ARROW_DROP_DOWN
+                if e.control.trailing.name == icons.ARROW_DROP_DOWN_CIRCLE
+                else icons.ARROW_DROP_DOWN_CIRCLE
+            )
+            page.update()
+
     def check_item_clicked(e):
         e.control.checked = not e.control.checked
         page.update()
@@ -11,10 +26,14 @@ def tpl_index(page):
     drawer = NavigationDrawer(
         controls=[
             Container(height=12),
-            NavigationDrawerDestination(
-                label="Item 1",
-                icon=icons.DOOR_BACK_DOOR_OUTLINED,
-                selected_icon_content=Icon(icons.DOOR_BACK_DOOR),
+            ExpansionTile(
+                title=Text("ExpansionTile 1"),
+                subtitle=Text("Trailing expansion arrow icon"),
+                affinity=TileAffinity.PLATFORM,
+                maintain_state=True,
+                collapsed_text_color=colors.RED,
+                text_color=colors.RED,
+                controls=[ListTile(title=Text("This is sub-tile number 1"))],
             ),
             Divider(thickness=2),
             NavigationDrawerDestination(
