@@ -26,28 +26,24 @@ def tpl_index(page):
     drawer = NavigationDrawer(
         controls=[
             Container(height=12),
-                #padding=10,
-                #border_radius=5,
-                #margin=10,
-                #bgcolor=colors.ON_PRIMARY
-            ExpansionTile(
-                title=Text("ExpansionTile 1"),
-                subtitle=Text("Trailing expansion arrow icon"),
-                affinity=TileAffinity.PLATFORM,
-                maintain_state=True,
-                collapsed_text_color=colors.ON_PRIMARY,
-                text_color=colors.ON_PRIMARY,
-                controls=[
-                    ListTile(
-                        title=Text("This is sub-tile number 1")
-                    )
-                ],
-            ),
+            # ExpansionTile(
+            #     title=Text("ExpansionTile 1"),
+            #     subtitle=Text("Trailing expansion arrow icon"),
+            #     affinity=TileAffinity.PLATFORM,
+            #     maintain_state=True,
+            #     collapsed_text_color=colors.ON_PRIMARY,
+            #     text_color=colors.ON_PRIMARY,
+            #     controls=[
+            #         ListTile(
+            #             title=Text("This is sub-tile number 1")
+            #         )
+            #     ],
+            # ),
             Divider(thickness=2),
-            NavigationDrawerDestination(
+            NavigationDrawer(
                 icon_content=Icon(icons.MAIL_OUTLINED),
-                label="Item 2",
-                selected_icon=icons.MAIL,
+                label="Профиль",
+                selected_icon=icons.VERIFIED_USER_ROUNDED,
             ),
             NavigationDrawerDestination(
                 icon_content=Icon(icons.PHONE_OUTLINED),
