@@ -31,9 +31,9 @@ def tpl_admin(page: Page):
             Text('Добро пожаловать в админ-панель!', size=20),
             Text('Здесь вы можете управлять системой.', size=16)
         ],
-        # alignment=MainAxisAlignment.START,
-        scroll=True,
-        expand=True,
+        alignment=MainAxisAlignment.START,  # Устанавливаем выравнивание сверху
+        scroll=True,  # Добавляем прокрутку
+        expand=True,  # Растягиваем контейнер
     )
 
     def update_body_content(content_controls):
@@ -56,7 +56,7 @@ def tpl_admin(page: Page):
                     padding=20,
                     expand=True,
                     height=300,
-                    # alignment=alignment.top_left
+                    alignment=alignment.top_left
                 )
             ])
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
@@ -111,7 +111,7 @@ def tpl_admin(page: Page):
                 [
                     rail,
                     VerticalDivider(width=2),
-                    body_content,
+                    body_content,  # Контент расположен сверху
                 ],
                 expand=True,
             ),
