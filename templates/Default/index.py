@@ -37,8 +37,8 @@ def tpl_index(page: Page):
                 label="Список Мутов/Гагов"
             ),
             NavigationRailDestination(
-                icon=icons.LIST,
-                selected_icon=icons.LIST,
+                icon=icons.STAR_HALF,
+                selected_icon=icons.STAR_HALF,
                 label="Админ-лист"
             ),
 
