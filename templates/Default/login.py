@@ -43,6 +43,13 @@ def tpl_login(page: Page):
                 page.session.set('login', user_data.get('login'))
                 page.session.set('email',  user_data.get('email'))
                 page.session.set('telegram_id', user_data.get('telegram_id'))
+                if check_remember.value:
+                    page.client_storage.set('user_group', user_data.get('user_group'))
+                    page.client_storage.set('login', user_data.get('login'))
+                    page.client_storage.set('email', user_data.get('email'))
+                    page.client_storage.set('telegram_id', user_data.get('telegram_id'))
+                    # Запомнить время последнего входа
+                    page.client_storage.set('last_login', time.time())
                 if page.session.get('user_group') != 'guest':
                     page.go('/index')
             else:
