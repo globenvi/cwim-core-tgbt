@@ -163,4 +163,4 @@ def main(page: Page):
 # Запуск Flet
 if __name__ == "__main__":
     import flet as ft
-    ft.app(target=main, view=ft.AppView.FLET_APP, port=57060)
+    ft.app(target=main, view=ft.AppView.WEB_BROWSER, port=57060)
