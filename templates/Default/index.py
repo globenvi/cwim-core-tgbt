@@ -13,7 +13,7 @@ def tpl_index(page):
                     bgcolor=colors.RED,
                     padding=20,
                     margin=20,
-                    rtl=True,
+                    expand=True,
                 )
             ]
         )
