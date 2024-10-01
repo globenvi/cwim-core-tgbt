@@ -64,7 +64,7 @@ def tpl_admin(page: Page):
                                 border_radius=5,
                                 content=Text("Управление пользователями", size=18, color=colors.ON_PRIMARY)
                             ),
-                            Column(
+                            Row(
                                 [
                                     Container(
                                         bgcolor=colors.ON_SECONDARY,
