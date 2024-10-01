@@ -1,45 +1,69 @@
-# admin.py
-from flet import Page, AppBar, Column, Text, Row, Container, IconButton, icons, NavigationRail
+import flet as ft
 
-def tpl_admin(page: Page):
+def tpl_admin(page: ft.Page):
     page.title = "Admin Panel"
     page.vertical_alignment = "start"
 
     # Header
-    header = AppBar(
-        title=Text("Admin Panel"),
+    header = ft.AppBar(
+        title=ft.Text("Admin Panel"),
         bgcolor="#1976D2",
         color="#FFFFFF"
     )
 
-    # Side Menu (Navigation Rail)
-    side_menu = NavigationRail(
-        extended=True,
+    # Sidebar (Navigation Rail)
+    rail = ft.NavigationRail(
+        selected_index=0,
+        label_type=ft.NavigationRailLabelType.ALL,
+        min_width=100,
+        min_extended_width=400,
+        leading=ft.FloatingActionButton(icon=ft.icons.CREATE, text="Add"),
+        group_alignment=-0.9,
         destinations=[
-            icons.NavigationRailDestination(icon=icons.DASHBOARD, label="Dashboard"),
-            icons.NavigationRailDestination(icon=icons.SETTINGS, label="Settings"),
-            icons.NavigationRailDestination(icon=icons.PERSON, label="Profile"),
-            icons.NavigationRailDestination(icon=icons.LOGOUT, label="Logout"),
+            ft.NavigationRailDestination(
+                icon=ft.icons.DASHBOARD, selected_icon=ft.icons.DASHBOARD, label="Dashboard"
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.PERSON, selected_icon=ft.icons.PERSON, label="Users"
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.SETTINGS_OUTLINED, selected_icon=ft.icons.SETTINGS, label="Settings"
+            ),
+            ft.NavigationRailDestination(
+                icon=ft.icons.LOGOUT, selected_icon=ft.icons.LOGOUT, label="Logout"
+            ),
         ],
-        selected_index=0,  # Начальный индекс выбранного пункта
+        on_change=lambda e: print("Selected destination:", e.control.selected_index),
     )
 
     # Content area
-    content = Column(
+    content = ft.Column(
         controls=[
-            Text("Welcome to the Admin Panel!", size=24),
-            Text("Here you can manage users and settings.", size=16),
+            ft.Text("Welcome to the Admin Panel!", size=24),
+            ft.Text("Here you can manage users and settings.", size=16),
         ],
-        alignment="center",
+        alignment=ft.MainAxisAlignment.CENTER,
         scroll=True,
+        expand=True,
     )
 
     # Footer
-    footer = Container(
-        content=Text("© 2024 Admin Panel"),
+    footer = ft.Container(
+        content=ft.Text("© 2024 Admin Panel"),
         padding=10,
-        alignment="center"
+        alignment=ft.alignment.center
     )
 
-    # Добавляем компоненты на страницу
-    page.add(header, Row([side_menu, content]), footer)
+    # Adding components to the page
+    page.add(
+        header,
+        ft.Row(
+            [
+                rail,
+                ft.VerticalDivider(width=1),
+                content,
+            ],
+            expand=True,
+        ),
+        footer
+    )
