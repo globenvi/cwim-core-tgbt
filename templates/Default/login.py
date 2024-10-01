@@ -42,7 +42,6 @@ def tpl_login(page: Page):
             psqd = user_data.get('password')
             if  login == user_login_input.value and psqd == user_password_input.value:
                 success_snack(e, 'Вы успешно авторизовались!')
-                time.sleep(3)
                 page.go('/index')
                 success_snack(e, 'Вы успешно авторизовались!')
                 page.session.set('login', user_data.get('login'))

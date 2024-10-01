@@ -22,6 +22,8 @@ def tpl_register(page: Page):
     user_email_input = TextField(label='Email')
     user_telegramid_input = TextField(label='Telegram ID', visible=False, password=True)
 
+    pb = ProgressBar(max=100, value=0, width=350)
+
     def err_snack(e, err_text):
         page.snack_bar = SnackBar(content=Text(f'{err_text}', weight=BOLD_UNDERLINE))
         page.snack_bar.bgcolor = colors.RED
@@ -107,6 +109,7 @@ def tpl_register(page: Page):
                                         padding=25,
                                         content=Column(
                                             [
+                                                pb,
                                                 user_login_input,
                                                 user_password_input,
                                                 user_email_input,
