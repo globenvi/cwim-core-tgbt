@@ -1,6 +1,6 @@
 from flet import *
 
-def tpl_index(page: Page):
+def tpl_index(page: Page, user_group: str):
     page.vertical_alignment = "start"
 
     header = AppBar(
@@ -24,7 +24,7 @@ def tpl_index(page: Page):
                 icon=icons.SETTINGS_OUTLINED, selected_icon=icons.SETTINGS, label="Settings"
             ),
             NavigationRailDestination(
-                icon=icons.LOGOUT, selected_icon=icons.LOGOUT, label="Logout"
+                icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN, selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN, label="Logout" if user_group != "guest" else "Войти"
             ),
         ],
         on_change=lambda e: menu_clicked(e),
