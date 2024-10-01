@@ -42,17 +42,17 @@ def tpl_login(page: Page):
             psqd = user_data.get('password')
             if  login == user_login_input.value and psqd == user_password_input.value:
                 success_snack(e, 'Вы успешно авторизовались!')
-                page.go('/index')
-                success_snack(e, 'Вы успешно авторизовались!')
                 page.session.set('login', user_data.get('login'))
                 page.session.set('email', user_data.get('email'))
                 page.session.set('role', user_data.get('role'))
                 page.session.set('password', user_data.get('password'))
+                page.go('/index')
                 if check_remember.value:
                     page.client_storage.set('login', user_data.get('login'))
                     page.client_storage.set('email', user_data.get('email'))
                     page.client_storage.set('role', user_data.get('role'))
                     page.client_storage.set('route', f'{page.route}')
+                    page.go('/index')
 
 
     submit_button = CupertinoFilledButton('Войти', on_click=validate_form, alignment=center)
