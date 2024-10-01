@@ -51,7 +51,13 @@ def tpl_admin(page: Page):
                 page.go("/login")  # Переход на страницу авторизации
         elif e.control.selected_index == 0:  # Кнопка "Управление пользователями"
             users = ["User1", "User2", "User3"]  # Пример списка пользователей
-            update_body_content([Text(f"Список пользователей:", size=18)] + [Text(user) for user in users])
+            update_body_content([
+                Container(
+                    bgcolor=colors.ON_SECONDARY,
+                    padding=20,
+                    expand=True,
+                )
+            ])
         elif e.control.selected_index == 1:  # Кнопка "Активные сессии"
             update_body_content([Text("Список активных сессий", size=18)])  # Заменить содержимым активных сессий
         elif e.control.selected_index == 2:  # Кнопка "Управление модулями"
