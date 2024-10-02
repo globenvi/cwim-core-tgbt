@@ -9,6 +9,7 @@ def tpl_admin(page: Page):
         title=Text("SRC-CMS | Admin"),
         bgcolor=colors.PRIMARY,
         color=colors.ON_PRIMARY,
+        leading=IconButton(icon=icons.MENU, on_click=lambda e: page.open(drawer)),
         actions=[  # Элементы справа
             IconButton(
                 icon=icons.PERSON,
@@ -148,32 +149,32 @@ def tpl_admin(page: Page):
             update_body_content([Text("Настройки системы", size=18)])  # Заменить содержимым настроек
 
     def handle_dismissal(e):
-        page.add(ft.Text("Drawer dismissed"))
+        page.add(Text("Drawer dismissed"))
 
     def handle_change(e):
-        page.add(ft.Text(f"Selected Index changed: {e.selected_index}"))
+        page.add(Text(f"Selected Index changed: {e.selected_index}"))
         # page.close(drawer)
 
-    drawer = ft.NavigationDrawer(
+    drawer = NavigationDrawer(
         on_dismiss=handle_dismissal,
         on_change=handle_change,
         controls=[
-            ft.Container(height=12),
-            ft.NavigationDrawerDestination(
+            Container(height=12),
+            NavigationDrawerDestination(
                 label="Item 1",
-                icon=ft.icons.DOOR_BACK_DOOR_OUTLINED,
-                selected_icon_content=ft.Icon(ft.icons.DOOR_BACK_DOOR),
+                icon=icons.DOOR_BACK_DOOR_OUTLINED,
+                selected_icon_content=Icon(icons.DOOR_BACK_DOOR),
             ),
-            ft.Divider(thickness=2),
-            ft.NavigationDrawerDestination(
-                icon_content=ft.Icon(ft.icons.MAIL_OUTLINED),
+            Divider(thickness=2),
+            NavigationDrawerDestination(
+                icon_content=Icon(icons.MAIL_OUTLINED),
                 label="Item 2",
-                selected_icon=ft.icons.MAIL,
+                selected_icon=icons.MAIL,
             ),
-            ft.NavigationDrawerDestination(
-                icon_content=ft.Icon(ft.icons.PHONE_OUTLINED),
+            NavigationDrawerDestination(
+                icon_content=Icon(icons.PHONE_OUTLINED),
                 label="Item 3",
-                selected_icon=ft.icons.PHONE,
+                selected_icon=icons.PHONE,
             ),
         ],
     )
