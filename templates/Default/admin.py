@@ -186,6 +186,7 @@ def tpl_admin(page: Page):
     )
 
     return Column(
+        scroll=ScrollMode.ADAPTIVE,
         controls=[
             header,
             Container(
