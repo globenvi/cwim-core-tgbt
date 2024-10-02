@@ -194,7 +194,7 @@ def tpl_admin(page: Page):
                 bgcolor=colors.RED_50,
                 expand=True,
                 content=Container(
-                    max_width=600,
+                    width=600,
                     bgcolor=colors.BLUE,
                     padding=20,
                     alignment=alignment.center,
