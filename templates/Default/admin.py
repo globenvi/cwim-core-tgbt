@@ -1,73 +1,73 @@
-from flet import *
+import flet as ft
 
-def tpl_admin(page: Page):
-    page.title = "Админ Панель"
+def tpl_admin(page: ft.Page):
+    ft.page.title = "Админ Панель"
 
     user_group = page.session.get('user_group')
 
     def handle_dismissal(e):
-        page.add(Text("Drawer dismissed"))
+        ft.page.add(ft.Text("Drawer dismissed"))
 
     def handle_change(e):
-        page.add(Text(f"Selected Index changed: {e.selected_index}"))
+        ft.page.add(ft.Text(f"Selected Index changed: {e.selected_index}"))
         # page.close(drawer)
     
-    btn = ElevatedButton("Show drawer", on_click=lambda e: page.open(drawer))
+    btn = ft.ElevatedButton("Show drawer", on_click=lambda e: ft.page.open(drawer))
 
-    drawer = NavigationDrawer(
+    drawer = ft.NavigationDrawer(
         on_dismiss=handle_dismissal,
         on_change=handle_change,
         controls=[
-            Container(height=12),
-            NavigationDrawerDestination(
+            ft.Container(height=12),
+            ft.NavigationDrawerDestination(
                 label="Item 1",
-                icon=icons.DOOR_BACK_DOOR_OUTLINED,
-                selected_icon_content=Icon(icons.DOOR_BACK_DOOR),
+                icon=ft.icons.DOOR_BACK_DOOR_OUTLINED,
+                selected_icon_content=ft.Icon(ft.icons.DOOR_BACK_DOOR),
             ),
-            Divider(thickness=2),
-            NavigationDrawerDestination(
-                icon_content=Icon(icons.MAIL_OUTLINED),
+            ft.Divider(thickness=2),
+            ft.NavigationDrawerDestination(
+                icon_content=ft.Icon(ft.icons.MAIL_OUTLINED),
                 label="Item 2",
-                selected_icon=icons.MAIL,
+                selected_icon=ft.icons.MAIL,
             ),
-            NavigationDrawerDestination(
-                icon_content=Icon(icons.PHONE_OUTLINED),
+            ft.NavigationDrawerDestination(
+                icon_content=ft.Icon(ft.icons.PHONE_OUTLINED),
                 label="Item 3",
-                selected_icon=icons.PHONE,
+                selected_icon=ft.icons.PHONE,
             ),
         ],
     )
 
-    header = AppBar(
-        title=Text("SRC-CMS | Admin"),
-        bgcolor=colors.PRIMARY,
-        color=colors.ON_PRIMARY,
-        leading=IconButton(icon=icons.MENU, on_click=lambda e: page.open(drawer)),
+    header = ft.AppBar(
+        title=ft.Text("SRC-CMS | Admin"),
+        bgcolor=ft.colors.PRIMARY,
+        color=ft.colors.ON_PRIMARY,
+        leading=ft.IconButton(icon=ft.icons.MENU, on_click=lambda e: ft.page.open(drawer)),
         actions=[  # Элементы справа
-            IconButton(
-                icon=icons.PERSON,
+            ft.IconButton(
+                icon=ft.icons.PERSON,
                 tooltip="Профиль",
-                on_click=lambda e: page.go("/profile"),
+                on_click=lambda e: ft.page.go("/profile"),
                 visible=False if user_group == 'guest' else True
             ),
-            IconButton(
-                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
+            ft.IconButton(
+                icon=ft.icons.ADMIN_PANEL_SETTINGS_OUTLINED,
                 tooltip="Админ Панель",
-                on_click=lambda e: page.go("/admin"),
+                on_click=lambda e: ft.page.go("/admin"),
                 visible=False if user_group != 'admin' else True
             ),
         ],
     )
 
 
-    footer = Container(
-        content=Text("© 2024 Admin Panel"),
+    footer = ft.Container(
+        content=ft.Text("© 2024 Admin Panel"),
         padding=10,
-        alignment=alignment.center
+        alignment=ft.alignment.center
     )
 
-    return Column(
-        scroll=ScrollMode.AUTO,
+    return ft.Column(
+        scroll=ft.ScrollMode.AUTO,
         controls=[
             header,
             btn,
