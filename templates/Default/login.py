@@ -56,7 +56,7 @@ def tpl_login(page: Page):
                     page.client_storage.set('email', user_data.get('email'))
                     page.client_storage.set('role', user_data.get('role'))
                     page.client_storage.set('registered_date', user_data.get('registered_date'))
-
+                    page.go('/index')
                 page.go('/index')
             else:
                 process_bar.visible = False
