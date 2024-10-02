@@ -5,27 +5,6 @@ def tpl_admin(page: Page):
 
     user_group = page.session.get('user_group')
 
-    header = AppBar(
-        title=Text("SRC-CMS | Admin"),
-        bgcolor=colors.PRIMARY,
-        color=colors.ON_PRIMARY,
-        leading=IconButton(icon=icons.MENU, on_click=lambda e: page.open(drawer)),
-        actions=[  # Элементы справа
-            IconButton(
-                icon=icons.PERSON,
-                tooltip="Профиль",
-                on_click=lambda e: page.go("/profile"),
-                visible=False if user_group == 'guest' else True
-            ),
-            IconButton(
-                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
-                tooltip="Админ Панель",
-                on_click=lambda e: page.go("/admin"),
-                visible=False if user_group != 'admin' else True
-            ),
-        ],
-    )
-
     # Начальное содержимое админки
     body_content = Column(
         controls=[
@@ -175,6 +154,27 @@ def tpl_admin(page: Page):
                 icon_content=Icon(icons.PHONE_OUTLINED),
                 label="Item 3",
                 selected_icon=icons.PHONE,
+            ),
+        ],
+    )
+
+    header = AppBar(
+        title=Text("SRC-CMS | Admin"),
+        bgcolor=colors.PRIMARY,
+        color=colors.ON_PRIMARY,
+        leading=IconButton(icon=icons.MENU, on_click=lambda e: page.open(drawer)),
+        actions=[  # Элементы справа
+            IconButton(
+                icon=icons.PERSON,
+                tooltip="Профиль",
+                on_click=lambda e: page.go("/profile"),
+                visible=False if user_group == 'guest' else True
+            ),
+            IconButton(
+                icon=icons.ADMIN_PANEL_SETTINGS_OUTLINED,
+                tooltip="Админ Панель",
+                on_click=lambda e: page.go("/admin"),
+                visible=False if user_group != 'admin' else True
             ),
         ],
     )
