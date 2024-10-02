@@ -68,7 +68,7 @@ def tpl_login(page: Page):
     user_password_input = TextField(label='Пароль', expand=True, password=True, can_reveal_password=True)
     user_remember_switch = CupertinoSwitch(label="Запомнить?")
     user_redirect_register_button = TextButton(text='Нет аккаунта?', on_click=lambda _e: page.go("/register"))
-    user_data_submit_button = CupertinoFilledButton(text='Войти', icon=icons.LOGIN)
+    user_data_submit_button = CupertinoFilledButton(text='Войти', icon=icons.LOGIN, on_click=validation_form)
 
     # Определение формы
     form = Column(
