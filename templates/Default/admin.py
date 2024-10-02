@@ -12,7 +12,7 @@ def tpl_admin(page: Page):
         page.add(Text(f"Selected Index changed: {e.selected_index}"))
         # page.close(drawer)
     
-    btn = ft.ElevatedButton("Show drawer", on_click=lambda e: page.open(drawer))
+    btn = ElevatedButton("Show drawer", on_click=lambda e: page.open(drawer))
 
     drawer = NavigationDrawer(
         on_dismiss=handle_dismissal,
