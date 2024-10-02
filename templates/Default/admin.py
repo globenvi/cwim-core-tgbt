@@ -11,6 +11,8 @@ def tpl_admin(page: Page):
     def handle_change(e):
         page.add(Text(f"Selected Index changed: {e.selected_index}"))
         # page.close(drawer)
+    
+    btn = ft.ElevatedButton("Show drawer", on_click=lambda e: page.open(drawer))
 
     drawer = NavigationDrawer(
         on_dismiss=handle_dismissal,
@@ -57,6 +59,7 @@ def tpl_admin(page: Page):
         ],
     )
 
+
     footer = Container(
         content=Text("© 2024 Admin Panel"),
         padding=10,
@@ -67,8 +70,7 @@ def tpl_admin(page: Page):
         scroll=ScrollMode.AUTO,
         controls=[
             header,
-            drawer,
-            footer
+            btn
 
         ]
     )
