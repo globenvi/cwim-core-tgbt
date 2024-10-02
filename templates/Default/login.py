@@ -55,7 +55,6 @@ def tpl_login(page: Page):
                     page.client_storage.set('login', user_data.get('login'))
                     page.client_storage.set('email', user_data.get('email'))
                     page.client_storage.set('role', user_data.get('role'))
-                    page.client_storage.set('registered_date', user_data.get('registered_date').isoformat())
                     page.go('/index')
                 page.go('/index')
             else:
