@@ -199,6 +199,7 @@ def tpl_admin(page: Page):
                     bgcolor=colors.BLUE,
                     padding=20,
                     alignment=alignment.center,
+                    content=rail
                 )
             ),
 
