@@ -78,7 +78,7 @@ def tpl_register(page: Page):
             'login': user_login_input.value,
             'email': user_email_input.value,
             'password': user_password_input.value,
-            'role': "user",
+            'user_group': "user",
             'registerd_date': datetime.now().isoformat(),
             'auth_method': 'default',
         })

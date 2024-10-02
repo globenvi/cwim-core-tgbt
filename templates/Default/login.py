@@ -45,19 +45,11 @@ def tpl_login(page: Page):
                     page.session.set('id', user_data.get('id'))
                     page.session.set('login', user_data.get('login'))
                     page.session.set('email', user_data.get('email'))
-                    page.session.set('role', user_data.get('role'))
+                    page.session.set('user_group', user_data.get('user_group'))
                     page.session.set('registered_date', user_data.get('registered_date'))
                     success_snack('Авторизация прошла успешно!')
                     process_bar.visible = False
                     page.update()
-
-                    if user_remember_switch.value:
-                        page.client_storage.set('id', user_data.get('id'))
-                        page.client_storage.set('login', user_data.get('login'))
-                        page.client_storage.set('email', user_data.get('email'))
-                        page.client_storage.set('role', user_data.get('role'))
-                        page.go('/index')
-                    page.go('/index')
             else:
                 process_bar.visible = False
                 page.update()
@@ -66,6 +58,14 @@ def tpl_login(page: Page):
             process_bar.visible = False
             page.update()
             error_snack('Неверный логин или пароль!')
+
+        if user_remember_switch.value:
+                        page.client_storage.set('id', user_data.get('id'))
+                        page.client_storage.set('login', user_data.get('login'))
+                        page.client_storage.set('email', user_data.get('email'))
+                        page.client_storage.set('user_group', user_data.get('user_group'))
+
+        page.go('/index')  # Переходим на страницу главной
 
     # Поля ввода
     user_login_input = TextField(label='Логин', expand=True)
