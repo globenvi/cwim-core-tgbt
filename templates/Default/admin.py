@@ -188,14 +188,14 @@ def tpl_admin(page: Page):
     return Column(
         controls=[
             header,
-            Row(
-                [
-                    rail,
-                    VerticalDivider(width=2),
-                    body_content,  # Контент расположен сверху
-                ],
+            Container(
+                padding=20,
+                alignment=alignment.center,
+                bgcolor=colors.RED_50,
                 expand=True,
+                content=Container(
+                )
             ),
-            footer
+
         ]
     )
