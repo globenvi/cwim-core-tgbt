@@ -1,71 +1,138 @@
-from flet import *
-from flet_core.alignment import center
-from flet_core.cupertino_icons import BOLD_UNDERLINE
-from services.DatabaseService import JSONService
 import time
+from datetime import datetime
+
+from flet import *
+
+from services.DatabaseService import JSONService
+db_service = JSONService()
 
 def tpl_register(page: Page):
-    page.title = 'Регистрация'
+    page.title = 'Авторизация'
     page.theme_mode = ThemeMode.SYSTEM
     page.vertical_alignment = MainAxisAlignment.CENTER
     page.horizontal_alignment = CrossAxisAlignment.CENTER
 
-    if page.session.get('user_group') == 'user' or page.client_storage.get('user_group') == 'user':
-        page.go('/index')
+    #SNACKS
+    page.snack_bar = SnackBar(
+        content=Text("Hello, world!"),
+        action="Alright!",
+    )
 
-    user_login_input = TextField(label='Login')
-    user_password_input = TextField(label='Password', password=True)
-    user_email_input = TextField(label='Email')
-
-    pb = ProgressBar(width=300, value=0, visible=False)
-
-    def err_snack(e, err_text):
-        page.snack_bar = SnackBar(content=Text(f'{err_text}', weight=BOLD_UNDERLINE))
+    def error_snack(message):
+        page.snack_bar = SnackBar(Text(f'{message}'))
         page.snack_bar.bgcolor = colors.RED
         page.snack_bar.open = True
         page.update()
 
-    def success_snack(e, msg_text):
-        page.snack_bar = SnackBar(content=Text(f'{msg_text}', weight=BOLD_UNDERLINE))
+    def success_snack(message):
+        page.snack_bar = SnackBar(Text(f'{message}'))
         page.snack_bar.bgcolor = colors.GREEN
         page.snack_bar.open = True
         page.update()
 
-    async def collect_data():
-        db_service = JSONService()
-        pb.visible = True
+    # Заголовок формы
+    from_header = Text('Регистрация', size=25, text_align=alignment.center)
+
+    # Процесс ринг
+    process_bar = ProgressBar(visible=False)
+
+    # Validation
+    async def validate_form_data(e):
+        process_bar.visible = True
         page.update()
 
-        if not db_service.find_one('users', {'login': user_login_input.value}):
-            db_service.create('users', {
-                'login': user_login_input.value,
-                'password': user_password_input.value,
-                'email': user_email_input.value,
-                'user_group': 'user',
-                'registration_date': time.strftime('%Y-%m-%d %H:%M:%S')
-            })
-            pb.value = 100
-            page.go('/login')
+        user_data = db_service.find_one('users', {'login': user_login_input.value})
 
-    async def validate_form(e):
-        if not user_login_input.value or not user_password_input.value or not user_email_input.value:
-            err_snack(e, 'Заполните все поля!')
-        else:
-            pb.visible = True
+        if user_data:
+            process_bar.visible = False
             page.update()
-            await collect_data()
-            success_snack(e, 'Регистрация прошла успешно!')
+            error_snack('Пользователь с такими данными уже существует!')
+            return
 
-    submit_button = CupertinoFilledButton('Зарегистрироваться', on_click=validate_form, alignment=center)
+        if not user_login_input.value:
+            process_bar.visible = False
+            page.update()
+            error_snack('Не указан логин!')
+            return
 
-    return Column(
+        if not user_email_input.value.find('@') or not user_email_input.value.endswith('.com') and not user_email_input.value.endswith('.ru'):
+            process_bar.visible = False
+            page.update()
+            error_snack('Не корректно указана почта')
+            return
+
+        if not user_password_input.value:
+            process_bar.visible = False
+            page.update()
+            error_snack('Не указан пароль!')
+            return
+
+        if len(user_password_input.value) < 7:
+            process_bar.visible = False
+            page.update()
+            error_snack('Минимальная длинна пароля 7 знаков!')
+            return
+
+
+        db_service.create('users', {
+            'login': user_login_input.value,
+            'email': user_email_input.value,
+            'password': user_password_input.value,
+            'role': "user",
+            'registerd_date': datetime.now().isoformat(),
+            'auth_method': 'default',
+        })
+
+        process_bar.visible = False
+        success_snack('Добро пожаловать! Теперь авторизуйтесь.')
+        page.go('/login')
+
+
+
+
+    # Поля ввода
+    user_login_input = TextField(label='Логин', expand=True)
+    user_email_input = TextField(label='Почта', expand=True)
+    user_password_input = TextField(label='Пароль', expand=True, password=True, can_reveal_password=True)
+    user_redirect_register_button = TextButton(text='Есть аккаунт?', on_click=lambda _e: page.go("/login"))
+    user_data_submit_button = CupertinoFilledButton(text='Зарегистрироваться', icon=icons.APP_REGISTRATION, on_click=validate_form_data)
+
+    # Определение формы
+    form = Column(
         controls=[
-            Text(page.title, size=25, weight="bold"),
+            from_header,
             user_login_input,
-            user_password_input,
             user_email_input,
-            pb,
-            submit_button
+            user_password_input,
+            user_redirect_register_button,
+            Column(
+                [
+                    user_data_submit_button,
+                    process_bar
+                ]
+            )
         ],
-        alignment=MainAxisAlignment.CENTER
+        alignment=MainAxisAlignment.START,
+        horizontal_alignment=CrossAxisAlignment.CENTER,
+        spacing=10
+    )
+
+    # Возврат главного контейнера
+    return Column(
+        [
+          Container(
+              padding=20,
+              alignment=alignment.center,
+              expand=True,
+              content=Container(
+                  bgcolor=colors.ON_SECONDARY,
+                  border_radius=10,
+                  padding=20,
+                  alignment=alignment.center,
+                  width=340,
+                  height=360,
+                  content=form
+              )
+          )
+        ],
     )
