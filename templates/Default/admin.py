@@ -70,7 +70,8 @@ def tpl_admin(page: Page):
         scroll=ScrollMode.AUTO,
         controls=[
             header,
-            btn
+            btn,
+            drawer
 
         ]
     )
