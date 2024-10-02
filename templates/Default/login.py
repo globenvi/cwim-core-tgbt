@@ -1,6 +1,7 @@
-from tkinter import Button
-
 from flet import *
+
+from services.DatabaseService import JSONService
+db_service = JSONService()
 
 def tpl_login(page: Page):
     page.title = 'Авторизация'
@@ -10,6 +11,57 @@ def tpl_login(page: Page):
 
     # Заголовок формы
     from_header = Text('Авторизация', size=25, text_align=alignment.center)
+
+    # Процесс бар
+    process_bar = ProgressBar(visible=False)
+
+        #SNACKS
+    page.snack_bar = SnackBar(
+        content=Text("Hello, world!"),
+        action="Alright!",
+    )
+
+    def error_snack(message):
+        page.snack_bar = SnackBar(Text(f'{message}'))
+        page.snack_bar.bgcolor = colors.RED
+        page.snack_bar.open = True
+        page.update()
+
+    def success_snack(message):
+        page.snack_bar = SnackBar(Text(f'{message}'))
+        page.snack_bar.bgcolor = colors.GREEN
+        page.snack_bar.open = True
+        page.update()
+
+    def validation_form(e):
+        process_bar.visible = True
+        page.update()
+
+        user_data = db_service.find_one('users', {'login': user_login_input.value})
+
+        if user_data:
+            if user_data.get('password') == user_password_input.value and user_data.get('login') == user_login_input.value:
+                page.session.set('id', user_data.get('id'))
+                page.session.set('login', user_data.get('login'))
+                page.session.set('email', user_data.get('email'))
+                page.session.set('role', user_data.get('role'))
+                page.session.set('registered_date', user_data.get('registered_date'))
+                success_snack('Авторизация прошла успешно!')
+                process_bar.visible = False
+                page.update()
+
+                if user_remember_switch.value:
+                    page.client_storage.set('id', user_data.get('id'))
+                    page.client_storage.set('login', user_data.get('login'))
+                    page.client_storage.set('email', user_data.get('email'))
+                    page.client_storage.set('role', user_data.get('role'))
+                    page.client_storage.set('registered_date', user_data.get('registered_date'))
+
+                page.go('/index')
+            else:
+                process_bar.visible = False
+                page.update()
+                error_snack('Неверный логин или пароль!')
 
     # Поля ввода
     user_login_input = TextField(label='Логин', expand=True)
@@ -26,7 +78,12 @@ def tpl_login(page: Page):
             user_password_input,
             user_remember_switch,
             user_redirect_register_button,
-            user_data_submit_button
+            Column(
+                [
+                    user_data_submit_button,
+                    process_bar
+                ]
+            )
         ],
         alignment=MainAxisAlignment.START,
         horizontal_alignment=CrossAxisAlignment.CENTER,

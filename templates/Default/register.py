@@ -7,7 +7,7 @@ from services.DatabaseService import JSONService
 db_service = JSONService()
 
 def tpl_register(page: Page):
-    page.title = 'Авторизация'
+    page.title = 'Регистрация'
     page.theme_mode = ThemeMode.SYSTEM
     page.vertical_alignment = MainAxisAlignment.CENTER
     page.horizontal_alignment = CrossAxisAlignment.CENTER
