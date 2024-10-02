@@ -147,36 +147,35 @@ def tpl_admin(page: Page):
         elif e.control.selected_index == 3:  # Кнопка "Настройки системы"
             update_body_content([Text("Настройки системы", size=18)])  # Заменить содержимым настроек
 
-    # Навигационное меню
-    rail = NavigationRail(
-        destinations=[
-            NavigationRailDestination(
-                icon=icons.PEOPLE_OUTLINE,
-                selected_icon=icons.PEOPLE,
-                label="Управление пользователями"
+    def handle_dismissal(e):
+        page.add(ft.Text("Drawer dismissed"))
+
+    def handle_change(e):
+        page.add(ft.Text(f"Selected Index changed: {e.selected_index}"))
+        # page.close(drawer)
+
+    drawer = ft.NavigationDrawer(
+        on_dismiss=handle_dismissal,
+        on_change=handle_change,
+        controls=[
+            ft.Container(height=12),
+            ft.NavigationDrawerDestination(
+                label="Item 1",
+                icon=ft.icons.DOOR_BACK_DOOR_OUTLINED,
+                selected_icon_content=ft.Icon(ft.icons.DOOR_BACK_DOOR),
             ),
-            NavigationRailDestination(
-                icon=icons.MONITOR_HEART,
-                selected_icon=icons.MONITOR_HEART,
-                label="Активные сессии"
+            ft.Divider(thickness=2),
+            ft.NavigationDrawerDestination(
+                icon_content=ft.Icon(ft.icons.MAIL_OUTLINED),
+                label="Item 2",
+                selected_icon=ft.icons.MAIL,
             ),
-            NavigationRailDestination(
-                icon=icons.EXTENSION_OUTLINED,
-                selected_icon=icons.EXTENSION,
-                label="Управление модулями"
-            ),
-            NavigationRailDestination(
-                icon=icons.SETTINGS_OUTLINED,
-                selected_icon=icons.SETTINGS,
-                label="Настройки системы"
-            ),
-            NavigationRailDestination(
-                icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
-                selected_icon=icons.LOGOUT if user_group != "guest" else icons.LOGIN,
-                label="Logout" if user_group != "guest" else "Войти",
+            ft.NavigationDrawerDestination(
+                icon_content=ft.Icon(ft.icons.PHONE_OUTLINED),
+                label="Item 3",
+                selected_icon=ft.icons.PHONE,
             ),
         ],
-        on_change=lambda e: menu_clicked(e),
     )
 
     footer = Container(
@@ -189,19 +188,8 @@ def tpl_admin(page: Page):
         scroll=ScrollMode.AUTO,
         controls=[
             header,
-            Container(
-                padding=20,
-                alignment=alignment.center,
-                bgcolor=colors.RED_50,
-                expand=True,
-                content=Container(
-                    width=1280,
-                    bgcolor=colors.BLUE,
-                    padding=20,
-                    alignment=alignment.center,
-                    content=rail
-                )
-            ),
+            drawer,
+            footer
 
         ]
     )
