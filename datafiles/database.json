@@ -1,5 +1,14 @@
 {
     "users": [
+        {
+            "login": "dottenv",
+            "email": "alexgolubev1404@gmail.com",
+            "password": "Lolkalol1488",
+            "user_group": "admin",
+            "registerd_date": "2024-10-03T20:29:18.300772",
+            "auth_method": "default",
+            "id": 1
+        }
     ],
     "users_groups": [
         {

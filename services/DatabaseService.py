@@ -3,7 +3,7 @@ import os
 
 
 class JSONService:
-    def __init__(self, data_file_path="./cwim-core-tgbt/datafiles/database.json"):
+    def __init__(self, data_file_path="./datafiles/database.json"):
         self.data_file_path = data_file_path
         self.data = self.load_data()
 

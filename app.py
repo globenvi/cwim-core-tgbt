@@ -8,10 +8,10 @@ from colorama import Fore, Style, init
 init(autoreset=True)
 
 # Путь к папке шаблонов и другим файлам
-TEMPLATES_DIR = "./cwim-core-tgbt/templates/Default"
-ROUTES_FILE = "./cwim-core-tgbt/routes.json"
-CONFIG_FILE = "./cwim-core-tgbt/config.json"
-DATABASE_FILE = "./cwim-core-tgbt/datafiles/database.json"
+TEMPLATES_DIR = "./templates/Default"
+ROUTES_FILE = "./routes.json"
+CONFIG_FILE = "./config.json"
+DATABASE_FILE = "./datafiles/database.json"
 
 # Переменная для хранения состояния отладки
 DEBUG_MODE = False
@@ -137,4 +137,4 @@ def main(page: Page):
 
 if __name__ == "__main__":
     import flet as ft
-    ft.app(target=main, view=ft.AppView.WEB_BROWSER)
+    ft.app(target=main, view=ft.AppView.FLET_APP, port=8080)

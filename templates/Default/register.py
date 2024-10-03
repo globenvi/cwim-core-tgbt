@@ -121,7 +121,7 @@ def tpl_register(page: Page):
     return Column(
         [
           Container(
-              padding=20,
+              padding=160,
               alignment=alignment.center,
               expand=True,
               content=Container(
@@ -135,4 +135,5 @@ def tpl_register(page: Page):
               )
           )
         ],
+        scroll=ScrollMode.ADAPTIVE
     )

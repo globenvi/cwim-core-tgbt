@@ -98,7 +98,7 @@ def tpl_login(page: Page):
     return Column(
         [
           Container(
-              padding=20,
+              padding=160,
               alignment=alignment.center,
               expand=True,
               content=Container(
@@ -112,4 +112,5 @@ def tpl_login(page: Page):
               )
           )
         ],
+        scroll=ScrollMode.ADAPTIVE,
     )
