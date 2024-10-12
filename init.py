@@ -1,10 +1,6 @@
 import asyncio
 import subprocess
 import json
-import betterlogging as logging
-
-# Настраиваем логирование
-logging.basic_colorized_config()
 
 # Функция для чтения конфигурационного файла
 def load_config():

@@ -1,10 +1,5 @@
 import json
 import os
-import logging
-
-# Настройка логгирования
-logging.basicConfig(level=logging.INFO, format="%(asctime)s [%(levelname)s] %(message)s")
-logger = logging.getLogger(__name__)
 
 
 class JSONService:
@@ -16,24 +11,20 @@ class JSONService:
             data_file_path = os.path.join(current_dir, "../datafiles/database.json")
 
         self.data_file_path = os.path.abspath(data_file_path)  # Приводим к абсолютному пути
-        logger.info(f"Используемый путь к файлу данных: {self.data_file_path}")
         self.data = self.load_data()
 
     def load_data(self):
         """Загрузка данных из файла JSON"""
         if not os.path.exists(self.data_file_path):
-            logger.info(f"Файл {self.data_file_path} не найден. Создаем новый файл.")
             with open(self.data_file_path, 'w') as f:
                 json.dump({}, f)  # Создаем пустой JSON объект
         with open(self.data_file_path, 'r') as f:
-            logger.info(f"Загружаем данные из {self.data_file_path}")
             return json.load(f)
 
     def save_data(self):
         """Сохранение данных в файл JSON"""
         with open(self.data_file_path, 'w') as f:
             json.dump(self.data, f, indent=4)
-        logger.info(f"Данные успешно сохранены в {self.data_file_path}")
 
     def create(self, section, record):
         """Создание записи в указанном разделе JSON"""
@@ -43,7 +34,6 @@ class JSONService:
         # Проверка на дубликаты по всем полям
         for existing_record in self.data[section]:
             if all(existing_record.get(key) == value for key, value in record.items()):
-                logger.warning(f"Найдена дубликат записи: {record}. Запись не создана.")
                 return
 
         # Генерация уникального ID
@@ -52,7 +42,6 @@ class JSONService:
 
         self.data[section].append(record)
         self.save_data()
-        logger.info(f"Запись создана в разделе '{section}': {record}")
 
     def read(self, section):
         """Чтение всех записей из указанного раздела JSON"""
@@ -65,9 +54,7 @@ class JSONService:
                 if record['id'] == record_id:
                     self.data[section][idx].update(updated_record)
                     self.save_data()
-                    logger.info(f"Запись обновлена в разделе '{section}': {self.data[section][idx]}")
                     return
-        logger.warning(f"Запись с ID {record_id} не найдена в разделе '{section}'.")
 
     def delete(self, section, record_id):
         """Удаление записи по ID в указанном разделе"""
@@ -76,9 +63,7 @@ class JSONService:
                 if record['id'] == record_id:
                     deleted_record = self.data[section].pop(idx)
                     self.save_data()
-                    logger.info(f"Запись удалена из раздела '{section}': {deleted_record}")
                     return
-        logger.warning(f"Запись с ID {record_id} не найдена в разделе '{section}'.")
 
     def find_one(self, section, query):
         """Поиск одной записи по критериям в указанном разделе"""
@@ -104,9 +89,7 @@ class JSONService:
     def test_connection(self):
         """Тестирует соединение с файлом JSON, проверяя его доступность и читаемость"""
         if os.path.exists(self.data_file_path) and os.access(self.data_file_path, os.R_OK | os.W_OK):
-            logger.info(f"Файл {self.data_file_path} доступен для чтения и записи")
             return True
-        logger.error(f"Файл {self.data_file_path} не доступен для чтения или записи")
         return False
 
 
