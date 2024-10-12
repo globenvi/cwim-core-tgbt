@@ -1,18 +1,16 @@
 {
-    "admin_pass": "Lolkalol1488",
-
+    "modules": {},
+    "admins": [
+        665852999
+    ],
     "core_settings": {
-        "default_template": "default",
-        "debug_mode": true
+        "core_autoupdate": true,
+        "modules_autoupdate": true,
+        "modules_autoload": false,
+        "debug_mode": false,
+        "web_ui_active": true
     },
-
-    "databases": {
-        "mysql": {
-        "host": "localhost",
-        "port": 3306,
-        "user": "root",
-        "password": "password",
-        "database": "my_database"
-        }
+    "database": {
+        "url": "sqlite:///./datafiles/test.db"
     }
 }

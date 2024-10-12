@@ -1,60 +1,52 @@
 {
     "users": [
         {
-            "login": "dottenv",
-            "email": "alexgolubev1404@gmail.com",
-            "password": "Lolkalol1488",
+            "tgid": 665852999,
+            "username": "UnoDosTresQuadro",
+            "fname": ".env",
+            "lname": null,
+            "is_bot": false,
+            "is_premium": true,
             "user_group": "admin",
-            "registerd_date": "2024-10-03T20:29:18.300772",
-            "auth_method": "default",
             "id": 1
+        },
+        {
+            "tgid": 2101343321,
+            "username": "a_obrikova",
+            "fname": "\u0410\u043b\u0438\u043d\u0430",
+            "lname": null,
+            "is_bot": false,
+            "is_premium": null,
+            "user_group": "user",
+            "id": 2
+        },
+        {
+            "tgid": 396960067,
+            "username": "Bobot57",
+            "fname": "\u0420\u043e\u043c\u0430\u043d \ud83e\udd16",
+            "lname": null,
+            "is_bot": false,
+            "is_premium": null,
+            "user_group": "user",
+            "id": 3
         }
     ],
-    "users_groups": [
+    "user_settings": [
         {
-            "admin": [
-                {
-                    "id": 1,
-                    "created_by": "dottenv",
-                    "created_at": "2022-03-15 12:34:56",
-                    "updated_by": "dottenv",
-                    "updated_at": "2022-03-15 12:34:56",
-                    "name": "Admin",
-                    "description": "Global administrator",
-                    "permissions": [
-                        "all"
-                    ]
-                }
-            ],
-            "users": [
-                {
-                    "id": 2,
-                    "created_by": "dottenv",
-                    "created_at": "2022-03-15 12:34:56",
-                    "updated_by": "dottenv",
-                    "updated_at": "2022-03-15 12:34:56",
-                    "name": "User",
-                    "description": "Standard user",
-                    "permissions": [
-                        "user_read",
-                        "user_write"
-                    ]
-                }
-            ],
-            "guest": [
-                {
-                    "id": 3,
-                    "created_by": "dottenv",
-                    "created_at": "2022-03-15 12:34:56",
-                    "updated_by": "dottenv",
-                    "updated_at": "2022-03-15 12:34:56",
-                    "name": "Guest",
-                    "description": "Guest user",
-                    "permissions": [
-                        "user_read"
-                    ]
-                }
-            ]
+            "tgid": 665852999,
+            "id": 1,
+            "theme_dark_mode": true,
+            "notifications": true,
+            "web_core_updates_download_auto": true,
+            "web_core_updates_install_auto": true
+        },
+        {
+            "tgid": 2101343321,
+            "id": 2
+        },
+        {
+            "tgid": 396960067,
+            "id": 3
         }
     ]
 }

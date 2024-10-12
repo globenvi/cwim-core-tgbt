@@ -1,0 +1,38 @@
+{
+    "/auth/": {
+        "module": "auth",
+        "template": "tpl_auth",
+        "enabled": true,
+        "group_access": "all"
+    },
+    "/settings/": {
+        "module": "settings",
+        "template": "tpl_settings",
+        "enabled": true,
+        "group_access": "user"
+    },
+    "/profile/": {
+        "module": "profile",
+        "template": "tpl_profile",
+        "enabled": true,
+        "group_access": "user"
+    },
+    "/servers/": {
+        "module": "servers",
+        "template": "tpl_servers",
+        "enabled": true,
+        "group_access": "user"
+    },
+    "/add_server/": {
+        "module": "add_server",
+        "template": "tpl_add_server",
+        "enabled": true,
+        "group_access": "user"
+    },
+    "/chat/": {
+        "module": "chat",
+        "template": "tpl_chat",
+        "enabled": true,
+        "group_access": "all"
+    }
+}
