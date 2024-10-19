@@ -8,7 +8,7 @@
         "modules_autoupdate": true,
         "modules_autoload": false,
         "debug_mode": false,
-        "web_ui_active": false
+        "web_ui_active": true
     },
     "database": {
         "url": "sqlite:///./datafiles/test.db"
