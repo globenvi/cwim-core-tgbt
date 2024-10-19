@@ -171,4 +171,4 @@ async def main(page: Page):
 if __name__ == "__main__":
     import flet as ft
 
-    asyncio.run(ft.app(target=main, view=ft.AppView.WEB_BROWSER, port=5000, assets_dir='assets'))
+    asyncio.run(ft.app(target=main, port=5000, assets_dir='assets'))
