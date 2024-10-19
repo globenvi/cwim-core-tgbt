@@ -8,6 +8,7 @@ from core.middlewares.is_admin import isAdmin
 
 router = Router()
 
-@router.message(Command("ban"), isAdmin())
+@router.message(Command("create"))
 async def ban_user(message: Message):
-    await message.reply(f"User USER has been banned.")
+    pass
+"""Server creating"""

@@ -3,50 +3,40 @@
         {
             "tgid": 665852999,
             "username": "UnoDosTresQuadro",
-            "fname": ".env",
-            "lname": null,
-            "is_bot": false,
-            "is_premium": true,
+            "first_name": "\u0410\u043b\u0435\u043a\u0441\u0435\u0439",
+            "last_name": "\u0413\u043e\u043b\u0443\u0431\u0435\u0432",
             "user_group": "admin",
+            "language_code": "ru",
+            "is_premium": null,
+            "is_bot": false,
             "id": 1
         },
         {
-            "tgid": 2101343321,
-            "username": "a_obrikova",
-            "fname": "\u0410\u043b\u0438\u043d\u0430",
-            "lname": null,
-            "is_bot": false,
-            "is_premium": null,
+            "tgid": 1191253350,
+            "username": "DarkAngelGo",
+            "first_name": "Masha",
+            "last_name": "Abramova",
             "user_group": "user",
+            "language_code": "ru",
+            "is_premium": null,
+            "is_bot": false,
             "id": 2
-        },
-        {
-            "tgid": 396960067,
-            "username": "Bobot57",
-            "fname": "\u0420\u043e\u043c\u0430\u043d \ud83e\udd16",
-            "lname": null,
-            "is_bot": false,
-            "is_premium": null,
-            "user_group": "user",
-            "id": 3
         }
     ],
-    "user_settings": [
+    "users_settings": [
         {
             "tgid": 665852999,
+            "dark_mode": false,
+            "notifications": false,
             "id": 1,
-            "theme_dark_mode": true,
+            "show_uid": false
+        },
+        {
+            "tgid": 1191253350,
+            "dark_mode": false,
             "notifications": true,
-            "web_core_updates_download_auto": true,
-            "web_core_updates_install_auto": true
-        },
-        {
-            "tgid": 2101343321,
-            "id": 2
-        },
-        {
-            "tgid": 396960067,
-            "id": 3
+            "id": 2,
+            "show_uid": true
         }
     ]
 }

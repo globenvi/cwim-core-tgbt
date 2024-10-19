@@ -1,144 +1,117 @@
 import os
-import json
-
-from aiogram import Router
-
-from aiogram.types import Message, WebAppInfo, InlineKeyboardMarkup, InlineKeyboardButton
-from aiogram.filters import CommandStart, Command
-
-from services.DatabaseService import JSONService
-
-from core.middlewares.is_admin import isAdmin
-
-router = Router()
-db_service = JSONService()
+import subprocess
+import urllib.request
+import zipfile
+from tqdm import tqdm
+import time
 
 
-@router.message(Command('test'))
-async def test_db(message: Message):
-    conntion = db_service.test_connection()
+def download_steamcmd(steamcmd_dir):
+    """Функция для автоматической загрузки SteamCMD"""
+    if not os.path.exists(steamcmd_dir):
+        os.makedirs(steamcmd_dir)
 
-    if conntion:
-        await message.answer("DB OK")
+    steamcmd_zip_url = "https://steamcdn-a.akamaihd.net/client/installer/steamcmd.zip"
+    local_zip_path = os.path.join(steamcmd_dir, "steamcmd.zip")
+    steamcmd_exe_path = os.path.join(steamcmd_dir, "steamcmd.exe")
+
+    if not os.path.exists(steamcmd_exe_path):
+        print("Скачивание SteamCMD...")
+
+        # Скачиваем SteamCMD
+        urllib.request.urlretrieve(steamcmd_zip_url, local_zip_path)
+
+        # Распаковываем архив
+        with zipfile.ZipFile(local_zip_path, 'r') as zip_ref:
+            zip_ref.extractall(steamcmd_dir)
+
+        # Удаляем архив после распаковки
+        os.remove(local_zip_path)
+        print("SteamCMD успешно скачан и установлен.")
     else:
-        await message.answer("DB ERR")
+        print("SteamCMD уже установлен.")
+
+    return steamcmd_exe_path
+
+
+def install_css_server(steamcmd_dir, steamcmd_exe):
+    """Функция для установки сервера CSS через SteamCMD с прогрессом"""
+    install_dir = os.path.join(steamcmd_dir, 'steamapps', 'common', 'Counter-Strike Source Dedicated Server')
+
+    if os.path.exists(os.path.join(install_dir, 'srcds.exe')):
+        print("Сервер уже установлен.")
+        return True  # Сервер уже существует, возвращаем True
+
+    steamcmd_command = [
+        steamcmd_exe,
+        '+login', 'anonymous',
+        '+force_install_dir', install_dir,
+        '+app_update', '232330',
+        'validate',
+        '+quit'
+    ]
+
+    tqdm_desc = "Установка сервера CS:S"
+    with tqdm(total=100, desc=tqdm_desc, ncols=100) as pbar:
+        process = subprocess.Popen(steamcmd_command, stdout=subprocess.PIPE, stderr=subprocess.PIPE, text=True,
+                                   bufsize=1)
+
+        while True:
+            output = process.stdout.readline()
+            if output == '' and process.poll() is not None:
+                break
+            if output:
+                tqdm_output_processing(output.strip(), pbar)
+            time.sleep(0.1)
+
+        process.communicate()
+
+    return False  # Сервер был только что установлен, возвращаем False
+
+
+def tqdm_output_processing(output, pbar):
+    """Обновляем прогресс бар на основе вывода SteamCMD"""
+    if "downloading" in output.lower() or "download complete" in output.lower():
+        pbar.update(1)
+    elif "Success!" in output:
+        pbar.update(pbar.total - pbar.n)
+    print(output)  # Выводим строку для отладки
+
+
+def run_css_server(steamcmd_dir):
+    """Функция для запуска сервера CS:S"""
+    install_dir = os.path.join(steamcmd_dir, 'steamapps', 'common', 'Counter-Strike Source Dedicated Server')
+    srcds_exe = os.path.join(install_dir, 'srcds.exe')  # Для Windows
+
+    if not os.path.exists(srcds_exe):
+        print(f"srcds.exe не найден в {install_dir}. Убедитесь, что сервер установлен правильно.")
         return
 
+    server_command = [
+        srcds_exe,
+        '-game', 'cstrike',
+        '-console',
+        '+maxplayers', '16',
+        '+map', 'de_dust2'
+    ]
 
-@router.message(CommandStart())
-async def start(message: Message):
-    if not db_service.find_one('users', {"tgid": message.from_user.id}):
-        await message.answer(f'Добро пожаловать {message.from_user.first_name}!\n'
-                             f'Данные внесены в БД!', parse_mode="HTML")
-        db_service.create('users', {
-            'tgid': message.from_user.id,
-            'username': message.from_user.username,
-            'fname': message.from_user.first_name,
-            'lname': message.from_user.last_name,
-            'is_bot': message.from_user.is_bot,
-            'is_premium': message.from_user.is_premium,
-            'user_group': 'user'
-        })
-        db_service.create('user_settings', {'tgid': message.from_user.id})
-
-@router.message(Command('open'))
-async def start_web_admin(message: Message):
-    test_keyboard = InlineKeyboardMarkup(
-        inline_keyboard=[
-            [
-                InlineKeyboardButton(text="Открыть WEB UI", web_app=WebAppInfo(url=f"https://e250-2-63-201-153.ngrok-free.app/auth/?tgid={message.from_user.id}"
-                                                                                   f"&uname={message.from_user.username}"
-                                                                                   f"&name={message.from_user.first_name}"
-                                                                                   f"&lname={message.from_user.last_name}"
-                                                                                   f"&is_bot={message.from_user.is_bot}"
-                                                                                   f"&is_prem={message.from_user.is_premium}"))
-            ],
-        ],
-        resize_keyboard=True,
-        one_time_keyboard=True,
-        row_width=2,
-        selective=False,  # optional, defaults to False
-    )
-    await message.answer('test', reply_markup=test_keyboard)
+    tqdm_desc = "Запуск сервера CS:S"
+    with tqdm(total=1, desc=tqdm_desc, ncols=100) as pbar:
+        subprocess.Popen(server_command)
+        pbar.update(1)
 
 
-@router.message(Command('install'))
-async def install_core_command(message: Message):
-    # Load config.json
-    with open('config.json', 'r') as f:
-        config = json.load(f)
+if __name__ == "__main__":
+    # Путь для установки SteamCMD
+    steamcmd_directory = r'steamcmd'  # Измените на нужный путь для вашей системы
 
-    # Check if 'modules' section exists in config.json
-    if 'modules' in config:
-        # Iterate through each module in the 'modules' section
-        for module_name, module_info in config['modules'].items():
-            # Check if the module is active
-            if module_info['active']:
-                # Check if all required module information keys exist
-                if all(key in module_info for key in ['version', 'author', 'tg_name']):
-                    # await message.answer the module information
-                    await message.answer(
-                        f"Предустановленный модуль: {module_name}, версия: {module_info['version']}, автор: {module_info['author']}, имя в Telegram: {module_info['tg_name']}")
-                else:
-                    # await message.answer a warning if any required module information keys are missing
-                    await message.answer(f"Warning: Missing required information for module {module_name}")
-            else:
-                # await message.answer the module name if it's not active
-                await message.answer(f"Модуль {module_name} не установлен")
-    else:
-        # await message.answer a warning if the 'modules' section does not exist in config.json
-        await message.answer("Warning: 'modules' section not found in config.json")
+    # Шаг 1: Скачивание и установка SteamCMD
+    steamcmd_path = download_steamcmd(steamcmd_directory)
 
-    # Check if 'core_settings' section exists in config.json
-    if 'core_settings' in config:
-        # await message.answer the core_settings information
-        await message.answer(f"Настройки ядра: {config['core_settings']}")
-    else:
-        # await message.answer a warning if the 'core_settings' section does not exist in config.json
-        await message.answer("Warning: 'core_settings' section not found in config.json")
+    # Шаг 2: Проверка и установка сервера CS:S с логированием (если нужно)
+    server_exists = install_css_server(steamcmd_directory, steamcmd_path)
 
-    # Check if 'admins' section exists in config.json
-    if 'admins' in config:
-        # Check if the 'admins' list is empty
-        if not config['admins']:
-            # Add the first admin to the list if it's empty
-            config['admins'] = [message.from_user.id]
-            await message.answer("Первый администратор добавлен в список")
-        else:
-            # await message.answer the list of admins if it's not empty
-            await message.answer(f"Администраторы: {config['admins']}")
-    else:
-        # await message.answer a warning if the 'admins' section does not exist in config.json
-        await message.answer("Warning: 'admins' section not found in config.json")
-
-    # Save the updated config.json
-    with open('config.json', 'w') as f:
-        json.dump(config, f, indent=4)
-
-
-@router.message(Command('modules'), isAdmin())
-async def modules_command(message: Message):
-    # Load config.json
-    with open('config.json', 'r') as f:
-        config = json.load(f)
-
-    # Check if 'modules' section exists in config.json
-    if 'modules' in config:
-        # Iterate through each module in the 'modules' section
-        for module_name, module_info in config['modules'].items():
-            # Check if the module is active
-            if module_info['active']:
-                # Check if all required module information keys exist
-                if all(key in module_info for key in ['version', 'author', 'tg_name']):
-                    # await message.answer the module information
-                    await message.answer(
-                        f"Module: {module_name}\nVersion: {module_info['version']}\nAuthor: {module_info['author']}\nTelegram Name: {module_info['tg_name']}")
-                else:
-                    # await message.answer a warning if any required module information keys are missing
-                    await message.answer(f"Warning: Missing required information for module {module_name}")
-            else:
-                # await message.answer the module name if it's not active
-                await message.answer(f"Module {module_name} is not active")
-    else:
-        # await message.answer a warning if the 'modules' section does not exist in config.json
-        await message.answer("Warning: 'modules' section not found in config.json")
+    # Шаг 3: Запуск сервера CS:S
+    if server_exists:
+        print("Сервер уже установлен. Запуск сервера...")
+    run_css_server(steamcmd_directory)

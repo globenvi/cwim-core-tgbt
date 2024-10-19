@@ -7,10 +7,14 @@ from tqdm import tqdm
 from aiogram import Bot, Dispatcher
 
 from config_reader import settings
+from core.utils.commands import set_commands
 
 async def main():
     bot = Bot(settings.bots.bot_tokken)  # Replace with your bot token
     dp = Dispatcher()
+
+    await set_commands(bot, 'start', 'Запустить бота')
+    await set_commands(bot, 'profile', 'Показать профиль пользователя')
 
     # Get all .py files in the core/handlers and modules directories
     handler_files = [f[:-3] for f in os.listdir('core/handlers') if f.endswith('.py')]
