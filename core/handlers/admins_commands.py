@@ -1,6 +1,7 @@
 # admin_commands.py
 from aiogram import Router
 from aiogram.filters import Command
+from aiogram.types import Message
 
 from services.update_service import UpdateService
 from core.middlewares.is_admin import isAdmin
@@ -8,6 +9,10 @@ from core.keyboards.inline_keyboards import get_open_web_ui_keyboard
 
 router = Router()
 update_service = UpdateService()
+
+@router.message(Command('test'))
+async def test_updates(message: Message):
+    await message.reply('Ты собака')
 
 
 @router.message(Command('get_updates'), isAdmin())
