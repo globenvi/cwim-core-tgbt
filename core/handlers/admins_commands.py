@@ -24,3 +24,26 @@ async def get_updates_command(message):
         await message.answer(f"Доступные обновления:\n{updates}")
     else:
         await message.answer("Обновлений нет.")
+
+
+# admin_commands.py
+@router.message(Command('update_core'), isAdmin())
+async def update_core_command(message):
+    try:
+        await message.answer("Начинаем обновление...")
+        update_service.update_core()
+        await message.answer("Обновление завершено. Система перезапущена.")
+    except Exception as e:
+        await message.answer(f"Ошибка при обновлении: {e}")
+
+
+# admin_commands.py
+@router.message(Command('auto_update_true'), isAdmin())
+async def enable_auto_update_command(message):
+    update_service.set_auto_update(True)
+    await message.answer("Автоматическое обновление включено.")
+
+@router.message(Command('auto_update_false'), isAdmin())
+async def disable_auto_update_command(message):
+    update_service.set_auto_update(False)
+    await message.answer("Автоматическое обновление выключено.")

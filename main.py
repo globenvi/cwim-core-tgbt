@@ -8,6 +8,17 @@ from aiogram import Bot, Dispatcher
 
 from config_reader import settings
 from core.utils.commands import set_commands
+from services.update_service import UpdateService
+
+update_service = UpdateService()
+
+async def check_for_updates():
+    while True:
+        if update_service.config.get('auto_update', False):
+            updates = update_service.get_updates()
+            if updates:
+                update_service.update_core()
+        await asyncio.sleep(21600)  # Проверка каждые 6 часов
 
 async def main():
     bot = Bot(settings.bots.bot_tokken)  # Replace with your bot token
@@ -45,7 +56,7 @@ async def main():
 
     try:
         await bot.delete_webhook(drop_pending_updates=True)
-        await dp.start_polling(bot)
+        await dp.start_polling(bot, on_startup=check_for_updates)
 
     finally:
         await bot.session.close()
