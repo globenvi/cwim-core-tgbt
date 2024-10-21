@@ -12,7 +12,7 @@ module_catalog_service = ModuleCatalogService()
 router = Router()
 update_service = UpdateService()
 
-@router.message(Command('modules'), isAdmin(), isPrivate())
+@router.message(Command('modules'), isAdmin())
 async def show_modules_catalog(message: Message):
     keyboard = await module_catalog_service.create_module_keyboard(page=1)
     await message.answer("Каталог модулей:", reply_markup=keyboard)
@@ -44,7 +44,7 @@ async def get_updates_command(message):
         await message.answer("Обновлений нет.")
 
 # admin_commands.py
-@router.message(Command('update_core'), isAdmin(), isPrivate())
+@router.message(Command('update_core'), isAdmin())
 async def update_core_command(message):
     try:
         await message.answer("Начинаем обновление...")
@@ -55,12 +55,12 @@ async def update_core_command(message):
 
 
 # admin_commands.py
-@router.message(Command('auto_update_true'), isAdmin(), isPrivate())
+@router.message(Command('auto_update_true'), isAdmin())
 async def enable_auto_update_command(message):
     update_service.set_auto_update(True)
     await message.answer("Автоматическое обновление включено.")
 
-@router.message(Command('auto_update_false'), isAdmin(), isPrivate())
+@router.message(Command('auto_update_false'), isAdmin())
 async def disable_auto_update_command(message):
     update_service.set_auto_update(False)
     await message.answer("Автоматическое обновление выключено.")
