@@ -19,20 +19,13 @@ def get_profile_keyboard():
         row_width=2,
     )
 
-def get_open_web_ui_keyboard(tgid):
+def get_open_web_ui_keyboard():
     return InlineKeyboardMarkup(
         inline_keyboard=[
             [
-                InlineKeyboardButton(text="Изменить Аватар", callback_data="change_avatar")
-            ],
-            [
-                InlineKeyboardButton(text="Изменить Ник", callback_data="change_nick"),
-                InlineKeyboardButton(text="Изменить Подпись", callback_data="change_signature")
-            ],
-            [
                 InlineKeyboardButton(
-                    text='⚙️ Настройки',
-                    web_app=WebAppInfo(url=f'/profile/?tgid={tgid}')
+                    text='⚙️ Открыть GPT',
+                    web_app=WebAppInfo(url='https://cwim-team.ru:8080')
                 )
             ]
         ]
