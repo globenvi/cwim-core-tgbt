@@ -56,7 +56,6 @@ class UpdateService:
         self.save_config()
 
     def restart_system(self):
-        """Перезапуск бота, Ngrok и Flet UI"""
-        os.system("pkill -f 'python init.py'")
-        subprocess.run(["python", "init.py"])
-
+        """Перезапуск бота, Ngrok и Flet UI после обновления"""
+        os.system("pkill -f 'python main.py'")  # Завершаем текущий процесс
+        subprocess.run(["python", "main.py"])  # Перезапускаем с обновленного кода
