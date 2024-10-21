@@ -19,14 +19,31 @@ class UpdateService:
             json.dump(self.config, f, indent=4)
 
     def get_updates(self):
-        """Получаем список доступных обновлений из GitHub"""
-        result = subprocess.run(
-            ["git", "fetch", "--dry-run"],
-            stdout=subprocess.PIPE,
-            stderr=subprocess.PIPE,
-            text=True
-        )
-        return result.stdout if result.returncode == 0 else result.stderr
+        """Проверяем, есть ли новые коммиты на удалённой ветке."""
+        try:
+            # Сравниваем локальную ветку с удалённой
+            result = subprocess.run(
+                ["git", "fetch"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+
+            # Теперь проверяем новые коммиты, которых нет локально
+            result = subprocess.run(
+                ["git", "log", "HEAD..origin/main", "--oneline"],
+                stdout=subprocess.PIPE,
+                stderr=subprocess.PIPE,
+                text=True
+            )
+
+            if result.stdout:
+                return result.stdout  # Возвращаем список новых коммитов
+            else:
+                return "Обновлений нет."
+
+        except subprocess.CalledProcessError as e:
+            return f"Ошибка при проверке обновлений: {e}"
 
     def update_core(self):
         """Обновляем проект с GitHub и перезапускаем"""
