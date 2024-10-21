@@ -12,7 +12,7 @@ router = Router()
 @router.message(Command('start'))
 async def start_bot(message: Message):
     user = User(message.from_user)
-    user_data = user.read_user()
+    user_data = await user.read_user()
 
     if not user_data:
         await message.reply(f'Добро пожаловать {message.from_user.username}\n'
