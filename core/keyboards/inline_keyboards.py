@@ -1,5 +1,4 @@
 from aiogram.types import InlineKeyboardMarkup, InlineKeyboardButton, WebAppInfo
-from init import ngrok_url
 
 def get_profile_keyboard():
     return InlineKeyboardMarkup(
@@ -33,7 +32,7 @@ def get_open_web_ui_keyboard(tgid):
             [
                 InlineKeyboardButton(
                     text='⚙️ Настройки',
-                    web_app=WebAppInfo(url=f'{ngrok_url}/profile/?tgid={tgid}')
+                    web_app=WebAppInfo(url=f'/profile/?tgid={tgid}')
                 )
             ]
         ]
