@@ -10,11 +10,6 @@ from core.keyboards.inline_keyboards import get_open_web_ui_keyboard
 router = Router()
 update_service = UpdateService()
 
-@router.message(Command('test'))
-async def test_updates(message: Message):
-    await message.reply('Ты собака')
-
-
 @router.message(Command('get_updates'), isAdmin())
 async def get_updates_command(message):
     updates = update_service.get_updates()
