@@ -5,7 +5,6 @@ class User(JSONService):
     def __init__(self, user=None, tgid=None, username=None, first_name=None, last_name=None, language_code=None,
                  is_premium=None, is_bot=None):
         super().__init__()  # Инициализация родительского класса
-
         if isinstance(user, dict):  # Если передан словарь с данными
             self.tgid = user.get('tgid')
             self.username = user.get('username')

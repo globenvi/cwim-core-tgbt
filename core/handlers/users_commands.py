@@ -9,3 +9,11 @@ from core.controllers.UserController import User
 
 router = Router()
 
+@router.message(Command('start'))
+async def start_bot(message: Message):
+    user = User(message.from_user)
+
+    await user.init()
+
+    user_data = message.from_user
+    await user.create_user()
