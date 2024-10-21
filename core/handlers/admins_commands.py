@@ -35,7 +35,7 @@ async def paginate_modules(callback_query: CallbackQuery):
     keyboard = await module_catalog_service.create_module_keyboard(page=page)
     await callback_query.message.edit_reply_markup(reply_markup=keyboard)
 
-@router.message(Command('get_updates'), isAdmin(), isPrivate())
+@router.message(Command('get_updates'), isAdmin())
 async def get_updates_command(message):
     updates = update_service.get_updates()
     if updates:
